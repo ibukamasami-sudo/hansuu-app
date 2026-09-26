@@ -264,6 +264,19 @@
     return "rgb(240,240,240)";                 // 白（0）
   }
 
+  /* ハートの黒さをメモリ値で変える */
+function updateHeartBlack(v) {
+  const mask = document.getElementById("heart-mask");
+
+  // v=0 → 0%黒い
+  // v=10 → 100%黒い
+  const percent = v * 10;  // 0〜100%
+
+  // 下から黒くなるようにする
+  mask.setAttribute("y", 100 - percent);
+  mask.setAttribute("height", percent);
+}
+
   slider.addEventListener("input", () => {
     const v = Number(slider.value);
     arc.style.transform = `rotate(${v * 36}deg)`;
@@ -272,7 +285,7 @@
   });
 
   function selectNum(n) {
-    slider.value = n;
+  slider.value = n;
   arc.style.transform = `rotate(${n * 36}deg)`;
   heart.style.color = colorCurve(n);
 
