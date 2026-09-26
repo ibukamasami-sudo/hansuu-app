@@ -2,75 +2,388 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<title>スマホ対応・音声選択</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>気持ちの入り口（色分け＋読み上げ強化版）</title>
+
 <style>
-  body { font-family: sans-serif; padding: 20px; }
-  select { font-size: 18px; padding: 8px; width: 100%; }
-  button { margin-top: 20px; padding: 10px; font-size: 18px; }
+  body {
+    margin: 0;
+    padding: 0;
+    background: #111;
+    color: #eee;
+    font-family: "Hiragino Sans", sans-serif;
+    display: flex;
+    justify-content: center;
+    padding-top: 40px;
+  }
+
+  .container {
+    width: 90%;
+    max-width: 480px;
+  }
+
+  .circle {
+    width: 220px;
+    height: 220px;
+    border-radius: 50%;
+    border: 8px solid #333;
+    margin: 0 auto;
+    position: relative;
+  }
+
+  .arc {
+    width: 220px;
+    height: 220px;
+    border-radius: 50%;
+    border: 8px solid transparent;
+    border-top-color: #bbb;
+    position: absolute;
+    top: 0;
+    left: 0;
+    transform: rotate(0deg);
+    transition: transform 0.3s ease;
+  }
+
+  .heart {
+    font-size: 90px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: rgb(240,240,240);
+    transition: color 0.3s ease;
+  }
+
+  input[type=range] {
+    width: 100%;
+    margin-top: 30px;
+  }
+
+  .numbers {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+  }
+
+  .num-btn {
+    width: 32px;
+    height: 32px;
+    background: #333;
+    border-radius: 6px;
+    text-align: center;
+    line-height: 32px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  .num-btn.active {
+    background: #666;
+  }
+
+  textarea {
+    width: 100%;
+    height: 120px;
+    background: #222;
+    color: #eee;
+    border: 1px solid #444;
+    border-radius: 6px;
+    padding: 10px;
+    resize: none;
+  }
+
+  .section-title {
+    margin-top: 30px;
+    margin-bottom: 10px;
+    font-size: 18px;
+  }
+
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .tag {
+    background: #333;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .tag.selected {
+    background: #777;
+    color: #fff;
+    border: 1px solid #aaa;
+    transform: scale(1.05);
+  }
+
+  .add-btn {
+    background: #444;
+    padding: 6px 12px;
+    border-radius: 20px;
+    cursor: pointer;
+  }
+
+  .read-btn {
+    width: 100%;
+    margin-top: 10px;
+    padding: 12px;
+    background: #333;
+    color: #eee;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+
+  .go-btn {
+    display: block;
+    width: 100%;
+    text-align: center;
+    background: #333;
+    padding: 14px 0;
+    border-radius: 8px;
+    margin-top: 40px;
+    text-decoration: none;
+    color: #eee;
+    font-size: 16px;
+  }
+
+  select {
+    width: 100%;
+    padding: 10px;
+    background: #222;
+    color: #eee;
+    border: 1px solid #444;
+    border-radius: 6px;
+    margin-top: 20px;
+  }
 </style>
 </head>
+
 <body>
+<div class="container">
 
-<h2>スマホでも確実に声を選べる読み上げ</h2>
+  <!-- 円周バー＋ハート -->
+  <div class="circle">
+    <div id="arc" class="arc"></div>
+    <div id="heart" class="heart">♥</div>
+  </div>
 
-<select id="voiceSelect"></select>
-<textarea id="text" rows="5" style="width:100%; margin-top:20px;">こんにちは、Masamiさん。</textarea>
-<button onclick="speak()">読み上げる</button>
+  <!-- レバー -->
+  <input id="slider" type="range" min="0" max="10" value="0">
+
+  <!-- 数値ボタン -->
+  <div class="numbers">
+    <script>
+      for (let i = 0; i <= 10; i++) {
+        document.write(`<div class="num-btn" onclick="selectNum(${i})">${i}</div>`);
+      }
+    </script>
+  </div>
+
+  <!-- 声選択 -->
+  <select id="voiceSelect"></select>
+
+  <!-- その時の状況 -->
+  <div class="section-title">その時の状況（実況）</div>
+  <textarea id="text実況" maxlength="200" placeholder="今の気持ちをそのまま書いてください"></textarea>
+  <button class="read-btn" onclick="readTextarea()">実況を読み上げる</button>
+
+  <!-- 気持ちの選択 -->
+  <div class="section-title">気持ちの選択</div>
+  <div id="feel-tags" class="tags">
+    <div class="tag">怒り</div>
+    <div class="tag">困惑</div>
+    <div class="tag">悲しみ</div>
+    <div class="tag">不安</div>
+    <div class="add-btn" onclick="addFeel()">＋追加</div>
+  </div>
+  <button class="read-btn" onclick="readFeel()">気持ちを読み上げる</button>
+
+  <!-- 言語化 -->
+  <div class="section-title">言語化</div>
+  <div id="word-tags" class="tags">
+    <div class="tag">ざわざわ</div>
+    <div class="tag">ゾワッ</div>
+    <div class="tag">氷を抱えているような</div>
+    <div class="add-btn" onclick="addWord()">＋追加</div>
+  </div>
+  <button class="read-btn" onclick="readWords()">言語化を読み上げる</button>
+
+  <!-- 連続読み上げ -->
+  <button class="read-btn" onclick="readAll()">連続で全部読み上げる</button>
+
+  <!-- 項目＋内容読み上げ -->
+  <button class="read-btn" onclick="readAllWithTitle()">項目＋内容を全部読み上げる</button>
+
+  <!-- 封筒ボタン -->
+  <a href="feel.html" class="go-btn">封筒に入れて、水中に入る</a>
+
+</div>
 
 <script>
-function loadVoicesSmart() {
-    const synth = window.speechSynthesis;
-    let voices = synth.getVoices();
+  const slider = document.getElementById("slider");
+  const arc = document.getElementById("arc");
+  const heart = document.getElementById("heart");
 
-    // スマホは getVoices() が遅延するため、再取得を試みる
-    if (!voices.length) {
-        setTimeout(loadVoicesSmart, 300);
-        return;
-    }
+  /* 色分け（あなたの感覚どおり） */
+  function colorCurve(v) {
+    if (v >= 8) return "rgb(40,40,40)";        // 黒グレー
+    if (v >= 6) return "rgb(60,80,160)";       // 青系
+    if (v >= 3) return "rgb(40,120,60)";       // 緑系
+    if (v >= 1) return "rgb(220,200,40)";      // 黄色系
+    return "rgb(240,240,240)";                 // 白（0）
+  }
 
-    // 実際に読み上げできる声だけを残す
-    const usableVoices = voices.filter(v => {
-        return v.lang && (v.lang.includes("ja") || v.lang.includes("JP"));
+  slider.addEventListener("input", () => {
+    const v = Number(slider.value);
+    arc.style.transform = `rotate(${v * 36}deg)`;
+    heart.style.color = colorCurve(v);
+    highlightNum(v);
+  });
+
+  function selectNum(n) {
+    slider.value = n;
+    arc.style.transform = `rotate(${n * 36}deg)`;
+    heart.style.color = colorCurve(n);
+    highlightNum(n);
+  }
+
+  function highlightNum(n) {
+    const btns = document.querySelectorAll('.num-btn');
+    btns.forEach(btn => btn.classList.remove('active'));
+    btns[n].classList.add('active');
+  }
+
+  /* タグ選択 */
+  function enableTagSelecting() {
+    document.querySelectorAll('.tag').forEach(tag => {
+      tag.onclick = () => tag.classList.toggle('selected');
     });
+  }
 
-    // スマホは日本語が1種類しかないことが多いので補正
-    let finalVoices = usableVoices.length ? usableVoices : voices;
+  /* タグ削除（右クリック） */
+  function enableTagEditing() {
+    document.querySelectorAll('.tag').forEach(tag => {
+      tag.oncontextmenu = (e) => {
+        e.preventDefault();
+        if (confirm(`「${tag.textContent}」を削除しますか？`)) tag.remove();
+      };
+    });
+  }
 
+  /* 気持ち追加 */
+  function addFeel() {
+    const text = prompt("気持ちを追加してください");
+    if (text) {
+      const tag = document.createElement("div");
+      tag.className = "tag";
+      tag.textContent = text;
+      document.getElementById("feel-tags").prepend(tag);
+      enableTagSelecting();
+      enableTagEditing();
+    }
+  }
+
+  /* 言語化追加 */
+  function addWord() {
+    const text = prompt("言語化を追加してください");
+    if (text) {
+      const tag = document.createElement("div");
+      tag.className = "tag";
+      tag.textContent = text;
+      document.getElementById("word-tags").prepend(tag);
+      enableTagSelecting();
+      enableTagEditing();
+    }
+  }
+
+  /* 声の読み込み */
+  let voices = [];
+
+  function loadVoices() {
+    voices = speechSynthesis.getVoices();
     const select = document.getElementById("voiceSelect");
     select.innerHTML = "";
 
-    finalVoices.forEach((v, i) => {
-        const option = document.createElement("option");
-        option.value = i;
-
-        // 名前が空欄のスマホ対策
-        const label = v.name ? v.name : `日本語音声 (${v.lang})`;
-        option.textContent = label;
-
-        select.appendChild(option);
+    voices.forEach((v, i) => {
+      const option = document.createElement("option");
+      option.value = i;
+      option.textContent = `${v.name} (${v.lang})`;
+      select.appendChild(option);
     });
-}
+  }
 
-function speak() {
-    const text = document.getElementById("text").value;
-    const voiceIndex = document.getElementById("voiceSelect").value;
+  window.addEventListener("load", () => {
+    setTimeout(() => {
+      loadVoices();
+      speechSynthesis.onvoiceschanged = loadVoices;
+    }, 500);
+  });
 
+  /* 読み上げ本体 */
+  function speak(text) {
     const utter = new SpeechSynthesisUtterance(text);
-    const voices = speechSynthesis.getVoices();
-
-    // スマホ用補正
-    const usableVoices = voices.filter(v => v.lang.includes("ja") || v.lang.includes("JP"));
-    const finalVoices = usableVoices.length ? usableVoices : voices;
-
-    utter.voice = finalVoices[voiceIndex];
+    const index = document.getElementById("voiceSelect").value;
+    if (voices[index]) utter.voice = voices[index];
     utter.rate = 1.0;
     utter.pitch = 1.0;
-
     speechSynthesis.speak(utter);
-}
+  }
 
-window.speechSynthesis.onvoiceschanged = loadVoicesSmart;
-loadVoicesSmart();
+  /* 読み上げ：実況 */
+  function readTextarea() {
+    const text = document.getElementById("text実況").value;
+    if (!text) return alert("実況が空です。");
+    speak(text);
+  }
+
+  /* 読み上げ：気持ち */
+  function readFeel() {
+    const selected = [...document.querySelectorAll('#feel-tags .tag.selected')].map(t => t.textContent);
+    if (!selected.length) return alert("気持ちが選択されていません。");
+    speak(selected.join("、"));
+  }
+
+  /* 読み上げ：言語化 */
+  function readWords() {
+    const selected = [...document.querySelectorAll('#word-tags .tag.selected')].map(t => t.textContent);
+    if (!selected.length) return alert("言語化が選択されていません。");
+    speak(selected.join("、"));
+  }
+
+  /* 連続読み上げ */
+  function readAll() {
+    const text1 = document.getElementById("text実況").value;
+    const feel = [...document.querySelectorAll('#feel-tags .tag.selected')].map(t => t.textContent).join("、");
+    const words = [...document.querySelectorAll('#word-tags .tag.selected')].map(t => t.textContent).join("、");
+
+    const all = [text1, feel, words].filter(t => t).join("。");
+    if (!all) return alert("読み上げる内容がありません。");
+
+    speak(all);
+  }
+
+  /* 項目＋内容読み上げ */
+  function readAllWithTitle() {
+    const text1 = document.getElementById("text実況").value;
+    const feel = [...document.querySelectorAll('#feel-tags .tag.selected')].map(t => t.textContent).join("、");
+    const words = [...document.querySelectorAll('#word-tags .tag.selected')].map(t => t.textContent).join("、");
+
+    let result = "";
+    if (text1) result += `その時の状況：${text1}。`;
+    if (feel) result += `気持ち：${feel}。`;
+    if (words) result += `言語化：${words}。`;
+
+    if (!result) return alert("読み上げる内容がありません。");
+
+    speak(result);
+  }
+
+  enableTagSelecting();
+  enableTagEditing();
 </script>
 
 </body>
