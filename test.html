@@ -160,13 +160,14 @@
     margin-top: 20px;
   }
 
-  .heart-wrapper {
+.heart-wrapper {
   position: absolute;
-  top: 50%;
+  top: 45%; /* 円の中央に近づける */
   left: 50%;
   transform: translate(-50%, -50%);
   width: 120px;
   height: 120px;
+  z-index: 10;
 }
 
 .heart-svg {
@@ -182,21 +183,24 @@
 </head>
 
 <body>
-<div class="container">
-
-  <!-- 円周バー＋ハート -->
-  <div class="heart-wrapper">
+<div class="heart-wrapper">
   <svg id="heart-svg" viewBox="0 0 100 100" class="heart-svg">
+    <defs>
+      <!-- 下から黒くなるマスク -->
+      <mask id="fill-mask">
+        <rect id="mask-rect" x="0" y="0" width="100" height="100" fill="white" />
+      </mask>
+    </defs>
+
+    <!-- ハート本体 -->
     <path id="heart-path"
       d="M50 85 L20 55 A20 20 0 1 1 50 30 A20 20 0 1 1 80 55 Z"
-      fill="#f0f0f0">
+      fill="rgb(240,240,240)"
+      mask="url(#fill-mask)">
     </path>
-
-    <!-- 黒い塗りつぶし用マスク -->
-    <rect id="heart-mask" x="0" y="0" width="100" height="100"
-      fill="black" opacity="0.8" />
   </svg>
 </div>
+
 
   <!-- レバー -->
   <input id="slider" type="range" min="0" max="10" value="0">
@@ -266,18 +270,13 @@
 
   /* ハートの黒さをメモリ値で変える */
 function updateHeartBlack(v) {
-  const mask = document.getElementById("heart-mask");
-
-  // v=0 → 0%黒い
-  // v=10 → 100%黒い
-  const percent = v * 10;  // 0〜100%
-
-  // 下から黒くなるようにする
+  const mask = document.getElementById("mask-rect");  // ← ここが重要
+  const percent = v * 10;
   mask.setAttribute("y", 100 - percent);
   mask.setAttribute("height", percent);
 }
 
-const heartPath = document.getElementById("heart-path");
+const heartPath = document.getElementById("heart-path");  // ← これは正しい
 
 function updateHeartColor(v) {
   heartPath.setAttribute("fill", colorCurve(v));
@@ -433,18 +432,7 @@ function selectNum(n) {
   enableTagSelecting();
   enableTagEditing();
 
-  /* ハートの黒さをメモリ値で変える */
-function updateHeartBlack(v) {
-  const mask = document.getElementById("heart-mask");
 
-  // v=0 → 0%黒い
-  // v=10 → 100%黒い
-  const percent = v * 10;  // 0〜100%
-
-  // 下から黒くなるようにする
-  mask.setAttribute("y", 100 - percent);
-  mask.setAttribute("height", percent);
-}
 
 </script>
 
