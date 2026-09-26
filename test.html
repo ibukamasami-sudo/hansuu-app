@@ -277,22 +277,27 @@ function updateHeartBlack(v) {
   mask.setAttribute("height", percent);
 }
 
-  slider.addEventListener("input", () => {
-    const v = Number(slider.value);
-    arc.style.transform = `rotate(${v * 36}deg)`;
-    heart.style.color = colorCurve(v);
-    highlightNum(v);
-  });
+const heartPath = document.getElementById("heart-path");
 
-  function selectNum(n) {
+function updateHeartColor(v) {
+  heartPath.setAttribute("fill", colorCurve(v));
+}
+
+slider.addEventListener("input", () => {
+  const v = Number(slider.value);
+  arc.style.transform = `rotate(${v * 36}deg)`;
+  updateHeartColor(v);      // ← ここに変更
+  updateHeartBlack(v);
+  highlightNum(v);
+});
+
+function selectNum(n) {
   slider.value = n;
   arc.style.transform = `rotate(${n * 36}deg)`;
-  heart.style.color = colorCurve(n);
-
-  updateHeartBlack(n);   // ← 追加
-
+  updateHeartColor(n);      // ← ここに変更
+  updateHeartBlack(n);
   highlightNum(n);
-  }
+}
 
   function highlightNum(n) {
     const btns = document.querySelectorAll('.num-btn');
