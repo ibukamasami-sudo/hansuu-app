@@ -6,163 +6,50 @@
 <title>気持ちの入り口（色分け＋読み上げ強化版）</title>
 
 <style>
-  body {
-    margin: 0;
-    padding: 0;
-    background: #111;
-    color: #eee;
-    font-family: "Hiragino Sans", sans-serif;
-    display: flex;
-    justify-content: center;
-    padding-top: 40px;
-  }
+ body {
+  margin: 0;
+  padding: 0;
+  background: #111;
+  color: #eee;
+  font-family: "Hiragino Sans", sans-serif;
+  display: flex;
+  justify-content: center;
+  padding-top: 40px;
+}
 
-  .container {
-    width: 90%;
-    max-width: 480px;
-  }
+.container {
+  width: 90%;
+  max-width: 480px;
+}
 
-  .circle {
-    width: 220px;
-    height: 220px;
-    border-radius: 50%;
-    border: 8px solid #333;
-    margin: 0 auto;
-    position: relative;
-  }
+/* 円の枠 */
+.circle {
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  border: 8px solid #333;
+  margin: 0 auto;
+  position: relative;   /* ← 円の中だけ絶対配置を許可 */
+}
 
-  .arc {
-    width: 220px;
-    height: 220px;
-    border-radius: 50%;
-    border: 8px solid transparent;
-    border-top-color: #bbb;
-    position: absolute;
-    top: 0;
-    left: 0;
-    transform: rotate(0deg);
-    transition: transform 0.3s ease;
-  }
-
-  .heart {
-    font-size: 90px;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    color: rgb(240,240,240);
-    transition: color 0.3s ease;
-  }
-
-  input[type=range] {
-    width: 100%;
-    margin-top: 30px;
-  }
-
-  .numbers {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 10px;
-  }
-
-  .num-btn {
-    width: 32px;
-    height: 32px;
-    background: #333;
-    border-radius: 6px;
-    text-align: center;
-    line-height: 32px;
-    cursor: pointer;
-    transition: background 0.2s;
-  }
-
-  .num-btn.active {
-    background: #666;
-  }
-
-  textarea {
-    width: 100%;
-    height: 120px;
-    background: #222;
-    color: #eee;
-    border: 1px solid #444;
-    border-radius: 6px;
-    padding: 10px;
-    resize: none;
-  }
-
-  .section-title {
-    margin-top: 30px;
-    margin-bottom: 10px;
-    font-size: 18px;
-  }
-
-  .tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-  }
-
-  .tag {
-    background: #333;
-    padding: 6px 12px;
-    border-radius: 20px;
-    font-size: 14px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-  }
-
-  .tag.selected {
-    background: #777;
-    color: #fff;
-    border: 1px solid #aaa;
-    transform: scale(1.05);
-  }
-
-  .add-btn {
-    background: #444;
-    padding: 6px 12px;
-    border-radius: 20px;
-    cursor: pointer;
-  }
-
-  .read-btn {
-    width: 100%;
-    margin-top: 10px;
-    padding: 12px;
-    background: #333;
-    color: #eee;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-  }
-
-  .go-btn {
-    display: block;
-    width: 100%;
-    text-align: center;
-    background: #333;
-    padding: 14px 0;
-    border-radius: 8px;
-    margin-top: 40px;
-    text-decoration: none;
-    color: #eee;
-    font-size: 16px;
-  }
-
-  select {
-    width: 100%;
-    padding: 10px;
-    background: #222;
-    color: #eee;
-    border: 1px solid #444;
-    border-radius: 6px;
-    margin-top: 20px;
-  }
-
-.heart-wrapper {
+/* 円周バー */
+.arc {
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  border: 8px solid transparent;
+  border-top-color: #bbb;
   position: absolute;
-  top: 45%; /* 円の中央に近づける */
+  top: 0;
+  left: 0;
+  transform: rotate(0deg);
+  transition: transform 0.3s ease;
+}
+
+/* ハート（SVG）を円の中央に置く */
+.heart-wrapper {
+  position: absolute;   /* ← 円の中だけ絶対配置 */
+  top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   width: 120px;
@@ -175,9 +62,133 @@
   height: 100%;
 }
 
-#heart-mask {
+/* マスクのアニメーション */
+#mask- {
   transition: height 0.3s ease;
 }
+
+/* スライダー */
+input[type=range] {
+  width: 100%;
+  margin-top: 30px;
+}
+
+/* 数字ボタン */
+.numbers {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+}
+
+.num-btn {
+  width: 32px;
+  height: 32px;
+  background: #333;
+  border-radius: 6px;
+  text-align: center;
+  line-height: 32px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.num-btn.active {
+  background: #666;
+}
+
+/* 実況欄（position: static に戻す） */
+textarea {
+  width: 100%;
+  height: 120px;
+  background: #222;
+  color: #eee;
+  border: 1px solid #444;
+  border-radius: 6px;
+  padding: 10px;
+  resize: none;
+  position: static;   /* ← ここが重要 */
+}
+
+/* セクションタイトル */
+.section-title {
+  margin-top: 30px;
+  margin-bottom: 10px;
+  font-size: 18px;
+  position: static;   /* ← 念のため明示 */
+}
+
+/* タグ群 */
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  position: static;
+}
+
+.tag {
+  background: #333;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tag.selected {
+  background: #777;
+  color: #fff;
+  border: 1px solid #aaa;
+  transform: scale(1.05);
+}
+
+/* タグ追加ボタン */
+.add-btn {
+  background: #444;
+  padding: 6px 12px;
+  border-radius: 20px;
+  cursor: pointer;
+  position: static;
+}
+
+/* 読み上げボタン */
+.read-btn {
+  width: 100%;
+  margin-top: 10px;
+  padding: 12px;
+  background: #333;
+  color: #eee;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  position: static;
+}
+
+/* 封筒ボタン */
+.go-btn {
+  display: block;
+  width: 100%;
+  text-align: center;
+  background: #333;
+  padding: 14px 0;
+  border-radius: 8px;
+  margin-top: 40px;
+  text-decoration: none;
+  color: #eee;
+  font-size: 16px;
+  position: static;
+}
+
+/* セレクトボックス */
+select {
+  width: 100%;
+  padding: 10px;
+  background: #222;
+  color: #eee;
+  border: 1px solid #444;
+  border-radius: 6px;
+  margin-top: 20px;
+  position: static;
+}
+
 
 </style>
 </head>
@@ -188,8 +199,8 @@
     <defs>
       <!-- 下から黒くなるマスク -->
       <mask id="fill-mask">
-        <rect id="mask-rect" x="0" y="0" width="100" height="100" fill="white" />
-      </mask>
+        < id="mask-" x="0" y="0" width="100" height="100"
+      fill="black" opacity="0.5" />
     </defs>
 
     <!-- ハート本体 -->
@@ -270,13 +281,14 @@
 
   /* ハートの黒さをメモリ値で変える */
 function updateHeartBlack(v) {
-  const mask = document.getElementById("mask-rect");  // ← ここが重要
+  const mask = document.getElementById("mask-");  // ← ここが重要
   const percent = v * 10;
   mask.setAttribute("y", 100 - percent);
   mask.setAttribute("height", percent);
 }
 
 const heartPath = document.getElementById("heart-path");  // ← これは正しい
+
 
 function updateHeartColor(v) {
   heartPath.setAttribute("fill", colorCurve(v));
