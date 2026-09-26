@@ -159,6 +159,25 @@
     border-radius: 6px;
     margin-top: 20px;
   }
+
+  .heart-wrapper {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 120px;
+  height: 120px;
+}
+
+.heart-svg {
+  width: 100%;
+  height: 100%;
+}
+
+#heart-mask {
+  transition: height 0.3s ease;
+}
+
 </style>
 </head>
 
@@ -166,10 +185,18 @@
 <div class="container">
 
   <!-- 円周バー＋ハート -->
-  <div class="circle">
-    <div id="arc" class="arc"></div>
-    <div id="heart" class="heart">♥</div>
-  </div>
+  <div class="heart-wrapper">
+  <svg id="heart-svg" viewBox="0 0 100 100" class="heart-svg">
+    <path id="heart-path"
+      d="M50 85 L20 55 A20 20 0 1 1 50 30 A20 20 0 1 1 80 55 Z"
+      fill="#f0f0f0">
+    </path>
+
+    <!-- 黒い塗りつぶし用マスク -->
+    <rect id="heart-mask" x="0" y="0" width="100" height="100"
+      fill="black" opacity="0.8" />
+  </svg>
+</div>
 
   <!-- レバー -->
   <input id="slider" type="range" min="0" max="10" value="0">
@@ -246,9 +273,12 @@
 
   function selectNum(n) {
     slider.value = n;
-    arc.style.transform = `rotate(${n * 36}deg)`;
-    heart.style.color = colorCurve(n);
-    highlightNum(n);
+  arc.style.transform = `rotate(${n * 36}deg)`;
+  heart.style.color = colorCurve(n);
+
+  updateHeartBlack(n);   // ← 追加
+
+  highlightNum(n);
   }
 
   function highlightNum(n) {
@@ -384,6 +414,20 @@
 
   enableTagSelecting();
   enableTagEditing();
+
+  /* ハートの黒さをメモリ値で変える */
+function updateHeartBlack(v) {
+  const mask = document.getElementById("heart-mask");
+
+  // v=0 → 0%黒い
+  // v=10 → 100%黒い
+  const percent = v * 10;  // 0〜100%
+
+  // 下から黒くなるようにする
+  mask.setAttribute("y", 100 - percent);
+  mask.setAttribute("height", percent);
+}
+
 </script>
 
 </body>
