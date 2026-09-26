@@ -300,38 +300,62 @@
     }
   }
 
-  /* 声の読み込み */
-  let voices = [];
+  /* スマホ・PC両対応：音声リストの安定取得 */
+let voices = [];
+let voiceRetryCount = 0;
 
-  function loadVoices() {
-    voices = speechSynthesis.getVoices();
-    const select = document.getElementById("voiceSelect");
-    select.innerHTML = "";
+function loadVoicesSmart() {
+  voices = speechSynthesis.getVoices();
 
-    voices.forEach((v, i) => {
-      const option = document.createElement("option");
-      option.value = i;
-      option.textContent = `${v.name} (${v.lang})`;
-      select.appendChild(option);
-    });
+  // スマホは getVoices() が遅れるので再試行（最大5回）
+  if (!voices.length) {
+    if (voiceRetryCount < 5) {
+      voiceRetryCount++;
+      setTimeout(loadVoicesSmart, 500);
+      return;
+    }
   }
 
-  window.addEventListener("load", () => {
-    setTimeout(() => {
-      loadVoices();
-      speechSynthesis.onvoiceschanged = loadVoices;
-    }, 500);
+  // 日本語優先
+  const usableVoices = voices.filter(v =>
+    v.lang.includes("ja") || v.lang.includes("JP")
+  );
+
+  // 日本語が1つしかないスマホ対策
+  const finalVoices = usableVoices.length ? usableVoices : voices;
+
+  const select = document.getElementById("voiceSelect");
+  select.innerHTML = "";
+
+  finalVoices.forEach((v, i) => {
+    const option = document.createElement("option");
+    option.value = i;
+    option.textContent = v.name || `日本語音声 (${v.lang})`;
+    select.appendChild(option);
   });
+}
 
-  /* 読み上げ本体 */
-  function speak(text) {
-    const utter = new SpeechSynthesisUtterance(text);
-    const index = document.getElementById("voiceSelect").value;
-    if (voices[index]) utter.voice = voices[index];
-    utter.rate = 1.0;
-    utter.pitch = 1.0;
-    speechSynthesis.speak(utter);
-  }
+/* 読み上げ本体（スマホ対応） */
+function speak(text) {
+  const utter = new SpeechSynthesisUtterance(text);
+
+  const usableVoices = voices.filter(v =>
+    v.lang.includes("ja") || v.lang.includes("JP")
+  );
+  const finalVoices = usableVoices.length ? usableVoices : voices;
+
+  const index = document.getElementById("voiceSelect").value;
+  if (finalVoices[index]) utter.voice = finalVoices[index];
+
+  utter.rate = 1.0;
+  utter.pitch = 1.0;
+
+  speechSynthesis.speak(utter);
+}
+
+/* 初期化 */
+window.speechSynthesis.onvoiceschanged = loadVoicesSmart;
+setTimeout(loadVoicesSmart, 300);
 
   /* 読み上げ：実況 */
   function readTextarea() {
