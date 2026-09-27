@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>Heart Test</title>
+<style>
+  body {
+    background: #111;
+    color: #eee;
+    font-family: sans-serif;
+    display: flex;
+    justify-content: center;
+    padding-top: 40px;
+  }
+
+  .container {
+    width: 300px;
+    text-align: center;
+  }
+
+  /* ハートを中央に置く */
+  .heart-wrapper {
+    width: 140px;
+    height: 140px;
+    margin: 0 auto;
+    position: relative;
+  }
+
+  .heart-svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  /* 黒さの変化を滑らかに */
+  #mask-rect {
+    transition: height 0.3s ease;
+  }
+
+  /* 数字ボタン */
+  .numbers {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+  }
+
+  .num-btn {
+    width: 28px;
+    height: 28px;
+    background: #333;
+    border-radius: 6px;
+    text-align: center;
+    line-height: 28px;
+    cursor: pointer;
+  }
+
+  .num-btn.active {
+    background: #666;
+  }
+</style>
+</head>
+
+<body>
+<div class="container">
+
+  <!-- ハート本体 -->
+  <div class="heart-wrapper">
+    <svg id="heart-svg" viewBox="0 0 100 100" class="heart-svg">
+      <defs>
+        <mask id="fill-mask">
+          <!-- 黒さを変える矩形（白＝見える、黒＝隠れる） -->
+          <rect id="mask-rect" x="0" y="0" width="100" height="100" fill="white"/>
+        </mask>
+      </defs>
+
+      <path id="heart-path"
+        d="M50 85 L20 55 A20 20 0 1 1 50 30 A20 20 0 1 1 80 55 Z"
+        fill="rgb(240,240,240)"
+        mask="url(#fill-mask)">
+      </path>
+    </svg>
+  </div>
+
+  <!-- 数字ボタン -->
+  <div class="numbers">
+    <div class="num-btn" onclick="selectNum(0)">0</div>
+    <div class="num-btn" onclick="selectNum(1)">1</div>
+    <div class="num-btn" onclick="selectNum(2)">2</div>
+    <div class="num-btn" onclick="selectNum(3)">3</div>
+    <div class="num-btn" onclick="selectNum(4)">4</div>
+    <div class="num-btn" onclick="selectNum(5)">5</div>
+    <div class="num-btn" onclick="selectNum(6)">6</div>
+    <div class="num-btn" onclick="selectNum(7)">7</div>
+    <div class="num-btn" onclick="selectNum(8)">8</div>
+    <div class="num-btn" onclick="selectNum(9)">9</div>
+    <div class="num-btn" onclick="selectNum(10)">10</div>
+  </div>
+
+</div>
+
+<script>
+  const heartPath = document.getElementById("heart-path");
+  const maskRect = document.getElementById("mask-rect");
+
+  /* 色分け（あなたの感覚どおり） */
+  function colorCurve(v) {
+    if (v >= 8) return "rgb(40,40,40)";
+    if (v >= 6) return "rgb(60,80,160)";
+    if (v >= 3) return "rgb(40,120,60)";
+    if (v >= 1) return "rgb(220,200,40)";
+    return "rgb(240,240,240)";
+  }
+
+  /* 黒さの割合を変える（下から黒くなる） */
+  function updateHeartBlack(v) {
+    const percent = v * 10;  // 0〜100%
+    maskRect.setAttribute("y", 100 - percent);
+    maskRect.setAttribute("height", percent);
+  }
+
+  /* 色と黒さを反映 */
+  function selectNum(n) {
+    heartPath.setAttribute("fill", colorCurve(n));
+    updateHeartBlack(n);
+
+    // ボタンのハイライト
+    const btns = document.querySelectorAll('.num-btn');
+    btns.forEach(btn => btn.classList.remove('active'));
+    btns[n].classList.add('active');
+  }
+</script>
+
+</body>
+</html>
