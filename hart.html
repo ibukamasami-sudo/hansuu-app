@@ -35,7 +35,7 @@ body {
   opacity: 0.8;
 
   mask-image: url('heart-mask.png');
-  mask-size: contain;
+  mask-size: 100% 100%;   /* ← ここが決定的 */
   mask-repeat: no-repeat;
   mask-position: center;
   transition: height 0.3s ease;
@@ -89,7 +89,7 @@ body {
 </div>
 
 <script>
-  
+
 function selectNum(n) {
   const curtain = document.querySelector('.black-curtain');
   curtain.style.height = (n * 10) + '%';
