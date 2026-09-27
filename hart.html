@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<title>Heart Mask Test</title>
+<title>Heart Curtain Test</title>
 <style>
   body {
     background: #111;
@@ -22,6 +22,7 @@
     width: 140px;
     height: 140px;
     margin: 0 auto;
+    position: relative;
   }
 
   .heart-svg {
@@ -60,25 +61,17 @@
 
   <div class="heart-wrapper">
     <svg viewBox="0 0 100 85" class="heart-svg">
+      <!-- 白いハート -->
+      <path id="heart-path"
+        d="M50 85 L20 55 A20 20 0 1 1 50 30 A20 20 0 1 1 80 55 Z"
+        fill="white">
+      </path>
 
-      <defs>
-        <!-- ハート形のマスク（黒幕はこの形で切り抜かれる） -->
-        <mask id="heart-mask">
-          <path d="M50 85 L20 55 A20 20 0 1 1 50 30 A20 20 0 1 1 80 55 Z"
-                fill="white"/>
-        </mask>
-      </defs>
-
-      <!-- 黒い幕（ハート形で切り抜かれる） -->
+      <!-- 黒い幕（ハートの上に重ねる） -->
       <rect id="black-rect"
-            x="0" y="85" width="100" height="0"
-            fill="black"
-            mask="url(#heart-mask)">
+        x="0" y="85" width="100" height="0"
+        fill="black" opacity="0.8">
       </rect>
-
-      <!-- 白いハート本体 -->
-      <path d="M50 85 L20 55 A20 20 0 1 1 50 30 A20 20 0 1 1 80 55 Z"
-            fill="white"/>
     </svg>
   </div>
 
