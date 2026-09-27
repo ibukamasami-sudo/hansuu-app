@@ -56,18 +56,17 @@
 
 .black-curtain {
   position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  height: 0;
-  background: black;
+  inset: 0; /* top, right, bottom, leftをまとめて指定 */
+  background: linear-gradient(to top, black 0%, transparent 100%);
   opacity: 0.8;
 
   mask-image: url('heart-mask.png');
-  mask-size: 100% 100%;
+  mask-size: contain;
   mask-repeat: no-repeat;
-  mask-position: center center;
+  mask-position: center;
+  transition: background-position 0.3s ease;
 }
+
 
 </style>
 </head>
@@ -98,15 +97,15 @@
 
 <script>
   function selectNum(n) {
-    // 黒い幕の高さを変える
     const curtain = document.querySelector('.black-curtain');
-    curtain.style.height = (n * 10) + '%';
+    const percent = n * 10;
+    curtain.style.background = `linear-gradient(to top, black ${percent}%, transparent 100%)`;
 
-    // ボタンの見た目を更新
     const btns = document.querySelectorAll('.num-btn');
     btns.forEach(btn => btn.classList.remove('active'));
     btns[n].classList.add('active');
   }
+
 </script>
 
 
