@@ -13,8 +13,6 @@
     padding-top: 40px;
   }
 
-  
-
   .container {
     width: 300px;
     text-align: center;
@@ -66,13 +64,11 @@
   opacity: 0.8;
 
   mask-image: url('heart-mask.png');
-  mask-size: contain;
+  mask-size: 100% 100%;
   mask-repeat: no-repeat;
-  mask-position: center;
+  mask-position: center center;
 }
 
-
-  
 </style>
 </head>
 
@@ -80,14 +76,7 @@
 <div class="container">
 
 <div class="heart-wrapper">
-  <svg viewBox="0 0 100 85" class="heart-svg">
-    <path id="heart-path"
-      d="M50 85 L20 55 A20 20 0 1 1 50 30 A20 20 0 1 1 80 55 Z"
-      fill="white">
-    </path>
-  </svg>
-
-  <!-- 黒い幕は SVG の外に置く -->
+  <!-- SVGは削除 -->
   <div class="black-curtain"></div>
 </div>
 
