@@ -53,6 +53,14 @@
   .num-btn.active {
     background: #666;
   }
+
+mask-image: url('heart-mask.png');
+mask-size: contain;
+mask-repeat: no-repeat;
+mask-position: center;
+
+
+  
 </style>
 </head>
 
@@ -61,19 +69,15 @@
 
   <div class="heart-wrapper">
     <svg viewBox="0 0 100 85" class="heart-svg">
-      <!-- 白いハート -->
       <path id="heart-path"
         d="M50 85 L20 55 A20 20 0 1 1 50 30 A20 20 0 1 1 80 55 Z"
         fill="white">
       </path>
-
-      <!-- 黒い幕（ハートの上に重ねる） -->
-      <rect id="black-rect"
-        x="0" y="85" width="100" height="0"
-        fill="black" opacity="0.8">
-      </rect>
     </svg>
-  </div>
+
+    <!-- 黒い幕はここに置く（SVGの外） -->
+    <div class="black-curtain"></div>
+</div>
 
   <div class="numbers">
     <div class="num-btn" onclick="selectNum(0)">0</div>
@@ -92,18 +96,18 @@
 </div>
 
 <script>
-  const blackRect = document.getElementById("black-rect");
-
   function selectNum(n) {
-    const percent = n * 8.5; // 0〜85に合わせる
-    blackRect.setAttribute("y", 85 - percent);
-    blackRect.setAttribute("height", percent);
+    // 黒い幕の高さを変える
+    const curtain = document.querySelector('.black-curtain');
+    curtain.style.height = (n * 10) + '%';
 
+    // ボタンの見た目を更新
     const btns = document.querySelectorAll('.num-btn');
     btns.forEach(btn => btn.classList.remove('active'));
     btns[n].classList.add('active');
   }
 </script>
+
 
 </body>
 </html>
