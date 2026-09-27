@@ -30,7 +30,6 @@
     height: 100%;
   }
 
-  /* 黒レイヤーのアニメーション */
   #black-layer {
     transition: height 0.3s ease;
   }
@@ -61,16 +60,16 @@
 <div class="container">
 
   <div class="heart-wrapper">
-    <svg id="heart-svg" viewBox="0 0 100 100" class="heart-svg">
-      <!-- 白いハート本体 -->
+    <svg id="heart-svg" viewBox="0 0 100 85" class="heart-svg">
+      <!-- 白いハート -->
       <path id="heart-path"
         d="M50 85 L20 55 A20 20 0 1 1 50 30 A20 20 0 1 1 80 55 Z"
         fill="white">
       </path>
 
-      <!-- 黒レイヤー（半透明） -->
+      <!-- 黒レイヤー（下から伸びる） -->
       <rect id="black-layer"
-        x="0" y="100" width="100" height="0"
+        x="0" y="85" width="100" height="0"
         fill="black" opacity="0.5">
       </rect>
     </svg>
@@ -96,9 +95,8 @@
   const blackLayer = document.getElementById("black-layer");
 
   function selectNum(n) {
-    const percent = n * 10; // 0〜100%
-
-    blackLayer.setAttribute("y", 100 - percent);
+    const percent = n * 8.5; // 0〜85に合わせる
+    blackLayer.setAttribute("y", 85 - percent);
     blackLayer.setAttribute("height", percent);
 
     const btns = document.querySelectorAll('.num-btn');
