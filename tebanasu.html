@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<title>反芻を手放す簡易版（身体感覚＝言語化版）</title>
+<title>反芻を手放す簡易版（全変更）</title>
 <style>
   body { font-family: sans-serif; padding: 20px; }
   .flash {
@@ -18,13 +18,13 @@
 </head>
 <body>
 
-<h2>反芻を手放す簡易版（身体感覚＝言語化版）</h2>
+<h2>反芻を手放す簡易版（全変更）</h2>
 
-<!-- ① 呼びかけ -->
+<!-- ① 呼びかけ（固定） -->
 <p><strong>それで、いまどう感じてる？</strong></p>
 
 <!-- ② 感情（複数選択＋追加） -->
-<label>感情（複数可）：</label><br>
+<label>感情を選んでください（複数可）：</label><br>
 <select id="emotion" multiple size="6">
   <option>怒り</option>
   <option>悲しみ</option>
@@ -39,7 +39,7 @@
 
 <hr>
 
-<!-- ③ ハート数値 -->
+<!-- ③ ハート数値（既存UIを使う前提） -->
 <label>不快感（0〜10）：</label>
 <input type="number" id="heartBefore" min="0" max="10" value="6">
 
@@ -50,15 +50,28 @@
 
 <hr>
 
-<!-- ⑤ 言語化 -->
+<!-- ⑤ 言語化（自由記述） -->
 <label>どんな感じか、言語化してみて：</label><br>
 <textarea id="describeText" rows="3" cols="40"></textarea>
 
 <hr>
 
-<!-- ⑥ 身体感覚（言語化） -->
-<label>体のどの辺がどんな感じ？（例：胸の中央が冷たい／胃のあたりがぎゅっとする）</label><br>
-<textarea id="bodyText" rows="3" cols="40"></textarea>
+<!-- ⑥ 身体感覚 -->
+<label>体のどの辺がどんな感じ？</label><br>
+
+<select id="bodyPart">
+  <option>胸</option>
+  <option>お腹</option>
+  <option>頭</option>
+  <option>喉</option>
+  <option>肩</option>
+  <option>背中</option>
+</select>
+
+<input type="text" id="bodyFeeling" placeholder="例：ざわざわする">
+
+<label>強さ（0〜10）：</label>
+<input type="number" id="bodyStrength" min="0" max="10" value="5">
 
 <hr>
 
@@ -101,4 +114,58 @@ function addEmotion() {
 }
 
 function readEmotion() {
-  const emotions
+  const sel = document.getElementById("emotion");
+  const emotions = Array.from(sel.selectedOptions).map(o => o.value).join("、");
+  const heart = document.getElementById("heartBefore").value;
+
+  const text = `いまは、${emotions}を感じていて、不快感は${heart}くらいなんだね。`;
+  speechSynthesis.speak(new SpeechSynthesisUtterance(text));
+}
+
+function readFinal() {
+  const sel = document.getElementById("emotion");
+  const emotions = Array.from(sel.selectedOptions).map(o => o.value).join("、");
+
+  const heart = document.getElementById("heartBefore").value;
+  const desc = document.getElementById("describeText").value;
+
+  const bodyPart = document.getElementById("bodyPart").value;
+  const bodyFeeling = document.getElementById("bodyFeeling").value;
+  const bodyStrength = document.getElementById("bodyStrength").value;
+
+  const text =
+    `いまは${emotions}を感じていて、${desc}という感じで、${bodyPart}が${bodyFeeling}感じで、強さは${bodyStrength}。不快感は${heart}だね。これを感じるのはありだよ。`;
+
+  speechSynthesis.speak(new SpeechSynthesisUtterance(text));
+}
+
+function release() {
+  const flash = document.getElementById("flash");
+  flash.style.opacity = 1;
+  setTimeout(() => flash.style.opacity = 0, 500);
+}
+
+function readAfter() {
+  const before = document.getElementById("heartBefore").value;
+  const after = document.getElementById("heartAfter").value;
+
+  const text = `${before}から${after}に下がったね。不快感が少なくなってるよ。`;
+  speechSynthesis.speak(new SpeechSynthesisUtterance(text));
+}
+
+function saveRecord() {
+  const sel = document.getElementById("emotion");
+  const emotions = Array.from(sel.selectedOptions).map(o => o.value).join("、");
+
+  const before = document.getElementById("heartBefore").value;
+  const after = document.getElementById("heartAfter").value;
+
+  const log = document.getElementById("log");
+  const item = document.createElement("p");
+  item.textContent = `【記録】感情：${emotions} / 不快感：${before}→${after}`;
+  log.appendChild(item);
+}
+</script>
+
+</body>
+</html>
