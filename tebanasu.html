@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>反芻を手放す簡易版</title>
+<style>
+  body { font-family: sans-serif; padding: 20px; }
+  .flash {
+    position: fixed;
+    top:0; left:0;
+    width:100%; height:100%;
+    background:white;
+    opacity:0;
+    transition: opacity 0.5s;
+    pointer-events:none;
+  }
+</style>
+</head>
+<body>
+
+<h2>反芻を手放す簡易版</h2>
+
+<!-- ① 呼びかけ（固定） -->
+<p><strong>それで、いまどう感じてる？</strong></p>
+
+<!-- ② 感情の種類 -->
+<label>感情の種類：</label>
+<select id="emotion">
+  <option>怒り</option>
+  <option>悲しみ</option>
+  <option>不安</option>
+  <option>イライラ</option>
+  <option>孤独</option>
+  <option>罪悪感</option>
+</select>
+
+<hr>
+
+<!-- ③ ハート数値（既存のハートUIを使う前提） -->
+<label>不快感（0〜10）：</label>
+<input type="number" id="heartBefore" min="0" max="10" value="5">
+
+<hr>
+
+<!-- ④ 気持ちの書き出し -->
+<label>いまの気持ちを書いてみよう：</label><br>
+<textarea id="feelingText" rows="3" cols="40"></textarea>
+
+<hr>
+
+<!-- ⑤ 質感（オノマトペ） -->
+<label>質感（もやもや・ざわざわなど）：</label>
+<select id="quality">
+  <option>もやもや</option>
+  <option>ざわざわ</option>
+  <option>ぐちゃぐちゃ</option>
+  <option>しんとする</option>
+  <option>ひりひり</option>
+</select>
+
+<hr>
+
+<!-- ⑥ 身体感覚 -->
+<label>体のどの辺がどんな感じ？</label><br>
+<select id="bodyPart">
+  <option>胸</option>
+  <option>お腹</option>
+  <option>頭</option>
+  <option>喉</option>
+  <option>肩</option>
+  <option>背中</option>
+</select>
+
+<input type="text" id="bodyFeeling" placeholder="例：ざわざわする">
+
+<label>強さ（0〜10）：</label>
+<input type="number" id="bodyStrength" min="0" max="10" value="5">
+
+<hr>
+
+<!-- ⑦ まとめて読み上げる -->
+<button onclick="readSummary()">まとめて読み上げる</button>
+
+<hr>
+
+<!-- ⑧ 手放し -->
+<button onclick="release()">手放す</button>
+
+<div class="flash" id="flash"></div>
+
+<hr>
+
+<!-- ⑨ 手放し後の数値 -->
+<label>今の不快感（0〜10）：</label>
+<input type="number" id="heartAfter" min="0" max="10" value="3">
+
+<button onclick="readAfter()">変化を読み上げる</button>
+
+<hr>
+
+<!-- ⑩ 記録 -->
+<button onclick="saveRecord()">記録する</button>
+
+<div id="log"></div>
+
+<script>
+function readSummary() {
+  const emotion = document.getElementById("emotion").value;
+  const heartBefore = document.getElementById("heartBefore").value;
+  const feelingText = document.getElementById("feelingText").value;
+  const quality = document.getElementById("quality").value;
+  const bodyPart = document.getElementById("bodyPart").value;
+  const bodyFeeling = document.getElementById("bodyFeeling").value;
+  const bodyStrength = document.getElementById("bodyStrength").value;
+
+  const text =
+    `${emotion}を感じていて、${quality}で、${bodyPart}が${bodyFeeling}感じで、強さは${bodyStrength}。不快感は${heartBefore}だね。それ、あるあるだよ。`;
+
+  const uttr = new SpeechSynthesisUtterance(text);
+  speechSynthesis.speak(uttr);
+}
+
+function release() {
+  const flash = document.getElementById("flash");
+  flash.style.opacity = 1;
+  setTimeout(() => flash.style.opacity = 0, 500);
+}
+
+function readAfter() {
+  const before = document.getElementById("heartBefore").value;
+  const after = document.getElementById("heartAfter").value;
+
+  const text = `${before}から${after}に下がったね。不快感が少なくなってるよ。`;
+  const uttr = new SpeechSynthesisUtterance(text);
+  speechSynthesis.speak(uttr);
+}
+
+function saveRecord() {
+  const emotion = document.getElementById("emotion").value;
+  const before = document.getElementById("heartBefore").value;
+  const after = document.getElementById("heartAfter").value;
+
+  const log = document.getElementById("log");
+  const item = document.createElement("p");
+  item.textContent = `【記録】感情：${emotion} / 不快感：${before}→${after}`;
+  log.appendChild(item);
+}
+</script>
+
+</body>
+</html>
