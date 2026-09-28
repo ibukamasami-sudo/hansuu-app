@@ -66,18 +66,19 @@ button:hover {
 <!-- 質問の音声 -->
 <label>質問の音声：</label>
 <select id="voiceChoice">
-  <option value="hennakoe.mp3">大丈夫？何があったの？</option>
-  <option value="yasashiku.mp3">やさしい声</option>
-  <option value="bakappoi.mp3">バカっぽい声</option>
+  <option value="mp3/hennakoe.mp3">バカっぽい声</option>
+  <option value="mp3/ochituitakoe.mp3">落ち着いた声</option>
+  <option value="mp3/onee.mp3">おねえの声</option>
+  <option value="mp3/mama.mp3">ママの声</option>
 </select><br>
 
 <!-- 読み上げ速度 -->
 <label>読み上げ速度：</label>
 <select id="rateChoice" onchange="setRate(this.value)">
-  <option value="0.8">ゆっくり読む（0.8）</option>
+  <option value="0.8">ゆっくり読む（0.5）</option>
   <option value="1.0">やさしく読む（1.0）</option>
   <option value="1.3">すっきり読む（1.3）</option>
-  <option value="1.4">ちょっとバカっぽく読む（1.4）</option>
+  <option value="1.4">ちょっとバカっぽく読む（1.7）</option>
 </select><br>
 
 <!-- 読み上げの声（ブラウザの音声） -->
