@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>反芻ストップ試作</title>
+
 <style>
 body {
   background:#aaa;
@@ -11,6 +12,8 @@ body {
   text-align:center;
   padding:30px;
 }
+
+/* 入力欄 */
 textarea {
   width:90%;
   height:100px;
@@ -20,23 +23,40 @@ textarea {
   border:1px solid #666;
   background:#eee;
 }
-select,button {
+
+/* ドロップボタン */
+select {
   margin:8px;
   padding:8px 12px;
+  border-radius:6px;
+  border:none;
+  background:#444;
+  color:#fff;
+  cursor:pointer;
+}
+
+/* ボタン */
+button {
+  margin:12px;
+  padding:10px 20px;
   border-radius:6px;
   border:none;
   background:#333;
   color:#fff;
   cursor:pointer;
+  transition: background 0.2s;
 }
-select {
-  background:#444;
+
+/* クリック時に色が変わる */
+button:active {
+  background:#666;
 }
 button:hover {
   background:#555;
 }
 </style>
 </head>
+
 <body>
 
 <h2>反芻ストップ試作</h2>
@@ -60,6 +80,7 @@ button:hover {
 
 <label>BGM：</label>
 <select id="bgmChoice">
+  <option value="">BGMなし</option>
   <option value="bgm1.mp3">静かなBGM</option>
   <option value="bgm2.mp3">軽いBGM</option>
   <option value="bgm3.mp3">少し不安なBGM</option>
@@ -79,11 +100,17 @@ function setRate(rate){
 function playSequence(){
   const voiceFile = document.getElementById("voiceChoice").value;
   const bgmFile = document.getElementById("bgmChoice").value;
-  const bgm = document.getElementById("bgm");
-  bgm.src = bgmFile;
-  bgm.volume = 0.3;
-  bgm.play();
 
+  const bgm = document.getElementById("bgm");
+
+  // BGMファイルがある時だけ再生
+  if(bgmFile){
+    bgm.src = bgmFile;
+    bgm.volume = 0.3;
+    bgm.play().catch(()=>{});
+  }
+
+  // 質問の音声
   const audio = new Audio(voiceFile);
   audio.play();
 
@@ -94,12 +121,16 @@ function playSequence(){
 
 function readText(){
   const text = document.getElementById("happeningText").value;
+
   const utter = new SpeechSynthesisUtterance(text);
   utter.rate = currentRate;
   utter.pitch = 1.2;
+
   utter.onend = () => {
-    document.getElementById("bgm").pause();
+    const bgm = document.getElementById("bgm");
+    bgm.pause();
   };
+
   speechSynthesis.speak(utter);
 }
 </script>
