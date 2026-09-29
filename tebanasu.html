@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<title>反芻を手放す簡易版（安定版）</title>
+<title>手放しステップ（単体）</title>
 <style>
   body { font-family: sans-serif; padding: 20px; }
   .flash {
@@ -14,60 +14,28 @@
     transition: opacity 0.5s;
     pointer-events:none;
   }
+  #heart {
+    width: 60px;
+    height: 60px;
+    background: #ff4d4d; /* 手放し前の濃い色 */
+    clip-path: polygon(50% 0%, 61% 13%, 75% 13%, 88% 25%, 88% 38%, 75% 50%, 50% 75%, 25% 50%, 12% 38%, 12% 25%, 25% 13%, 39% 13%);
+    margin-bottom: 20px;
+  }
 </style>
 </head>
 <body>
 
-<h2>反芻を手放す簡易版（安定版）</h2>
+<h2>手放しステップ（単体）</h2>
 
-<!-- ① 呼びかけ -->
-<p><strong>それで、いまどう感じてる？</strong></p>
+<!-- 手放し前のハート -->
+<div id="heart"></div>
 
-<!-- ② 感情（複数選択＋追加） -->
-<label>感情（複数可）：</label><br>
-<select id="emotion" multiple size="6">
-  <option>怒り</option>
-  <option>悲しみ</option>
-  <option>不安</option>
-  <option>イライラ</option>
-  <option>孤独</option>
-  <option>罪悪感</option>
-</select>
-<br>
-<input type="text" id="emotionAdd" placeholder="感情を追加">
-<button onclick="addEmotion()">追加</button>
+<!-- 読み上げ：誘導 -->
+<button onclick="readGuide()">読み上げ（誘導）</button>
 
 <hr>
 
-<!-- ③ ハート数値 -->
-<label>不快感（0〜10）：</label>
-<input type="number" id="heartBefore" min="0" max="10" value="6">
-
-<hr>
-
-<!-- ④ 読み上げ（感情＋ハート） -->
-<button onclick="readEmotion()">読み上げる</button>
-
-<hr>
-
-<!-- ⑤ 言語化 -->
-<label>どんな感じか、言語化してみて：</label><br>
-<textarea id="describeText" rows="3" cols="40"></textarea>
-
-<hr>
-
-<!-- ⑥ 身体感覚（言語化） -->
-<label>体のどの辺がどんな感じ？（例：胸の中央が冷たい／胃のあたりがぎゅっとする）</label><br>
-<textarea id="bodyText" rows="3" cols="40"></textarea>
-
-<hr>
-
-<!-- ⑦ 最終まとめ読み上げ -->
-<button onclick="readFinal()">全部まとめて読み上げる</button>
-
-<hr>
-
-<!-- ⑧ 手放し -->
+<!-- 手放しボタン -->
 <p><strong>今味わったね。一度、手放してみよっか？</strong></p>
 <button onclick="release()">手放す</button>
 
@@ -75,78 +43,44 @@
 
 <hr>
 
-<!-- ⑨ 手放し後の数値 -->
-<label>今の不快感（0〜10）：</label>
-<input type="number" id="heartAfter" min="0" max="10" value="3">
-
-<button onclick="readAfter()">変化を読み上げる</button>
+<!-- 手放し後の読み上げ -->
+<button onclick="readAfter()">読み上げ（手放し後）</button>
 
 <hr>
 
-<!-- ⑩ 記録 -->
+<!-- 記録 -->
 <button onclick="saveRecord()">記録する</button>
-
 <div id="log"></div>
 
 <script>
-function addEmotion() {
-  const add = document.getElementById("emotionAdd").value;
-  if(add.trim() !== "") {
-    const sel = document.getElementById("emotion");
-    const op = document.createElement("option");
-    op.textContent = add;
-    sel.appendChild(op);
-    document.getElementById("emotionAdd").value = "";
-  }
-}
-
-function readEmotion() {
-  const emotions = Array.from(document.getElementById("emotion").selectedOptions).map(o => o.value).join("、");
-  const heart = document.getElementById("heartBefore").value;
-
-  const text = `いまは、${emotions}を感じていて、不快感は${heart}くらいなんだね。`;
-
-  speechSynthesis.cancel();
-  speechSynthesis.speak(new SpeechSynthesisUtterance(text));
-}
-
-function readFinal() {
-  const emotions = Array.from(document.getElementById("emotion").selectedOptions).map(o => o.value).join("、");
-  const heart = document.getElementById("heartBefore").value;
-  const desc = document.getElementById("describeText").value;
-  const body = document.getElementById("bodyText").value;
-
-  const text =
-    `いまは${emotions}を感じていて、${desc}という感じで、体は「${body}」。不快感は${heart}だね。これを感じるのはありだよ。`;
-
+function readGuide() {
+  const text = "今味わったね。一度手放してみよっか。";
   speechSynthesis.cancel();
   speechSynthesis.speak(new SpeechSynthesisUtterance(text));
 }
 
 function release() {
   const flash = document.getElementById("flash");
+  const heart = document.getElementById("heart");
+
+  // 白フラッシュ演出
   flash.style.opacity = 1;
   setTimeout(() => flash.style.opacity = 0, 500);
+
+  // ハートの色を薄くする（簡易版）
+  heart.style.background = "#ffb3b3";
 }
 
 function readAfter() {
-  const before = document.getElementById("heartBefore").value;
-  const after = document.getElementById("heartAfter").value;
-
-  const text = `${before}から${after}に下がったね。不快感が少なくなってるよ。`;
-
+  const text = "少し楽になってきてるね。手放せてるよ。";
   speechSynthesis.cancel();
   speechSynthesis.speak(new SpeechSynthesisUtterance(text));
 }
 
 function saveRecord() {
-  const emotions = Array.from(document.getElementById("emotion").selectedOptions).map(o => o.value).join("、");
-  const before = document.getElementById("heartBefore").value;
-  const after = document.getElementById("heartAfter").value;
-
   const log = document.getElementById("log");
   const item = document.createElement("p");
-  item.textContent = `【記録】感情：${emotions} / 不快感：${before}→${after}`;
+  item.textContent = "【記録】手放しを行いました（ハートの色が薄くなった）";
   log.appendChild(item);
 }
 </script>
