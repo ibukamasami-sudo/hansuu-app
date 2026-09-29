@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>味わいステップ（単体）</title>
+<style>
+  body { font-family: sans-serif; padding: 20px; }
+  .emotion-btn {
+    display: inline-block;
+    margin: 4px;
+    padding: 6px 12px;
+    border: 1px solid #666;
+    border-radius: 6px;
+    cursor: pointer;
+    background: #f9f9f9;
+  }
+  .selected { background: #333; color: white; }
+</style>
+</head>
+<body>
+
+<h2>味わいステップ（単体）</h2>
+
+<!-- 感情選択 -->
+<p><strong>どんな気持ちだった？選んでみて。</strong></p>
+<div id="emotionArea">
+  <span class="emotion-btn" onclick="toggleEmotion(this)">怒り</span>
+  <span class="emotion-btn" onclick="toggleEmotion(this)">不安</span>
+  <span class="emotion-btn" onclick="toggleEmotion(this)">悲しみ</span>
+  <span class="emotion-btn" onclick="toggleEmotion(this)">イライラ</span>
+  <span class="emotion-btn" onclick="toggleEmotion(this)">孤独</span>
+  <span class="emotion-btn" onclick="toggleEmotion(this)">罪悪感</span>
+</div>
+
+<input type="text" id="emotionAdd" placeholder="感情を追加">
+<button onclick="addEmotion()">追加</button>
+
+<hr>
+
+<!-- 小説のように気持ちを表現 -->
+<p><strong>その時の気持ちを、小説みたいに表現してみて？</strong></p>
+<textarea id="feelingText" rows="3" cols="40"></textarea>
+
+<hr>
+
+<!-- 身体の変化 -->
+<p><strong>今この時を思い出して、体にはどんな変化があった？</strong></p>
+<textarea id="bodyText" rows="3" cols="40"></textarea>
+
+<hr>
+
+<!-- 読み上げ設定 -->
+<p><strong>読み上げ設定</strong></p>
+<label>速度：</label>
+<input type="range" id="rate" min="0.5" max="2" step="0.1" value="1">
+
+<label>声：</label>
+<select id="voiceSelect"></select>
+
+<label>BGM：</label>
+<select id="bgmSelect">
+  <option value="">なし</option>
+  <option value="calm.mp3">落ち着く音</option>
+  <option value="soft.mp3">やわらかい音</option>
+</select>
+
+<hr>
+
+<!-- 読み上げ -->
+<button onclick="readAll()">全部読み上げる</button>
+
+<script>
+let selectedEmotions = [];
+let voices = [];
+
+function toggleEmotion(el) {
+  const emotion = el.textContent;
+  if (selectedEmotions.includes(emotion)) {
+    selectedEmotions = selectedEmotions.filter(e => e !== emotion);
+    el.classList.remove("selected");
+  } else {
+    selectedEmotions.push(emotion);
+    el.classList.add("selected");
+  }
+}
+
+function addEmotion() {
+  const add = document.getElementById("emotionAdd").value.trim();
+  if (add) {
+    const area = document.getElementById("emotionArea");
+    const span = document.createElement("span");
+    span.className = "emotion-btn";
+    span.textContent = add;
+    span.onclick = function() { toggleEmotion(span); };
+    area.appendChild(span);
+    document.getElementById("emotionAdd").value = "";
+  }
+}
+
+function loadVoices() {
+  voices = speechSynthesis.getVoices();
+  const select = document.getElementById("voiceSelect");
+  voices.forEach((v, i) => {
+    const opt = document.createElement("option");
+    opt.value = i;
+    opt.textContent = v.name;
+    select.appendChild(opt);
+  });
+}
+loadVoices();
+speechSynthesis.onvoiceschanged = loadVoices;
+
+function readAll() {
+  const emotions = selectedEmotions.join("、");
+  const feeling = document.getElementById("feelingText").value;
+  const body = document.getElementById("bodyText").value;
+  const rate = document.getElementById("rate").value;
+  const voiceIndex = document.getElementById("voiceSelect").value;
+
+  const text =
+    `${emotions}を感じていて、${feeling}という気持ちがあって、体は「${body}」。その時どんな感じだったか教えて？`;
+
+  const utter = new SpeechSynthesisUtterance(text);
+  utter.rate = rate;
+  utter.voice = voices[voiceIndex];
+
+  speechSynthesis.cancel();
+  speechSynthesis.speak(utter);
+}
+</script>
+
+</body>
+</html>
