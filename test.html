@@ -2,96 +2,148 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<title>Heart Test</title>
+<title>感情を味わって手放す（統合版）</title>
 <style>
-  body {
-    background: #111;
-    color: #eee;
-    font-family: sans-serif;
-    display: flex;
-    justify-content: center;
-    padding-top: 40px;
-  }
-
-  .container {
-    width: 300px;
-    text-align: center;
-  }
-
-  .heart-wrapper {
-    width: 140px;
-    height: 140px;
-    margin: 0 auto;
-  }
-
-  .heart-svg {
-    width: 100%;
-    height: 100%;
-  }
-
-  .numbers {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 20px;
-  }
-
-  .num-btn {
-    width: 28px;
-    height: 28px;
-    background: #333;
-    border-radius: 6px;
-    text-align: center;
-    line-height: 28px;
+  body { font-family: sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+  section { margin-bottom: 40px; border-bottom: 1px solid #ddd; padding-bottom: 20px; }
+  .heart {
+    width: 80px; height: 80px;
+    background: #ff4d4d;
+    clip-path: polygon(50% 0%, 61% 13%, 75% 13%, 88% 25%, 88% 38%, 75% 50%, 50% 75%, 25% 50%, 12% 38%, 12% 25%, 25% 13%, 39% 13%);
     cursor: pointer;
+    transition: transform 0.4s ease, opacity 0.8s ease;
+    margin: 10px 0;
   }
-
-  .num-btn.active {
-    background: #666;
+  .heart-selected { transform: scale(1.2); }
+  .heart-release { transform: scale(2.5); opacity: 0; }
+  .emotion-btn {
+    display: inline-block; margin: 4px; padding: 6px 12px;
+    border: 1px solid #666; border-radius: 6px;
+    cursor: pointer; background: #f9f9f9;
   }
+  .selected { background: #333; color: white; }
 </style>
 </head>
-
 <body>
-<div class="container">
 
-  <div class="heart-wrapper">
-    <svg id="heart-svg" viewBox="0 0 100 85" class="heart-svg">
-      <path id="heart-path"
-        d="M50 85 L20 55 A20 20 0 1 1 50 30 A20 20 0 1 1 80 55 Z"
-        fill="white">
-      </path>
-    </svg>
+<h1>感情を味わって手放す（統合版）</h1>
+
+<!-- hart.html -->
+<section id="hart">
+  <h2>① 今の不快の度合いを入力してください</h2>
+  <p>ハートをクリックして、今の辛さを選んでください。</p>
+  <div class="heart" style="background:#ff0000;" onclick="selectHeart(this,8)"></div>
+  <div class="heart" style="background:#ff6666;" onclick="selectHeart(this,6)"></div>
+  <div class="heart" style="background:#ff9999;" onclick="selectHeart(this,4)"></div>
+  <div class="heart" style="background:#ffcccc;" onclick="selectHeart(this,2)"></div>
+  <p id="heartInfo">選択された不快指数：まだ選んでいません</p>
+  <button onclick="goToDekigoto()">次へ進む</button>
+</section>
+
+<!-- dekigoto.html -->
+<section id="dekigoto" style="display:none;">
+  <h2>② 出来事の記述</h2>
+  <p>何かあった？大丈夫？出来事を教えてください。</p>
+  <textarea id="eventText" rows="3" cols="60"></textarea>
+  <button onclick="readEvent()">出来事を読み上げる</button>
+  <button onclick="goToAziwai()">次へ進む</button>
+</section>
+
+<!-- aziwai.html -->
+<section id="aziwai" style="display:none;">
+  <h2>③ 気持ちを味わうステップ</h2>
+  <p>その時の気持ちを教えて？</p>
+  <div id="emotionArea">
+    <span class="emotion-btn" onclick="toggleEmotion(this)">怒り</span>
+    <span class="emotion-btn" onclick="toggleEmotion(this)">不安</span>
+    <span class="emotion-btn" onclick="toggleEmotion(this)">悲しみ</span>
+    <span class="emotion-btn" onclick="toggleEmotion(this)">イライラ</span>
+    <span class="emotion-btn" onclick="toggleEmotion(this)">孤独</span>
+    <span class="emotion-btn" onclick="toggleEmotion(this)">罪悪感</span>
   </div>
+  <input type="text" id="emotionAdd" placeholder="感情を追加">
+  <button onclick="addEmotion()">追加</button>
+  <p id="emotionInfo">選択された感情：なし</p>
 
-  <div class="numbers">
-    <div class="num-btn" onclick="selectNum(0)">0</div>
-    <div class="num-btn" onclick="selectNum(1)">1</div>
-    <div class="num-btn" onclick="selectNum(2)">2</div>
-    <div class="num-btn" onclick="selectNum(3)">3</div>
-    <div class="num-btn" onclick="selectNum(4)">4</div>
-    <div class="num-btn" onclick="selectNum(5)">5</div>
-    <div class="num-btn" onclick="selectNum(6)">6</div>
-    <div class="num-btn" onclick="selectNum(7)">7</div>
-    <div class="num-btn" onclick="selectNum(8)">8</div>
-    <div class="num-btn" onclick="selectNum(9)">9</div>
-    <div class="num-btn" onclick="selectNum(10)">10</div>
-  </div>
+  <p>その時の気持ちを小説みたいに表現してみて？</p>
+  <textarea id="novelText" rows="3" cols="60"></textarea>
 
-</div>
+  <p>今この時を思い出して、体にはどんな変化があった？</p>
+  <textarea id="bodyText" rows="3" cols="60"></textarea>
+
+  <button onclick="readAziwai()">全部読み上げる</button>
+  <button onclick="goToTebanasu()">次へ進む</button>
+</section>
+
+<!-- tebanasu.html -->
+<section id="tebanasu" style="display:none;">
+  <h2>④ 手放しステップ</h2>
+  <p>なるほど、気持ちを味わえましたね。この気持ち、どうしますか？今手放しますか？</p>
+  <button onclick="releaseYes()">YES</button>
+  <button onclick="releaseNo()">NO</button>
+
+  <div id="releaseHeart" class="heart" style="display:none;" onclick="releaseHeartAnim()"></div>
+</section>
 
 <script>
-  const heartPath = document.getElementById("heart-path");
+let selectedEmotions = [];
+let startValue = null;
 
-  function selectNum(n) {
-    // 0 → 白、10 → 黒
-    const gray = 255 - n * 25; // 白→黒の直線的な変化
-    heartPath.setAttribute("fill", `rgb(${gray},${gray},${gray})`);
+// ハート選択
+function selectHeart(el, value) {
+  document.querySelectorAll("#hart .heart").forEach(h => h.classList.remove("heart-selected"));
+  el.classList.add("heart-selected");
+  startValue = value;
+  document.getElementById("heartInfo").textContent = "選択された不快指数：" + value;
+}
 
-    const btns = document.querySelectorAll('.num-btn');
-    btns.forEach(btn => btn.classList.remove('active'));
-    btns[n].classList.add('active');
+function goToDekigoto() {
+  if (!startValue) { alert("まずハートを選んでください。"); return; }
+  document.getElementById("dekigoto").style.display = "block";
+}
+
+// 出来事読み上げ
+function readEvent() {
+  const eventText = document.getElementById("eventText").value;
+  const text = "その時はこんな出来事があったんだね。" + eventText + "。その時どんな感じだったか教えて？";
+  speechSynthesis.cancel();
+  speechSynthesis.speak(new SpeechSynthesisUtterance(text));
+}
+
+function goToAziwai() {
+  document.getElementById("aziwai").style.display = "block";
+}
+
+// 感情選択
+function toggleEmotion(el) {
+  const emotion = el.textContent;
+  if (selectedEmotions.includes(emotion)) {
+    selectedEmotions = selectedEmotions.filter(e => e !== emotion);
+    el.classList.remove("selected");
+  } else {
+    selectedEmotions.push(emotion);
+    el.classList.add("selected");
   }
-</script>
+  document.getElementById("emotionInfo").textContent =
+    "選択された感情：" + (selectedEmotions.length ? selectedEmotions.join("、") : "なし");
+}
 
-</body>
-</html>
+function addEmotion() {
+  const add = document.getElementById("emotionAdd").value.trim();
+  if (add) {
+    const area = document.getElementById("emotionArea");
+    const span = document.createElement("span");
+    span.className = "emotion-btn";
+    span.textContent = add;
+    span.onclick = function() { toggleEmotion(span); };
+    area.appendChild(span);
+    document.getElementById("emotionAdd").value = "";
+  }
+}
+
+// 味わい読み上げ
+function readAziwai() {
+  const emotions = selectedEmotions.join("、");
+  const novel = document.getElementById("novelText").value;
+  const body = document.getElementById("bodyText").value;
+  const text = `いまは${emotions}を感じていて、${novel}という気持ちがあって、
