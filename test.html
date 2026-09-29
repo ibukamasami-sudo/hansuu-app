@@ -111,6 +111,19 @@ function selectNum(n) {
   curtain.style.height = (n * 10) + '%';
 }
 
+function toggleHeart() {
+  const wrapper = document.querySelector('.heart-wrapper');
+  const btn = document.getElementById('hideHeartBtn');
+
+  if (wrapper.style.display === 'none') {
+    wrapper.style.display = 'flex';
+    btn.textContent = 'ハートを非表示にする';
+  } else {
+    wrapper.style.display = 'none';
+    btn.textContent = 'ハートを表示する';
+  }
+}
+
 </script>
 
 
