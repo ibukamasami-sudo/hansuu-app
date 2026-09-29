@@ -74,18 +74,20 @@ body {
 }
 
 .nav-btn {
-  width: 90%;
-  margin: 6px 0;
+  display: block;
+  width: 100%;
   padding: 10px;
-  background: #444;
+  margin: 6px 0;
+  background: #333;
   color: #eee;
-  border-radius: 8px;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
   cursor: pointer;
 }
 .nav-btn:hover {
-  background: #666;
+  background: #555;
 }
-
 
 </style>
 </head>
@@ -120,15 +122,18 @@ body {
   ハートを非表示にする
 </button>
 
-<!-- ▼ ナビゲーター選択ボタン ▼ -->
-<div class="navigator-block" style="margin-top:25px;">
-  <p>ナビゲーターを選んでください</p>
+<div id="navigatorSelect" style="margin-top:20px;">
+  <p>ナビゲーターを選択してください。</p>
 
-  <button class="nav-btn" onclick="selectNavigator('ossan')">変なおっさん</button>
-  <button class="nav-btn" onclick="selectNavigator('teacher')">男性教諭</button>
-  <button class="nav-btn" onclick="selectNavigator('onee')">おねえ</button>
+  <button class="nav-btn" onclick="selectNavigator('henoj')">変なおじさん</button>
+  <button class="nav-btn" onclick="selectNavigator('sensei')">男性教諭</button>
+  <button class="nav-btn" onclick="selectNavigator('onei')">おねえ</button>
   <button class="nav-btn" onclick="selectNavigator('mama')">ママ</button>
 </div>
+
+<!-- 質問を表示する欄（まだ空） -->
+<div id="navigatorText" style="margin-top:20px; font-size:16px;"></div>
+
 
 <script>
 
@@ -150,25 +155,32 @@ function toggleHeart() {
   }
 }
 
-let navigatorType = null;
-
 function selectNavigator(type) {
-  navigatorType = type;
+  let voiceFile = "";
 
-  let prefix = "";
   switch(type) {
-    case "ossan": prefix = "えーっとさ、ちょっと聞くけどさ。"; break;
-    case "teacher": prefix = "では、状況を教えてください。"; break;
-    case "onee": prefix = "ねえねえ、どうしたのよ〜。"; break;
-    case "mama": prefix = "どうしたの、話してごらん。"; break;
+    case "henoj":
+      voiceFile = "henoj_1.mp3";
+      break;
+    case "sensei":
+      voiceFile = "sensei_1.mp3";
+      break;
+    case "onei":
+      voiceFile = "onei_1.mp3";
+      break;
+    case "mama":
+      voiceFile = "mama_1.mp3";
+      break;
   }
 
-  const utter = new SpeechSynthesisUtterance(prefix + "何かあった？大丈夫？");
-  speechSynthesis.speak(utter);
+  // ▼ MP3を再生
+  new Audio(voiceFile).play();
 
-  // 次のステップ（出来事入力）を表示する場所
-  // ここに dekigoto.html の内容を追加していく
+  // ▼ 画面に質問を表示（次のステップで内容を入れる）
+  document.getElementById("navigatorText").textContent =
+    "今の不快の度合いを教えて？";
 }
+
 </script>
 
 
