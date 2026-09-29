@@ -73,6 +73,19 @@ body {
   background: #666;
 }
 
+.nav-btn {
+  width: 90%;
+  margin: 6px 0;
+  padding: 10px;
+  background: #444;
+  color: #eee;
+  border-radius: 8px;
+  cursor: pointer;
+}
+.nav-btn:hover {
+  background: #666;
+}
+
 
 </style>
 </head>
@@ -101,11 +114,21 @@ body {
 
 </div>
 
-<!-- ← この下に非表示ボタンを置く -->
+<!-- ← この下に非表示ボタンを置く 
 <button id="hideHeartBtn" onclick="toggleHeart()" 
   style="margin-top:20px; padding:8px; background:#222; color:#eee; border-radius:6px;">
   ハートを非表示にする
 </button>
+-->
+<!-- ▼ ナビゲーター選択ボタン ▼ -->
+<div class="navigator-block" style="margin-top:25px;">
+  <p>ナビゲーターを選んでください</p>
+
+  <button class="nav-btn" onclick="selectNavigator('ossan')">変なおっさん</button>
+  <button class="nav-btn" onclick="selectNavigator('teacher')">男性教諭</button>
+  <button class="nav-btn" onclick="selectNavigator('onee')">おねえ</button>
+  <button class="nav-btn" onclick="selectNavigator('mama')">ママ</button>
+</div>
 
 <script>
 
@@ -127,6 +150,25 @@ function toggleHeart() {
   }
 }
 
+let navigatorType = null;
+
+function selectNavigator(type) {
+  navigatorType = type;
+
+  let prefix = "";
+  switch(type) {
+    case "ossan": prefix = "えーっとさ、ちょっと聞くけどさ。"; break;
+    case "teacher": prefix = "では、状況を教えてください。"; break;
+    case "onee": prefix = "ねえねえ、どうしたのよ〜。"; break;
+    case "mama": prefix = "どうしたの、話してごらん。"; break;
+  }
+
+  const utter = new SpeechSynthesisUtterance(prefix + "何かあった？大丈夫？");
+  speechSynthesis.speak(utter);
+
+  // 次のステップ（出来事入力）を表示する場所
+  // ここに dekigoto.html の内容を追加していく
+}
 </script>
 
 
