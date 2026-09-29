@@ -89,6 +89,22 @@ body {
   background: #555;
 }
 
+.index-btn {
+  display: inline-block;
+  width: 32px;
+  height: 32px;
+  margin: 4px;
+  background: #444;
+  color: #eee;
+  border-radius: 6px;
+  text-align: center;
+  line-height: 32px;
+  cursor: pointer;
+}
+.index-btn:hover {
+  background: #666;
+}
+
 </style>
 </head>
 
@@ -116,12 +132,7 @@ body {
 
 </div>
 
-<!-- ← この下に非表示ボタンを置く -->
-<button id="hideHeartBtn" onclick="toggleHeart()" 
-  style="margin-top:20px; padding:8px; background:#222; color:#eee; border-radius:6px;">
-  ハートを非表示にする
-</button>
-
+<!-- ▼ ナビゲーター選択欄 ▼ -->
 <div id="navigatorSelect" style="margin-top:20px;">
   <p>ナビゲーターを選択してください。</p>
 
@@ -131,9 +142,15 @@ body {
   <button class="nav-btn" onclick="selectNavigator('mama')">ママ</button>
 </div>
 
-<!-- 質問を表示する欄（まだ空） -->
+<!-- ▼ ナビゲーターの質問表示欄 ▼ -->
 <div id="navigatorText" style="margin-top:20px; font-size:16px;"></div>
 
+<!-- ▼ 不快指数（最初は非表示） ▼ -->
+<div id="indexSection" style="margin-top:20px; display:none;">
+  <p>1〜10までの不快の度合いを選んで。</p>
+
+  <div id="indexButtons"></div>
+</div>
 
 <script>
 
@@ -176,10 +193,37 @@ function selectNavigator(type) {
   // ▼ MP3を再生
   new Audio(voiceFile).play();
 
-  // ▼ 画面に質問を表示（次のステップで内容を入れる）
+  // ▼ 質問を表示
   document.getElementById("navigatorText").textContent =
     "今の不快の度合いを教えて？";
+
+  // ▼ 不快指数ボタンを表示
+  document.getElementById("indexSection").style.display = "block";
+
+  // ▼ ボタンを生成（1〜10）
+  const container = document.getElementById("indexButtons");
+  container.innerHTML = "";
+  for (let i = 1; i <= 10; i++) {
+    const btn = document.createElement("div");
+    btn.className = "index-btn";
+    btn.textContent = i;
+
+    btn.onclick = function() {
+      onSelectIndex(i);
+    };
+
+    container.appendChild(btn);
+  }
 }
+
+function onSelectIndex(value) {
+  // ▼ 次の質問へ
+  document.getElementById("navigatorText").textContent =
+    `不快指数 ${value} ね。何があったの？ここに描き出して？`;
+
+  // ▼ この後に出来事入力欄を表示する（次のステップで作る）
+}
+
 
 </script>
 
