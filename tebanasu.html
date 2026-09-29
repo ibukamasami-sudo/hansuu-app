@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<title>手放しステップ（単体）</title>
+<title>手放し確認ステップ（単体）</title>
 <style>
   body { font-family: sans-serif; padding: 20px; }
   .flash {
@@ -11,77 +11,90 @@
     width:100%; height:100%;
     background:white;
     opacity:0;
-    transition: opacity 0.5s;
+    transition: opacity 1s;
     pointer-events:none;
   }
-  #heart {
+  .heart {
     width: 60px;
     height: 60px;
-    background: #ff4d4d; /* 手放し前の濃い色 */
+    background: #ff4d4d;
     clip-path: polygon(50% 0%, 61% 13%, 75% 13%, 88% 25%, 88% 38%, 75% 50%, 50% 75%, 25% 50%, 12% 38%, 12% 25%, 25% 13%, 39% 13%);
-    margin-bottom: 20px;
+    margin: 10px;
+    cursor: pointer;
   }
+  .selected { outline: 3px solid #333; }
 </style>
 </head>
 <body>
 
-<h2>手放しステップ（単体）</h2>
+<h2>手放し確認ステップ（単体）</h2>
 
-<!-- 手放し前のハート -->
-<div id="heart"></div>
+<p><strong>この感情を手放しますか？</strong></p>
+<button onclick="confirmRelease(true)">YES</button>
+<button onclick="confirmRelease(false)">NO</button>
 
-<!-- 読み上げ：誘導 -->
-<button onclick="readGuide()">読み上げ（誘導）</button>
+<div id="flash" class="flash"></div>
+<audio id="bgm" src="" loop></audio>
 
-<hr>
+<div id="releaseArea" style="display:none;">
+  <p><strong>今の不快指数を選んでください（ハートの色で）</strong></p>
+  <div id="heartArea">
+    <div class="heart" style="background:#ff0000;" onclick="selectHeart(this,8)"></div>
+    <div class="heart" style="background:#ff6666;" onclick="selectHeart(this,6)"></div>
+    <div class="heart" style="background:#ff9999;" onclick="selectHeart(this,4)"></div>
+    <div class="heart" style="background:#ffcccc;" onclick="selectHeart(this,2)"></div>
+  </div>
+  <p id="selectedValue">選択された不快指数：なし</p>
+  <button onclick="saveRecord()">記録する</button>
+</div>
 
-<!-- 手放しボタン -->
-<p><strong>今味わったね。一度、手放してみよっか？</strong></p>
-<button onclick="release()">手放す</button>
-
-<div class="flash" id="flash"></div>
-
-<hr>
-
-<!-- 手放し後の読み上げ -->
-<button onclick="readAfter()">読み上げ（手放し後）</button>
-
-<hr>
-
-<!-- 記録 -->
-<button onclick="saveRecord()">記録する</button>
 <div id="log"></div>
 
 <script>
-function readGuide() {
-  const text = "今味わったね。一度手放してみよっか。";
-  speechSynthesis.cancel();
-  speechSynthesis.speak(new SpeechSynthesisUtterance(text));
+let selectedValue = null;
+
+function confirmRelease(isYes) {
+  if (isYes) {
+    // BGM再生
+    const bgm = document.getElementById("bgm");
+    bgm.src = "calm.mp3"; // 仮のBGM
+    bgm.play();
+
+    // 白フラッシュ演出
+    const flash = document.getElementById("flash");
+    flash.style.opacity = 1;
+    setTimeout(() => flash.style.opacity = 0, 1000);
+
+    // ハート選択エリア表示
+    document.getElementById("releaseArea").style.display = "block";
+
+    // 読み上げ
+    const text = "今味わったね。一度手放してみよっか。";
+    speechSynthesis.cancel();
+    speechSynthesis.speak(new SpeechSynthesisUtterance(text));
+  } else {
+    const text = "もう少し味わってみようか。";
+    speechSynthesis.cancel();
+    speechSynthesis.speak(new SpeechSynthesisUtterance(text));
+  }
 }
 
-function release() {
-  const flash = document.getElementById("flash");
-  const heart = document.getElementById("heart");
-
-  // 白フラッシュ演出
-  flash.style.opacity = 1;
-  setTimeout(() => flash.style.opacity = 0, 500);
-
-  // ハートの色を薄くする（簡易版）
-  heart.style.background = "#ffb3b3";
-}
-
-function readAfter() {
-  const text = "少し楽になってきてるね。手放せてるよ。";
-  speechSynthesis.cancel();
-  speechSynthesis.speak(new SpeechSynthesisUtterance(text));
+function selectHeart(el, value) {
+  document.querySelectorAll(".heart").forEach(h => h.classList.remove("selected"));
+  el.classList.add("selected");
+  selectedValue = value;
+  document.getElementById("selectedValue").textContent = `選択された不快指数：${value}`;
 }
 
 function saveRecord() {
   const log = document.getElementById("log");
   const item = document.createElement("p");
-  item.textContent = "【記録】手放しを行いました（ハートの色が薄くなった）";
+  item.textContent = `【記録】手放し完了。不快指数：${selectedValue}`;
   log.appendChild(item);
+
+  const text = "記録しました。少し楽になってきてるね。";
+  speechSynthesis.cancel();
+  speechSynthesis.speak(new SpeechSynthesisUtterance(text));
 }
 </script>
 
