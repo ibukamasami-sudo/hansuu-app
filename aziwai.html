@@ -118,7 +118,7 @@ function readAll() {
   const voiceIndex = document.getElementById("voiceSelect").value;
 
   const text =
-    `${emotions}を感じていて、${feeling}という気持ちがあって、体は「${body}」。その時どんな感じだったか教えて？`;
+    `${emotions}を感じていて、${feeling}という気持ちがあって、体は「${body}」。なるほど、十分味わえた所で、手放しますか？`;
 
   const utter = new SpeechSynthesisUtterance(text);
   utter.rate = rate;
