@@ -85,8 +85,8 @@ body {
   font-size: 16px;
   cursor: pointer;
 }
-.nav-btn:hover {
-  background: #555;
+.nav-btn.selected {
+  background: #0066cc;
 }
 
 .index-btn {
@@ -116,23 +116,7 @@ body {
   <div class="black-curtain"></div>
 </div>
 
-  <div class="numbers">
-    <div class="num-btn" onclick="selectNum(0)">0</div>
-    <div class="num-btn" onclick="selectNum(1)">1</div>
-    <div class="num-btn" onclick="selectNum(2)">2</div>
-    <div class="num-btn" onclick="selectNum(3)">3</div>
-    <div class="num-btn" onclick="selectNum(4)">4</div>
-    <div class="num-btn" onclick="selectNum(5)">5</div>
-    <div class="num-btn" onclick="selectNum(6)">6</div>
-    <div class="num-btn" onclick="selectNum(7)">7</div>
-    <div class="num-btn" onclick="selectNum(8)">8</div>
-    <div class="num-btn" onclick="selectNum(9)">9</div>
-    <div class="num-btn" onclick="selectNum(10)">10</div>
-  </div>
-
-</div>
-
-<!-- ▼ ナビゲーター選択欄 ▼ -->
+<!-- ▼ ナビゲーター選択 ▼ -->
 <div id="navigatorSelect" style="margin-top:20px;">
   <p>ナビゲーターを選択してください。</p>
 
@@ -142,67 +126,66 @@ body {
   <button class="nav-btn" onclick="selectNavigator('mama')">ママ</button>
 </div>
 
-<!-- ▼ ナビゲーターの質問表示欄 ▼ -->
+<!-- ▼ 質問表示欄 ▼ -->
 <div id="navigatorText" style="margin-top:20px; font-size:16px;"></div>
 
 <!-- ▼ 不快指数（最初は非表示） ▼ -->
 <div id="indexSection" style="margin-top:20px; display:none;">
-  <p>1〜10までの不快の度合いを選んで。</p>
-
   <div id="indexButtons"></div>
 </div>
 
+<!-- ▼ 出来事入力欄（最初は非表示） ▼ -->
+<div id="eventSection" style="margin-top:20px; display:none;">
+  <textarea id="eventInput" rows="4" style="width:100%;"></textarea>
+
+  <button id="readEventBtn">読み上げる</button>
+</div>
+
+<!-- ▼ 気持ち選択欄（最初は非表示） ▼ -->
+<div id="emotionSection" style="margin-top:20px; display:none;">
+  <p>その時の気持ちを選んでね。</p>
+  <select id="emotionSelect">
+    <option value="">選択してください</option>
+    <option value="怒り">怒り</option>
+    <option value="悲しみ">悲しみ</option>
+    <option value="不安">不安</option>
+    <option value="後悔">後悔</option>
+    <option value="混乱">混乱</option>
+    <option value="孤独">孤独</option>
+  </select>
+</div>
+
+
 <script>
 
-function selectNum(n) {
-  const curtain = document.querySelector('.black-curtain');
-  curtain.style.height = (n * 10) + '%';
-}
+let currentNavigator = "";
+let step = 1;
 
-function toggleHeart() {
-  const wrapper = document.querySelector('.heart-wrapper');
-  const btn = document.getElementById('hideHeartBtn');
-
-  if (wrapper.style.display === 'none') {
-    wrapper.style.display = 'flex';
-    btn.textContent = 'ハートを非表示にする';
-  } else {
-    wrapper.style.display = 'none';
-    btn.textContent = 'ハートを表示する';
-  }
-}
-
+// ▼ ナビゲーター選択
 function selectNavigator(type) {
-  let voiceFile = "";
+  currentNavigator = type;
 
-  switch(type) {
-    case "henoj":
-      voiceFile = "henoj_1.mp3";
-      break;
-    case "sensei":
-      voiceFile = "sensei_1.mp3";
-      break;
-    case "onei":
-      voiceFile = "onei_1.mp3";
-      break;
-    case "mama":
-      voiceFile = "mama_1.mp3";
-      break;
-  }
+  // ボタン色変更
+  document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('selected'));
+  event.target.classList.add('selected');
 
-  // ▼ MP3を再生
-  new Audio(voiceFile).play();
+  // 質問1の音声
+  new Audio(`${currentNavigator}_1.mp3`).play();
 
-  // ▼ 質問を表示
+  // 質問表示
   document.getElementById("navigatorText").textContent =
-    "今の不快の度合いを教えて？";
+    "どんだけ不愉快なのか教えて？";
 
-  // ▼ 不快指数ボタンを表示
-  document.getElementById("indexSection").style.display = "block";
+  // 不快指数ボタン表示
+  showIndexButtons();
+}
 
-  // ▼ ボタンを生成（1〜10）
+// ▼ 不快指数ボタン生成
+function showIndexButtons() {
   const container = document.getElementById("indexButtons");
   container.innerHTML = "";
+  document.getElementById("indexSection").style.display = "block";
+
   for (let i = 1; i <= 10; i++) {
     const btn = document.createElement("div");
     btn.className = "index-btn";
@@ -216,13 +199,34 @@ function selectNavigator(type) {
   }
 }
 
+// ▼ 数字を押した時
 function onSelectIndex(value) {
-  // ▼ 次の質問へ
-  document.getElementById("navigatorText").textContent =
-    `不快指数 ${value} ね。何があったの？ここに描き出して？`;
+  // 質問2の音声
+  new Audio(`${currentNavigator}_2.mp3`).play();
 
-  // ▼ この後に出来事入力欄を表示する（次のステップで作る）
+  document.getElementById("navigatorText").textContent =
+    "何があったのか教えて？";
+
+  // 出来事入力欄を表示
+  document.getElementById("eventSection").style.display = "block";
 }
+
+// ▼ 読み上げボタン
+document.getElementById("readEventBtn").onclick = function() {
+  const text = document.getElementById("eventInput").value;
+
+  const utter = new SpeechSynthesisUtterance(text);
+  speechSynthesis.speak(utter);
+
+  // 質問3の音声
+  new Audio(`${currentNavigator}_3.mp3`).play();
+
+  // 気持ち選択欄を表示
+  document.getElementById("emotionSection").style.display = "block";
+
+  document.getElementById("navigatorText").textContent =
+    "その時の気持ちを選んでね。";
+};
 
 
 </script>
