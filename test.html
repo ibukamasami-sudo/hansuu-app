@@ -85,8 +85,8 @@ body {
   font-size: 16px;
   cursor: pointer;
 }
-.nav-btn.selected {
-  background: #0066cc;
+.nav-btn:hover {
+  background: #555;
 }
 
 .index-btn {
@@ -116,6 +116,22 @@ body {
   <div class="black-curtain"></div>
 </div>
 
+  <div class="numbers">
+    <div class="num-btn" onclick="selectNum(0)">0</div>
+    <div class="num-btn" onclick="selectNum(1)">1</div>
+    <div class="num-btn" onclick="selectNum(2)">2</div>
+    <div class="num-btn" onclick="selectNum(3)">3</div>
+    <div class="num-btn" onclick="selectNum(4)">4</div>
+    <div class="num-btn" onclick="selectNum(5)">5</div>
+    <div class="num-btn" onclick="selectNum(6)">6</div>
+    <div class="num-btn" onclick="selectNum(7)">7</div>
+    <div class="num-btn" onclick="selectNum(8)">8</div>
+    <div class="num-btn" onclick="selectNum(9)">9</div>
+    <div class="num-btn" onclick="selectNum(10)">10</div>
+  </div>
+
+</div>
+
 <!-- ▼ ナビゲーター選択 ▼ -->
 <div id="navigatorSelect" style="margin-top:20px;">
   <p>ナビゲーターを選択してください。</p>
@@ -136,8 +152,19 @@ body {
 
 <!-- ▼ 出来事入力欄（最初は非表示） ▼ -->
 <div id="eventSection" style="margin-top:20px; display:none;">
+  <p>何があったのか、ここに描き出してみて。</p>
   <textarea id="eventInput" rows="4" style="width:100%;"></textarea>
 
+  <!-- 読み上げ設定 -->
+  <div style="margin-top:10px;">
+    <label>声の種類：</label>
+    <select id="voiceSelect"></select>
+
+    <label>速さ：</label>
+    <input type="range" id="rateSelect" min="0.5" max="2" step="0.1" value="1">
+  </div>
+
+  <!-- 読み上げボタン -->
   <button id="readEventBtn">読み上げる</button>
 </div>
 
@@ -158,77 +185,62 @@ body {
 
 <script>
 
-let currentNavigator = "";
-let step = 1;
-
-// ▼ ナビゲーター選択
-function selectNavigator(type) {
-  currentNavigator = type;
-
-  // ボタン色変更
-  document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('selected'));
-  event.target.classList.add('selected');
-
-  // 質問1の音声
-  new Audio(`${currentNavigator}_1.mp3`).play();
-
-  // 質問表示
-  document.getElementById("navigatorText").textContent =
-    "どんだけ不愉快なのか教えて？";
-
-  // 不快指数ボタン表示
-  showIndexButtons();
+function selectNum(n) {
+  const curtain = document.querySelector('.black-curtain');
+  curtain.style.height = (n * 10) + '%';
 }
 
-// ▼ 不快指数ボタン生成
-function showIndexButtons() {
-  const container = document.getElementById("indexButtons");
-  container.innerHTML = "";
-  document.getElementById("indexSection").style.display = "block";
+// 声一覧を読み込む
+function loadVoices() {
+  const select = document.getElementById("voiceSelect");
+  select.innerHTML = "";
+  const voices = speechSynthesis.getVoices();
 
-  for (let i = 1; i <= 10; i++) {
-    const btn = document.createElement("div");
-    btn.className = "index-btn";
-    btn.textContent = i;
-
-    btn.onclick = function() {
-      onSelectIndex(i);
-    };
-
-    container.appendChild(btn);
-  }
+  voices.forEach(v => {
+    const opt = document.createElement("option");
+    opt.value = v.name;
+    opt.textContent = v.name;
+    select.appendChild(opt);
+  });
 }
 
-// ▼ 数字を押した時
+// ブラウザによっては非同期なのでイベントも付ける
+speechSynthesis.onvoiceschanged = loadVoices;
+loadVoices();
+
+// 数字を押したときに出来事欄を表示（ここで呼ぶ）
 function onSelectIndex(value) {
-  // 質問2の音声
   new Audio(`${currentNavigator}_2.mp3`).play();
 
   document.getElementById("navigatorText").textContent =
     "何があったのか教えて？";
 
-  // 出来事入力欄を表示
   document.getElementById("eventSection").style.display = "block";
 }
 
-// ▼ 読み上げボタン
+// 読み上げボタン
 document.getElementById("readEventBtn").onclick = function() {
   const text = document.getElementById("eventInput").value;
+  const rate = document.getElementById("rateSelect").value;
+  const voiceName = document.getElementById("voiceSelect").value;
 
   const utter = new SpeechSynthesisUtterance(text);
+  utter.rate = Number(rate);
+
+  const voices = speechSynthesis.getVoices();
+  const voice = voices.find(v => v.name === voiceName);
+  if (voice) utter.voice = voice;
+
   speechSynthesis.speak(utter);
 
-  // 質問3の音声
+  // 読み上げ後のナビゲーター音声（質問3）
   new Audio(`${currentNavigator}_3.mp3`).play();
 
   // 気持ち選択欄を表示
   document.getElementById("emotionSection").style.display = "block";
-
   document.getElementById("navigatorText").textContent =
     "その時の気持ちを選んでね。";
 };
-
-
 </script>
 
 
