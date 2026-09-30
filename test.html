@@ -210,7 +210,44 @@ function loadVoices() {
 speechSynthesis.onvoiceschanged = loadVoices;
 loadVoices();
 
-/* 読み上げ処理（音声3は読み上げ後にだけ再生） */
+// ▼ 出来事 → 気持ち欄を出す（質問3はテキストに追加）
+document.getElementById("readEventBtn").onclick = function() {
+  const eventText = document.getElementById("eventInput").value;
+  const rate = document.getElementById("rateSelect").value;
+  const voiceName = document.getElementById("voiceSelect").value;
+
+  // 質問3をテキストに追加
+  const finalText = eventText + "\n\n" + "その時の気持ちを選んでね。";
+
+  speakText(finalText, rate, voiceName);
+
+  // 気持ち欄を表示
+  document.getElementById("emotionSection").style.visibility = "visible";
+};
+
+
+// ▼ 最後に全部つなげて読み上げるボタン
+document.getElementById("readAllBtn").onclick = function() {
+  const eventText = document.getElementById("eventInput").value;
+  const emotion = document.getElementById("emotionInput").value;
+  const novelText = document.getElementById("novelInput").value;
+  const bodyText = document.getElementById("bodyInput").value;
+
+  const rate = document.getElementById("rateSelect").value;
+  const voiceName = document.getElementById("voiceSelect").value;
+
+  // ここで全部つなげる（改行は \n\n）
+  const finalText =
+    eventText + "\n\n" +
+    "気持ち：" + emotion + "\n\n" +
+    "小説風：" + novelText + "\n\n" +
+    "体感：" + bodyText;
+
+  speakText(finalText, rate, voiceName);
+};
+
+
+// ▼ 読み上げ処理（最後に MP3 をくっつける）
 function speakText(text, rate, voiceName) {
   let voices = speechSynthesis.getVoices();
 
@@ -225,25 +262,13 @@ function speakText(text, rate, voiceName) {
   const voice = voices.find(v => v.name === voiceName);
   if (voice) utter.voice = voice;
 
+  // 読み終わったら最後に MP3 を流す
   utter.onend = function() {
     new Audio(`${currentNavigator}_3.mp3`).play();
-
-    document.getElementById("emotionSection").style.visibility = "visible";
-    document.getElementById("navigatorText").textContent =
-      "その時の気持ちを選んでね。";
   };
 
   speechSynthesis.speak(utter);
 }
-
-/* 読み上げボタン（音声3を先に再生しない） */
-document.getElementById("readEventBtn").onclick = function() {
-  const text = document.getElementById("eventInput").value;
-  const rate = document.getElementById("rateSelect").value;
-  const voiceName = document.getElementById("voiceSelect").value;
-
-  speakText(text, rate, voiceName);
-};
 
 </script>
 
