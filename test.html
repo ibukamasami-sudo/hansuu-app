@@ -24,7 +24,7 @@ body {
   width: 300px;
   height: 300px;
   background: #ec9292;
-  overflow: hidden;
+  overflow: none;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -125,7 +125,7 @@ body {
 <div id="navigatorText" style="margin-top:20px; font-size:16px;"></div>
 
 <!-- 出来事入力欄 -->
-<div id="eventSection" style="margin-top:20px; visibility:hidden;">
+<div id="eventSection" style="margin-top:20px; visibility:none;">
   <p>何があったのか、ここに描き出してみて。</p>
   <textarea id="eventInput" rows="4" style="width:100%;"></textarea>
 
@@ -141,7 +141,7 @@ body {
 </div>
 
 <!-- 気持ち選択 -->
-<div id="emotionSection" style="margin-top:20px; visibility:hidden;">
+<div id="emotionSection" style="margin-top:20px; visibility:none;">
   <p>その時の気持ちを選んでね。</p>
   <select id="emotionSelect">
     <option value="">選択してください</option>
@@ -155,19 +155,19 @@ body {
 </div>
 
 <!-- 小説風欄 -->
-<div id="novelSection" style="margin-top:20px; visibility:hidden;">
+<div id="novelSection" style="margin-top:20px; visibility:none;">
   <p>その出来事を、小説みたいに書いてみて。</p>
   <textarea id="novelInput" rows="4" style="width:100%;"></textarea>
 </div>
 
 <!-- 体感欄 -->
-<div id="bodySection" style="margin-top:20px; visibility:hidden;">
+<div id="bodySection" style="margin-top:20px; visibility:none;">
   <p>その時、体はどう感じていた？</p>
   <textarea id="bodyInput" rows="4" style="width:100%;"></textarea>
 </div>
 
 <!-- 最後に全部読み上げる -->
-<div id="finalSection" style="margin-top:20px; visibility:hidden;">
+<div id="finalSection" style="margin-top:20px; visibility:none;">
   <button id="readAllBtn">全部まとめて読み上げる</button>
 </div>
 
