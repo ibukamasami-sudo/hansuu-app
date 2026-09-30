@@ -159,7 +159,7 @@ body {
 
 let currentNavigator = "";
 
-/* ハートの黒幕 */
+/* ハートの黒幕（既存機能） */
 function selectNum(n) {
   const curtain = document.querySelector('.black-curtain');
   curtain.style.height = (n * 10) + '%';
@@ -189,7 +189,8 @@ function handleIndex(n) {
   selectNum(n);
 
   // 質問2の音声
-  new Audio(`${currentNavigator}_2.mp3`).play();
+  const audio2 = new Audio(`${currentNavigator}_2.mp3`);
+  audio2.play();
 
   document.getElementById("navigatorText").textContent =
     "何があったのか教えて？";
@@ -214,7 +215,7 @@ function loadVoices() {
 speechSynthesis.onvoiceschanged = loadVoices;
 loadVoices();
 
-/* 読み上げ処理（安定版） */
+/* 読み上げ処理（完全安定版） */
 function speakText(text, rate, voiceName) {
   let voices = speechSynthesis.getVoices();
 
@@ -244,13 +245,20 @@ function speakText(text, rate, voiceName) {
   speechSynthesis.speak(utter);
 }
 
-/* 読み上げボタン */
+/* 読み上げボタン（MP3と競合しない完全版） */
 document.getElementById("readEventBtn").onclick = function() {
   const text = document.getElementById("eventInput").value;
   const rate = document.getElementById("rateSelect").value;
   const voiceName = document.getElementById("voiceSelect").value;
 
-  speakText(text, rate, voiceName);
+  // MP3（質問2）が完全に終わってから読み上げ開始する
+  const audioCheck = new Audio(`${currentNavigator}_2.mp3`);
+
+  audioCheck.onended = function() {
+    speakText(text, rate, voiceName);
+  };
+
+  audioCheck.play();
 };
 
 </script>
