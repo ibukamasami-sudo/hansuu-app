@@ -216,10 +216,10 @@ loadVoices();
 
 /* 読み上げ処理（安定版） */
 function speakText(text, rate, voiceName) {
-  const voices = speechSynthesis.getVoices();
+  let voices = speechSynthesis.getVoices();
 
   // 声がまだ読み込まれていない場合は再試行
-  if (voices.length === 0) {
+  if (!voices || voices.length === 0) {
     setTimeout(() => speakText(text, rate, voiceName), 300);
     return;
   }
@@ -252,6 +252,7 @@ document.getElementById("readEventBtn").onclick = function() {
 
   speakText(text, rate, voiceName);
 };
+
 </script>
 
 
