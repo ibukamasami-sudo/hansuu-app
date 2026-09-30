@@ -165,7 +165,7 @@ function selectNum(n) {
   curtain.style.height = (n * 10) + '%';
 }
 
-/* ナビゲーター選択 */
+/* ナビゲーター選択（質問1だけ再生） */
 function selectNavigator(btn, type) {
   currentNavigator = type;
 
@@ -173,7 +173,7 @@ function selectNavigator(btn, type) {
   document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('selected'));
   btn.classList.add('selected');
 
-  // 質問1の音声
+  // 質問1の音声（ここは安全）
   new Audio(`${currentNavigator}_1.mp3`).play();
 
   // 質問表示
@@ -184,13 +184,12 @@ function selectNavigator(btn, type) {
   document.querySelector('.numbers').style.display = "flex";
 }
 
-/* 数字を押したとき */
+/* 数字を押したとき（質問2だけ再生） */
 function handleIndex(n) {
   selectNum(n);
 
-  // 質問2の音声
-  const audio2 = new Audio(`${currentNavigator}_2.mp3`);
-  audio2.play();
+  // 質問2の音声（ここも安全）
+  new Audio(`${currentNavigator}_2.mp3`).play();
 
   document.getElementById("navigatorText").textContent =
     "何があったのか教えて？";
@@ -231,12 +230,10 @@ function speakText(text, rate, voiceName) {
   const voice = voices.find(v => v.name === voiceName);
   if (voice) utter.voice = voice;
 
-  // 読み上げ終了後の処理
+  // 読み上げ終了後の処理（ここだけ MP3 を流す）
   utter.onend = function() {
-    // 質問3の音声
     new Audio(`${currentNavigator}_3.mp3`).play();
 
-    // 気持ち欄を表示
     document.getElementById("emotionSection").style.display = "block";
     document.getElementById("navigatorText").textContent =
       "その時の気持ちを選んでね。";
@@ -251,29 +248,9 @@ document.getElementById("readEventBtn").onclick = function() {
   const rate = document.getElementById("rateSelect").value;
   const voiceName = document.getElementById("voiceSelect").value;
 
-  // 読み上げ本体
-  const utter = new SpeechSynthesisUtterance(text);
-  utter.rate = Number(rate);
-
-  const voices = speechSynthesis.getVoices();
-  const voice = voices.find(v => v.name === voiceName);
-  if (voice) utter.voice = voice;
-
-  // 読み上げ終了後に質問3の音声を流す
-  utter.onend = function() {
-    new Audio(`${currentNavigator}_3.mp3`).play();
-
-    document.getElementById("navigatorText").textContent =
-      "その時の気持ちを選んでね。";
-
-    document.getElementById("emotionSection").style.display = "block";
-  };
-
-  // 重要：読み上げ前に MP3 を絶対に再生しない
-  speechSynthesis.speak(utter);
+  // 読み上げ前に MP3 を絶対に再生しない
+  speakText(text, rate, voiceName);
 };
-
-
 </script>
 
 
