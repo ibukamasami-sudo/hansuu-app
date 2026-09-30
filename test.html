@@ -216,8 +216,9 @@ document.getElementById("readEventBtn").onclick = function() {
   const rate = document.getElementById("rateSelect").value;
   const voiceName = document.getElementById("voiceSelect").value;
 
-  // 質問3をテキストに追加
-  const finalText = eventText + "\n\n" + "その時の気持ちを選んでね。";
+  // 質問3をテキストとして追加
+  const finalText = eventText + "\n\n" +
+    "なるほど、その時の気持ちを一覧から選んでみて。追加もありだよ。";
 
   speakText(finalText, rate, voiceName);
 
@@ -236,18 +237,22 @@ document.getElementById("readAllBtn").onclick = function() {
   const rate = document.getElementById("rateSelect").value;
   const voiceName = document.getElementById("voiceSelect").value;
 
-  // ここで全部つなげる（改行は \n\n）
+  // 最後のナビゲーターコメント（テキスト）
+  const navigatorLast =
+    "\n\n" + "ここまで書けたね。じゃあ、ゆっくり手放していこう。";
+
+  // 全部つなげる
   const finalText =
     eventText + "\n\n" +
     "気持ち：" + emotion + "\n\n" +
     "小説風：" + novelText + "\n\n" +
-    "体感：" + bodyText;
+    "体感：" + bodyText + navigatorLast;
 
   speakText(finalText, rate, voiceName);
 };
 
 
-// ▼ 読み上げ処理（最後に MP3 をくっつける）
+// ▼ 読み上げ処理（MP3は使わない）
 function speakText(text, rate, voiceName) {
   let voices = speechSynthesis.getVoices();
 
@@ -261,11 +266,6 @@ function speakText(text, rate, voiceName) {
 
   const voice = voices.find(v => v.name === voiceName);
   if (voice) utter.voice = voice;
-
-  // 読み終わったら最後に MP3 を流す
-  utter.onend = function() {
-    new Audio(`${currentNavigator}_3.mp3`).play();
-  };
 
   speechSynthesis.speak(utter);
 }
