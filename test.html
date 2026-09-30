@@ -159,7 +159,7 @@ body {
 
 let currentNavigator = "";
 
-/* ハートの黒幕 */
+/* ハートの黒幕（既存機能） */
 function selectNum(n) {
   const curtain = document.querySelector('.black-curtain');
   curtain.style.height = (n * 10) + '%';
@@ -169,14 +169,18 @@ function selectNum(n) {
 function selectNavigator(btn, type) {
   currentNavigator = type;
 
+  // ボタン色変更
   document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('selected'));
   btn.classList.add('selected');
 
+  // 質問1の音声（ここは安全）
   new Audio(`${currentNavigator}_1.mp3`).play();
 
+  // 質問表示
   document.getElementById("navigatorText").textContent =
     "どんだけ不愉快なのか教えて？";
 
+  // 数字ボタン表示
   document.querySelector('.numbers').style.display = "flex";
 }
 
@@ -184,13 +188,13 @@ function selectNavigator(btn, type) {
 function handleIndex(n) {
   selectNum(n);
 
+  // 質問2の音声（ここも安全）
   new Audio(`${currentNavigator}_2.mp3`).play();
 
   document.getElementById("navigatorText").textContent =
     "何があったのか教えて？";
 
-  // DOM は既に存在しているので visibility を切り替えるだけ
-  document.getElementById("eventSection").style.visibility = "visible";
+  document.getElementById("eventSection").style.display = "block";
 }
 
 /* 声一覧読み込み */
@@ -210,52 +214,11 @@ function loadVoices() {
 speechSynthesis.onvoiceschanged = loadVoices;
 loadVoices();
 
-// ▼ 出来事 → 気持ち欄を出す（質問3はテキストに追加）
-document.getElementById("readEventBtn").onclick = function() {
-  const eventText = document.getElementById("eventInput").value;
-  const rate = document.getElementById("rateSelect").value;
-  const voiceName = document.getElementById("voiceSelect").value;
-
-  // 質問3をテキストとして追加
-  const finalText = eventText + "\n\n" +
-    "なるほど、その時の気持ちを一覧から選んでみて。追加もありだよ。";
-
-  speakText(finalText, rate, voiceName);
-
-  // 気持ち欄を表示
-  //document.getElementById("emotionSection").style.visibility = "visible";
-};
-
-
-// ▼ 最後に全部つなげて読み上げるボタン
-document.getElementById("readAllBtn").onclick = function() {
-  const eventText = document.getElementById("eventInput").value;
-  const emotion = document.getElementById("emotionInput").value;
-  const novelText = document.getElementById("novelInput").value;
-  const bodyText = document.getElementById("bodyInput").value;
-
-  const rate = document.getElementById("rateSelect").value;
-  const voiceName = document.getElementById("voiceSelect").value;
-
-  // 最後のナビゲーターコメント（テキスト）
-  const navigatorLast =
-    "\n\n" + "ここまで書けたね。じゃあ、ゆっくり手放していこう。";
-
-  // 全部つなげる
-  const finalText =
-    eventText + "\n\n" +
-    "気持ち：" + emotion + "\n\n" +
-    "小説風：" + novelText + "\n\n" +
-    "体感：" + bodyText + navigatorLast;
-
-  speakText(finalText, rate, voiceName);
-};
-
-
-// ▼ 読み上げ処理（MP3は使わない）
+/* 読み上げ処理（完全安定版） */
 function speakText(text, rate, voiceName) {
   let voices = speechSynthesis.getVoices();
 
+  // 声がまだ読み込まれていない場合は再試行
   if (!voices || voices.length === 0) {
     setTimeout(() => speakText(text, rate, voiceName), 300);
     return;
@@ -267,8 +230,27 @@ function speakText(text, rate, voiceName) {
   const voice = voices.find(v => v.name === voiceName);
   if (voice) utter.voice = voice;
 
+  // 読み上げ終了後の処理（ここだけ MP3 を流す）
+  utter.onend = function() {
+    new Audio(`${currentNavigator}_3.mp3`).play();
+
+    document.getElementById("emotionSection").style.display = "block";
+    document.getElementById("navigatorText").textContent =
+      "その時の気持ちを選んでね。";
+  };
+
   speechSynthesis.speak(utter);
 }
+
+/* 読み上げボタン（MP3と競合しない完全版） */
+document.getElementById("readEventBtn").onclick = function() {
+  const text = document.getElementById("eventInput").value;
+  const rate = document.getElementById("rateSelect").value;
+  const voiceName = document.getElementById("voiceSelect").value;
+
+  // 読み上げ前に MP3 を絶対に再生しない
+  speakText(text, rate, voiceName);
+};
 
 </script>
 
