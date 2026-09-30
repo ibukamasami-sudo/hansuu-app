@@ -251,15 +251,28 @@ document.getElementById("readEventBtn").onclick = function() {
   const rate = document.getElementById("rateSelect").value;
   const voiceName = document.getElementById("voiceSelect").value;
 
-  // MP3（質問2）が完全に終わってから読み上げ開始する
-  const audioCheck = new Audio(`${currentNavigator}_2.mp3`);
+  // 読み上げ本体
+  const utter = new SpeechSynthesisUtterance(text);
+  utter.rate = Number(rate);
 
-  audioCheck.onended = function() {
-    speakText(text, rate, voiceName);
+  const voices = speechSynthesis.getVoices();
+  const voice = voices.find(v => v.name === voiceName);
+  if (voice) utter.voice = voice;
+
+  // 読み上げ終了後に質問3の音声を流す
+  utter.onend = function() {
+    new Audio(`${currentNavigator}_3.mp3`).play();
+
+    document.getElementById("navigatorText").textContent =
+      "その時の気持ちを選んでね。";
+
+    document.getElementById("emotionSection").style.display = "block";
   };
 
-  audioCheck.play();
+  // 重要：読み上げ前に MP3 を絶対に再生しない
+  speechSynthesis.speak(utter);
 };
+
 
 </script>
 
