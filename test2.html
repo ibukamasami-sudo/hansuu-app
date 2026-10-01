@@ -201,7 +201,9 @@ function selectNum(n) {
   document.getElementById("eventSection").style.display = "block";
 }
 
-/* 声一覧を読み込む */
+/* ============================
+   共通：声一覧を読み込む
+============================ */
 function loadVoices() {
   const select = document.getElementById("voiceSelect");
   select.innerHTML = "";
@@ -218,9 +220,10 @@ function loadVoices() {
 speechSynthesis.onvoiceschanged = loadVoices;
 loadVoices();
 
-/* 出来事を読み上げる → 気持ち欄を表示 */
-document.getElementById("readEventBtn").onclick = function() {
-  const text = document.getElementById("eventInput").value;
+/* ============================
+   共通：読み上げ関数
+============================ */
+function speakText(text, onEndCallback = null) {
   const rate = document.getElementById("rateSelect").value;
   const voiceName = document.getElementById("voiceSelect").value;
 
@@ -231,16 +234,43 @@ document.getElementById("readEventBtn").onclick = function() {
   const voice = voices.find(v => v.name === voiceName);
   if (voice) utter.voice = voice;
 
-  utter.onend = function() {
+  if (onEndCallback) {
+    utter.onend = onEndCallback;
+  }
+
+  speechSynthesis.speak(utter);
+}
+
+/* ============================
+   不快指数 → 出来事欄を表示
+============================ */
+function selectNum(n) {
+  const curtain = document.querySelector('.black-curtain');
+  curtain.style.height = (n * 10) + '%';
+
+  document.getElementById("stepMessage").textContent =
+    "きっかけを書き出してください。";
+
+  document.getElementById("eventSection").style.display = "block";
+}
+
+/* ============================
+   出来事を読み上げる → 気持ち欄へ
+============================ */
+document.getElementById("readEventBtn").onclick = function() {
+  const text = document.getElementById("eventInput").value;
+
+  speakText(text, function() {
     document.getElementById("stepMessage").textContent =
       "気持ちを選んでください。";
 
     document.getElementById("emotionSection").style.display = "block";
-  };
-
-  speechSynthesis.speak(utter);
+  });
 };
 
+/* ============================
+   気持ち選択（複数＋削除＋追加）
+============================ */
 let selectedEmotions = [];
 
 /* プルダウンから追加 */
@@ -262,7 +292,7 @@ document.getElementById("customEmotionBtn").onclick = function() {
   }
 };
 
-/* タグ表示（削除機能つき） */
+/* タグ表示（削除可能） */
 function renderEmotionTags() {
   const list = document.getElementById("emotionList");
   list.innerHTML = "";
@@ -272,7 +302,6 @@ function renderEmotionTags() {
     tag.className = "emotion-tag";
     tag.textContent = emotion;
 
-    // ← タップで削除
     tag.onclick = function() {
       selectedEmotions = selectedEmotions.filter(e => e !== emotion);
       renderEmotionTags();
@@ -282,23 +311,16 @@ function renderEmotionTags() {
   });
 }
 
-/* 読み上げ（決定ボタン方式） */
+/* ============================
+   気持ちを読み上げる → 小説風へ
+============================ */
 document.getElementById("readEmotionBtn").onclick = function() {
-  readEmotion();
-};
-
-/* 読み上げ処理 */
-function readEmotion() {
   const text = selectedEmotions.join("、");
-  const utter = new SpeechSynthesisUtterance(text);
-  speechSynthesis.speak(utter);
 
-  utter.onend = function() {
+  speakText(text, function() {
     document.getElementById("storySection").style.display = "block";
-  };
-}
-
-
+  });
+};
 
 </script>
 
