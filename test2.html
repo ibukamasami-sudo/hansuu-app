@@ -71,13 +71,19 @@ body {
   color: #fff;
 }
 
-/* --- セクション共通 --- */
+/* --- セクション（透明→表示） --- */
 .section {
-  display: none;
   margin-top: 20px;
   text-align: left;
+  opacity: 0;
+  transition: opacity 0.3s ease;
 }
 
+.section.visible {
+  opacity: 1;
+}
+
+/* 入力欄 */
 .section textarea,
 .section input,
 .section select {
@@ -85,6 +91,11 @@ body {
   padding: 6px;
   margin-top: 6px;
   box-sizing: border-box;
+}
+
+/* テキスト入力欄の高さを大きく */
+textarea {
+  height: 120px;
 }
 
 button {
@@ -210,7 +221,10 @@ function loadVoices() {
 }
 
 speechSynthesis.onvoiceschanged = loadVoices;
-window.onload = loadVoices;
+window.onload = function() {
+  loadVoices();
+  showSection("event"); // 最初に表示
+};
 
 /* 声リストをUIに入れる */
 function fillVoiceList() {
@@ -224,7 +238,7 @@ function fillVoiceList() {
   });
 }
 
-/* 数字ボタン：選択状態＋入力欄に反映＋黒幕 */
+/* 数字ボタン */
 function selectNum(n) {
   document.querySelector('.black-curtain').style.height = (n * 10) + '%';
   document.getElementById("discomfort_input").value = n;
@@ -240,10 +254,16 @@ let discomfortEnd = null;
 /* セクション順序 */
 const sectionOrder = ["event", "emotion", "story", "body", "summary", "end"];
 
+function showSection(name) {
+  document.querySelectorAll('.section').forEach(sec => sec.classList.remove('visible'));
+  const target = document.getElementById("section_" + name);
+  if (target) target.classList.add('visible');
+}
+
 function showNextSection(current) {
-  const nextIndex = sectionOrder.indexOf(current) + 1;
-  if (nextIndex < sectionOrder.length) {
-    showSection(sectionOrder[nextIndex]);
+  const idx = sectionOrder.indexOf(current);
+  if (idx >= 0 && idx + 1 < sectionOrder.length) {
+    showSection(sectionOrder[idx + 1]);
   }
 }
 
@@ -258,13 +278,7 @@ function setDiscomfortEnd() {
   discomfortEnd = Number(document.getElementById("discomfort_input_end").value);
 }
 
-/* セクション切り替え */
-function showSection(name) {
-  document.querySelectorAll('.section').forEach(sec => sec.style.display = "none");
-  document.getElementById("section_" + name).style.display = "block";
-}
-
-/* 読み上げ（1つだけ） */
+/* 読み上げ */
 function readContent(type) {
 
   const input_event = document.getElementById("input_event");
@@ -278,22 +292,22 @@ function readContent(type) {
   if (type === "event") {
     text = input_event.value;
     speakText(text);
-    setTimeout(() => showNextSection("event"), 300);
+    showNextSection("event");
   }
   else if (type === "emotion") {
     text = emotion_select.value + "。" + emotion_extra.value;
     speakText(text);
-    setTimeout(() => showNextSection("emotion"), 300);
+    showNextSection("emotion");
   }
   else if (type === "story") {
     text = input_story.value;
     speakText(text);
-    setTimeout(() => showNextSection("story"), 300);
+    showNextSection("story");
   }
   else if (type === "body") {
     text = input_body.value;
     speakText(text);
-    setTimeout(() => showNextSection("body"), 300);
+    showNextSection("body");
   }
   else if (type === "summary") {
     text =
@@ -302,7 +316,7 @@ function readContent(type) {
       "小説風では「" + input_story.value + "」。" +
       "身体感覚は「" + input_body.value + "」。";
     speakText(text);
-    setTimeout(() => showNextSection("summary"), 300);
+    showNextSection("summary");
   }
 }
 
@@ -328,25 +342,12 @@ function finishDiscomfort() {
 function saveRecord() {
   const today = new Date().toISOString().split("T")[0];
 
+  const input_event = document.getElementById("input_event");
+  const emotion_select = document.getElementById("emotion_select");
+  const emotion_extra = document.getElementById("emotion_extra");
+  const input_story = document.getElementById("input_story");
+  const input_body = document.getElementById("input_body");
+
   const record = {
     date: today,
-    event: input_event.value,
-    emotion: emotion_select.value,
-    emotion_extra: emotion_extra.value,
-    story: input_story.value,
-    body: input_body.value,
-    discomfortStart,
-    discomfortEnd
-  };
-
-  let records = JSON.parse(localStorage.getItem("records") || "[]");
-  records.push(record);
-  localStorage.setItem("records", JSON.stringify(records));
-
-  document.getElementById("records_view").textContent =
-    JSON.stringify(records, null, 2);
-}
-</script>
-
-</body>
-</html>
+    event: input
