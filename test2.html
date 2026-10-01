@@ -79,7 +79,8 @@ body {
 }
 
 .section textarea,
-.section input {
+.section input,
+.section select {
   width: 100%;
   padding: 6px;
   margin-top: 6px;
@@ -142,10 +143,23 @@ button {
   <button onclick="readContent('event')">出来事を読み上げる</button>
 </div>
 
-<!-- 気持ち -->
+<!-- 気持ち（選択式＋補足） -->
 <div id="section_emotion" class="section">
-  <div>その時の気持ちを入力してください</div>
-  <input id="input_emotion" type="text">
+  <div>その時の気持ちを選んでください</div>
+
+  <select id="emotion_select">
+    <option value="">選択してください</option>
+    <option value="怒り">怒り</option>
+    <option value="悲しみ">悲しみ</option>
+    <option value="不安">不安</option>
+    <option value="後悔">後悔</option>
+    <option value="混乱">混乱</option>
+    <option value="孤独">孤独</option>
+  </select>
+
+  <div style="margin-top:6px;">補足（自由入力）</div>
+  <textarea id="emotion_extra"></textarea>
+
   <button onclick="readContent('emotion')">気持ちを読み上げる</button>
 </div>
 
@@ -223,6 +237,16 @@ function selectNum(n) {
 let discomfortStart = null;
 let discomfortEnd = null;
 
+/* セクション順序 */
+const sectionOrder = ["event", "emotion", "story", "body", "summary", "end"];
+
+function showNextSection(current) {
+  const nextIndex = sectionOrder.indexOf(current) + 1;
+  if (nextIndex < sectionOrder.length) {
+    showSection(sectionOrder[nextIndex]);
+  }
+}
+
 /* 不快指数：始め */
 function setDiscomfortStart() {
   discomfortStart = Number(document.getElementById("discomfort_input").value);
@@ -244,7 +268,8 @@ function showSection(name) {
 function readContent(type) {
 
   const input_event = document.getElementById("input_event");
-  const input_emotion = document.getElementById("input_emotion");
+  const emotion_select = document.getElementById("emotion_select");
+  const emotion_extra = document.getElementById("emotion_extra");
   const input_story = document.getElementById("input_story");
   const input_body = document.getElementById("input_body");
 
@@ -252,31 +277,38 @@ function readContent(type) {
 
   if (type === "event") {
     text = input_event.value;
-    showSection("emotion");
+    speakText(text);
+    setTimeout(() => showNextSection("event"), 300);
   }
   else if (type === "emotion") {
-    text = input_emotion.value;
-    showSection("story");
+    text = emotion_select.value + "。" + emotion_extra.value;
+    speakText(text);
+    setTimeout(() => showNextSection("emotion"), 300);
   }
   else if (type === "story") {
     text = input_story.value;
-    showSection("body");
+    speakText(text);
+    setTimeout(() => showNextSection("story"), 300);
   }
   else if (type === "body") {
     text = input_body.value;
-    showSection("summary");
+    speakText(text);
+    setTimeout(() => showNextSection("body"), 300);
   }
   else if (type === "summary") {
     text =
       "出来事は「" + input_event.value + "」。" +
-      "気持ちは「" + input_emotion.value + "」。" +
+      "気持ちは「" + emotion_select.value + "」。補足は「" + emotion_extra.value + "」。" +
       "小説風では「" + input_story.value + "」。" +
       "身体感覚は「" + input_body.value + "」。";
-    showSection("end");
+    speakText(text);
+    setTimeout(() => showNextSection("summary"), 300);
   }
+}
 
+/* 読み上げ共通処理 */
+function speakText(text) {
   const utter = new SpeechSynthesisUtterance(text);
-
   utter.rate = Number(document.getElementById("voice_speed").value);
 
   const selectedName = document.getElementById("voice_select").value;
@@ -299,7 +331,8 @@ function saveRecord() {
   const record = {
     date: today,
     event: input_event.value,
-    emotion: input_emotion.value,
+    emotion: emotion_select.value,
+    emotion_extra: emotion_extra.value,
     story: input_story.value,
     body: input_body.value,
     discomfortStart,
