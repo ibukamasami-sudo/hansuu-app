@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<title>Heart Curtain Test</title>
+<title>感情記録アプリ</title>
 
 <style>
 body {
@@ -10,37 +10,27 @@ body {
   color: #eee;
   font-family: sans-serif;
   display: flex;
-  flex-direction: column;
-  align-items: center;
+  justify-content: center;
   padding-top: 40px;
 }
 
 .container {
   width: 300px;
   text-align: center;
-  margin-bottom: 20px;
 }
 
-#stepMessage,
-#eventSection,
-#emotionSection,
-#storySection {
-  width: 300px;
-  text-align: left;
-}
-
-/* ハートの枠 */
+/* --- ハート部分（Masamiさんのデザインそのまま） --- */
 .heart-wrapper {
   position: relative;
   width: 300px;
   height: 300px;
   background: #ec9292;
+  overflow: hidden;
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
-/* ハート画像（前面） */
 .heart-mask {
   position: relative;
   width: 100%;
@@ -48,7 +38,6 @@ body {
   z-index: 2;
 }
 
-/* 黒い幕（背面） */
 .black-curtain {
   position: absolute;
   bottom: 0;
@@ -61,7 +50,6 @@ body {
   transition: height 0.3s ease;
 }
 
-/* 数字ボタン */
 .numbers {
   display: flex;
   justify-content: space-between;
@@ -78,204 +66,196 @@ body {
   cursor: pointer;
 }
 
-/* 気持ちタグ */
-.emotion-tag {
-  display: inline-block;
-  background: #444;
-  color: #eee;
-  padding: 5px 10px;
-  margin: 4px;
-  border-radius: 6px;
-  cursor: pointer;
+/* --- セクション共通 --- */
+.section {
+  display: none;
+  margin-top: 20px;
+  text-align: left;
+}
+
+.section textarea,
+.section input {
+  width: 100%;
+  padding: 6px;
+  margin-top: 6px;
+  box-sizing: border-box;
+}
+
+button {
+  margin-top: 10px;
+  padding: 6px 10px;
 }
 </style>
 </head>
 
 <body>
-
 <div class="container">
 
-  <!-- ハート -->
-  <div class="heart-wrapper">
-    <img src="heart-mask.png" class="heart-mask" alt="">
-    <div class="black-curtain"></div>
-  </div>
-
-  <!-- 数値ボタン -->
-  <div class="numbers">
-    <div class="num-btn" onclick="selectNum(0)">0</div>
-    <div class="num-btn" onclick="selectNum(1)">1</div>
-    <div class="num-btn" onclick="selectNum(2)">2</div>
-    <div class="num-btn" onclick="selectNum(3)">3</div>
-    <div class="num-btn" onclick="selectNum(4)">4</div>
-    <div class="num-btn" onclick="selectNum(5)">5</div>
-    <div class="num-btn" onclick="selectNum(6)">6</div>
-    <div class="num-btn" onclick="selectNum(7)">7</div>
-    <div class="num-btn" onclick="selectNum(8)">8</div>
-    <div class="num-btn" onclick="selectNum(9)">9</div>
-    <div class="num-btn" onclick="selectNum(10)">10</div>
-  </div>
-
+<!-- ハート -->
+<div class="heart-wrapper">
+  <img src="heart-mask.png" class="heart-mask">
+  <div class="black-curtain"></div>
 </div>
 
-<!-- メッセージ欄 -->
-<div id="stepMessage" style="margin-top:20px; font-size:16px;">
-  不快感の数値を選んでください。
+<div class="numbers">
+  <div class="num-btn" onclick="selectNum(0)">0</div>
+  <div class="num-btn" onclick="selectNum(1)">1</div>
+  <div class="num-btn" onclick="selectNum(2)">2</div>
+  <div class="num-btn" onclick="selectNum(3)">3</div>
+  <div class="num-btn" onclick="selectNum(4)">4</div>
+  <div class="num-btn" onclick="selectNum(5)">5</div>
+  <div class="num-btn" onclick="selectNum(6)">6</div>
+  <div class="num-btn" onclick="selectNum(7)">7</div>
+  <div class="num-btn" onclick="selectNum(8)">8</div>
+  <div class="num-btn" onclick="selectNum(9)">9</div>
+  <div class="num-btn" onclick="selectNum(10)">10</div>
 </div>
 
-<!-- 出来事欄 -->
-<div id="eventSection" style="margin-top:20px; display:none;">
-  <textarea id="eventInput" rows="4" style="width:100%;"></textarea>
+<!-- 不快指数 -->
+<div style="margin-top:20px;">
+  不快指数（0〜10）  
+  <input id="discomfort_input" type="number" min="0" max="10">
 
-  <div style="margin-top:10px;">
-    <label>声：</label>
-    <select id="voiceSelect"></select>
-
-    <label>速さ：</label>
-    <input type="range" id="rateSelect" min="0.5" max="2" step="0.1" value="1">
-  </div>
-
-  <button id="readEventBtn">読み上げる</button>
+  <button onclick="setDiscomfortStart()">不快指数：始め</button>
+  <button onclick="setDiscomfortEnd()">不快指数：終わり</button>
 </div>
 
-<!-- 気持ち欄 -->
-<div id="emotionSection" style="margin-top:20px; display:none;">
-
-  <select id="emotionSelect">
-    <option value="">選択してください</option>
-    <option value="怒り">怒り</option>
-    <option value="悲しみ">悲しみ</option>
-    <option value="不安">不安</option>
-    <option value="後悔">後悔</option>
-    <option value="混乱">混乱</option>
-    <option value="孤独">孤独</option>
-  </select>
-  <button id="addEmotionBtn">追加</button>
-
-  <input id="customEmotion" type="text" placeholder="気持ちを追加する">
-  <button id="customEmotionBtn">追加する</button>
-
-  <div id="emotionList" style="margin-top:10px;"></div>
-
-  <button id="readEmotionBtn">気持ちを読み上げる</button>
+<!-- 出来事 -->
+<div id="section_event" class="section">
+  <div>きっかけになった出来事を入力してください</div>
+  <textarea id="input_event"></textarea>
+  <button onclick="readContent('event')">出来事を読み上げる</button>
 </div>
 
-<!-- 小説風欄 -->
-<div id="storySection" style="margin-top:20px; display:none;">
-  <textarea id="storyInput" rows="5" style="width:100%;"></textarea>
+<!-- 気持ち -->
+<div id="section_emotion" class="section">
+  <div>その時の気持ちを入力してください</div>
+  <input id="input_emotion" type="text">
+  <button onclick="readContent('emotion')">気持ちを読み上げる</button>
+</div>
+
+<!-- 小説風 -->
+<div id="section_story" class="section">
+  <div>小説風に言語化してください</div>
+  <textarea id="input_story"></textarea>
+  <button onclick="readContent('story')">小説風を読み上げる</button>
+</div>
+
+<!-- 身体感覚 -->
+<div id="section_body" class="section">
+  <div>身体感覚を入力してください</div>
+  <textarea id="input_body"></textarea>
+  <button onclick="readContent('body')">身体感覚を読み上げる</button>
+</div>
+
+<!-- 全部まとめて読み上げ -->
+<div id="section_summary" class="section">
+  <button onclick="readContent('summary')">全てつなげて読み上げる</button>
+</div>
+
+<!-- 終わりの不快指数 -->
+<div id="section_end" class="section">
+  今の不快指数を入力してください  
+  <input id="discomfort_input_end" type="number" min="0" max="10">
+  <button onclick="finishDiscomfort()">終わりを記録する</button>
+</div>
+
+<!-- 記録 -->
+<div id="section_save" class="section">
+  記録しますか？
+  <button onclick="saveRecord()">記録する</button>
+</div>
+
+<!-- 保存された記録 -->
+<pre id="records_view" style="margin-top:20px;"></pre>
+
 </div>
 
 <script>
-/* ============================
-   不快指数 → ハートアニメ＋出来事欄
-============================ */
+let discomfortStart = null;
+let discomfortEnd = null;
+
+/* ハートの黒幕 */
 function selectNum(n) {
   document.querySelector('.black-curtain').style.height = (n * 10) + '%';
-
-  document.getElementById("stepMessage").textContent =
-    "きっかけを書き出してください。";
-
-  document.getElementById("eventSection").style.display = "block";
 }
 
-/* ============================
-   声一覧
-============================ */
-function loadVoices() {
-  const select = document.getElementById("voiceSelect");
-  select.innerHTML = "";
-  speechSynthesis.getVoices().forEach(v => {
-    const opt = document.createElement("option");
-    opt.value = v.name;
-    opt.textContent = v.name;
-    select.appendChild(opt);
-  });
-}
-speechSynthesis.onvoiceschanged = loadVoices;
-loadVoices();
-
-/* ============================
-   共通読み上げ
-============================ */
-function speakText(text, onEnd = null) {
-  const rate = Number(document.getElementById("rateSelect").value);
-  const voiceName = document.getElementById("voiceSelect").value;
-
-  const utter = new SpeechSynthesisUtterance(text);
-  utter.rate = rate;
-
-  const voice = speechSynthesis.getVoices().find(v => v.name === voiceName);
-  if (voice) utter.voice = voice;
-
-  if (onEnd) utter.onend = onEnd;
-
-  speechSynthesis.speak(utter);
+/* 不快指数：始め */
+function setDiscomfortStart() {
+  discomfortStart = Number(document.getElementById("discomfort_input").value);
+  showSection("event");
 }
 
-/* ============================
-   出来事 → 気持ち
-============================ */
-document.getElementById("readEventBtn").onclick = () => {
-  const text = document.getElementById("eventInput").value;
+/* 不快指数：終わり */
+function setDiscomfortEnd() {
+  discomfortEnd = Number(document.getElementById("discomfort_input_end").value);
+}
 
-  speakText(text, () => {
-    document.getElementById("stepMessage").textContent =
-      "気持ちを選んでください。";
+/* セクション切り替え */
+function showSection(name) {
+  document.querySelectorAll('.section').forEach(sec => sec.style.display = "none");
+  document.getElementById("section_" + name).style.display = "block";
+}
 
-    document.getElementById("emotionSection").style.display = "block";
-  });
-};
+/* 読み上げ（1つだけ） */
+function readContent(type) {
+  let text = "";
 
-/* ============================
-   気持ち選択
-============================ */
-let selectedEmotions = [];
-
-document.getElementById("addEmotionBtn").onclick = () => {
-  const v = document.getElementById("emotionSelect").value;
-  if (v && !selectedEmotions.includes(v)) {
-    selectedEmotions.push(v);
-    renderEmotionTags();
+  if (type === "event") {
+    text = document.getElementById("input_event").value;
+    showSection("emotion");
   }
-};
-
-document.getElementById("customEmotionBtn").onclick = () => {
-  const v = document.getElementById("customEmotion").value.trim();
-  if (v && !selectedEmotions.includes(v)) {
-    selectedEmotions.push(v);
-    document.getElementById("customEmotion").value = "";
-    renderEmotionTags();
+  else if (type === "emotion") {
+    text = document.getElementById("input_emotion").value;
+    showSection("story");
   }
-};
+  else if (type === "story") {
+    text = document.getElementById("input_story").value;
+    showSection("body");
+  }
+  else if (type === "body") {
+    text = document.getElementById("input_body").value;
+    showSection("summary");
+  }
+  else if (type === "summary") {
+    text =
+      "出来事は「" + document.getElementById("input_event").value + "」。" +
+      "気持ちは「" + document.getElementById("input_emotion").value + "」。" +
+      "小説風では「" + document.getElementById("input_story").value + "」。" +
+      "身体感覚は「" + document.getElementById("input_body").value + "」。";
+    showSection("end");
+  }
 
-function renderEmotionTags() {
-  const list = document.getElementById("emotionList");
-  list.innerHTML = "";
-  selectedEmotions.forEach(e => {
-    const tag = document.createElement("span");
-    tag.className = "emotion-tag";
-    tag.textContent = e;
-    tag.onclick = () => {
-      selectedEmotions = selectedEmotions.filter(x => x !== e);
-      renderEmotionTags();
-    };
-    list.appendChild(tag);
-  });
+  speechSynthesis.speak(new SpeechSynthesisUtterance(text));
 }
 
-/* ============================
-   気持ち → 小説風
-============================ */
-document.getElementById("readEmotionBtn").onclick = () => {
-  const text = selectedEmotions.join("、");
+/* 終わりの不快指数 */
+function finishDiscomfort() {
+  discomfortEnd = Number(document.getElementById("discomfort_input_end").value);
+  showSection("save");
+}
 
-  speakText(text, () => {
-    document.getElementById("stepMessage").textContent =
-      "その時の気持ちを、小説のように詳しく言語化してください。";
+/* 記録保存（1つだけ） */
+function saveRecord() {
+  const today = new Date().toISOString().split("T")[0];
 
-    document.getElementById("storySection").style.display = "block";
-  });
-};
+  const record = {
+    date: today,
+    event: input_event.value,
+    emotion: input_emotion.value,
+    story: input_story.value,
+    body: input_body.value,
+    discomfortStart,
+    discomfortEnd
+  };
+
+  let records = JSON.parse(localStorage.getItem("records") || "[]");
+  records.push(record);
+  localStorage.setItem("records", JSON.stringify(records));
+
+  document.getElementById("records_view").textContent =
+    JSON.stringify(records, null, 2);
+}
 </script>
 
 </body>
