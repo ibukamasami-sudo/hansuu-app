@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>Heart Curtain Test</title>
+<style>
+body {
+  background: #aaa;
+  color: #eee;
+  font-family: sans-serif;
+  display: flex;
+  justify-content: center;
+  padding-top: 40px;
+}
+
+.container {
+  width: 300px;
+  text-align: center;
+}
+
+.heart-wrapper {
+  position: relative;
+  width: 300px;
+  height: 300px;
+  background: #ec9292; /* ← ほんのり薄ピンク */
+  overflow: none;
+
+  /* ここから追加 */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* ハート画像は固定・前面 */
+.heart-mask {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  z-index: 2; /* 前面に固定 */
+}
+
+/* 黒い幕は背面で上昇 */
+.black-curtain {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 0;
+  background: black;
+  opacity: 0.8;
+  z-index: 1; /* 背面に配置 */
+  transition: height 0.3s ease;
+}
+
+
+.numbers {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+.num-btn {
+  width: 28px;
+  height: 28px;
+  background: #333;
+  border-radius: 6px;
+  text-align: center;
+  line-height: 28px;
+  cursor: pointer;
+}
+
+.num-btn.active {
+  background: #666;
+}
+
+
+</style>
+</head>
+
+<body>
+<div class="container">
+
+<div class="heart-wrapper">
+  <img src="heart-mask.png" class="heart-mask" alt="">
+  <div class="black-curtain"></div>
+</div>
+
+  <div class="numbers">
+    <div class="num-btn" onclick="selectNum(0)">0</div>
+    <div class="num-btn" onclick="selectNum(1)">1</div>
+    <div class="num-btn" onclick="selectNum(2)">2</div>
+    <div class="num-btn" onclick="selectNum(3)">3</div>
+    <div class="num-btn" onclick="selectNum(4)">4</div>
+    <div class="num-btn" onclick="selectNum(5)">5</div>
+    <div class="num-btn" onclick="selectNum(6)">6</div>
+    <div class="num-btn" onclick="selectNum(7)">7</div>
+    <div class="num-btn" onclick="selectNum(8)">8</div>
+    <div class="num-btn" onclick="selectNum(9)">9</div>
+    <div class="num-btn" onclick="selectNum(10)">10</div>
+  </div>
+
+</div>
+
+<!-- 不快感の案内 -->
+<div id="stepMessage" style="margin-top:20px; font-size:16px;">
+  不快感の数値を選んでください。
+</div>
+
+<!-- 出来事入力欄（最初は非表示） -->
+<div id="eventSection" style="margin-top:20px; display:none;">
+  <p>きっかけを書き出してください。</p>
+  <textarea id="eventInput" rows="4" style="width:100%;"></textarea>
+
+  <div style="margin-top:10px;">
+    <label>声：</label>
+    <select id="voiceSelect"></select>
+
+    <label>速さ：</label>
+    <input type="range" id="rateSelect" min="0.5" max="2" step="0.1" value="1">
+  </div>
+
+  <button id="readEventBtn">読み上げる</button>
+</div>
+
+<!-- 気持ち選択欄（最初は非表示） -->
+<div id="emotionSection" style="margin-top:20px; display:none;">
+  <p>気持ちを選んでください。</p>
+  <select id="emotionSelect">
+    <option value="">選択してください</option>
+    <option value="怒り">怒り</option>
+    <option value="悲しみ">悲しみ</option>
+    <option value="不安">不安</option>
+    <option value="後悔">後悔</option>
+    <option value="混乱">混乱</option>
+    <option value="孤独">孤独</option>
+  </select>
+</div>
+
+
+<script>
+
+function selectNum(n) {
+  const curtain = document.querySelector('.black-curtain');
+  curtain.style.height = (n * 10) + '%';
+}
+
+/* 数値を選んだら出来事欄を表示 */
+function selectNum(n) {
+  const curtain = document.querySelector('.black-curtain');
+  curtain.style.height = (n * 10) + '%';
+
+  // メッセージ変更
+  document.getElementById("stepMessage").textContent =
+    "きっかけを書き出してください。";
+
+  // 出来事欄を表示
+  document.getElementById("eventSection").style.display = "block";
+}
+
+/* 声一覧を読み込む */
+function loadVoices() {
+  const select = document.getElementById("voiceSelect");
+  select.innerHTML = "";
+  const voices = speechSynthesis.getVoices();
+
+  voices.forEach(v => {
+    const opt = document.createElement("option");
+    opt.value = v.name;
+    opt.textContent = v.name;
+    select.appendChild(opt);
+  });
+}
+
+speechSynthesis.onvoiceschanged = loadVoices;
+loadVoices();
+
+/* 出来事を読み上げる → 気持ち欄を表示 */
+document.getElementById("readEventBtn").onclick = function() {
+  const text = document.getElementById("eventInput").value;
+  const rate = document.getElementById("rateSelect").value;
+  const voiceName = document.getElementById("voiceSelect").value;
+
+  const utter = new SpeechSynthesisUtterance(text);
+  utter.rate = Number(rate);
+
+  const voices = speechSynthesis.getVoices();
+  const voice = voices.find(v => v.name === voiceName);
+  if (voice) utter.voice = voice;
+
+  utter.onend = function() {
+    document.getElementById("stepMessage").textContent =
+      "気持ちを選んでください。";
+
+    document.getElementById("emotionSection").style.display = "block";
+  };
+
+  speechSynthesis.speak(utter);
+};
+
+
+</script>
+
+
+</body>
+</html>
