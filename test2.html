@@ -19,7 +19,7 @@ body {
   text-align: center;
 }
 
-/* --- ハート部分 --- */
+/* --- ハート部分（Masamiさんのデザインそのまま） --- */
 .heart-wrapper {
   position: relative;
   width: 300px;
@@ -97,7 +97,6 @@ button {
   <div class="black-curtain"></div>
 </div>
 
-<!-- 声とスピード -->
 <div style="margin-top:10px;">
   <label>声の種類</label>
   <select id="voice_select"></select>
@@ -181,24 +180,25 @@ button {
 </div>
 
 <script>
-/* ★★★ 追加：音声読み込み（必須） ★★★ */
-let voices = [];
+function fillVoiceList() {
+  const sel = document.getElementById("voice_select");
+  sel.innerHTML = "";
 
-function loadVoices() {
-  voices = speechSynthesis.getVoices();
-  fillVoiceList();
+  voices.forEach(v => {
+    const opt = document.createElement("option");
+    opt.value = v.name;
+    opt.textContent = v.name;
+    sel.appendChild(opt);
+  });
 }
 
-speechSynthesis.onvoiceschanged = loadVoices;
-loadVoices();
+let discomfortStart = null;
+let discomfortEnd = null;
 
 /* ハートの黒幕 */
 function selectNum(n) {
   document.querySelector('.black-curtain').style.height = (n * 10) + '%';
 }
-
-let discomfortStart = null;
-let discomfortEnd = null;
 
 /* 不快指数：始め */
 function setDiscomfortStart() {
@@ -212,26 +212,21 @@ function setDiscomfortEnd() {
 }
 
 /* セクション切り替え */
+
 function showSection(name) {
   document.querySelectorAll('.section').forEach(sec => sec.style.display = "none");
   document.getElementById("section_" + name).style.display = "block";
 }
 
-/* 声リストをUIに入れる */
-function fillVoiceList() {
-  const sel = document.getElementById("voice_select");
-  sel.innerHTML = "";
-
-  voices.forEach(v => {
-    const opt = document.createElement("option");
-    opt.value = v.name;
-    opt.textContent = v.name;
-    sel.appendChild(opt);
-  });
-}
-
 /* 読み上げ（1つだけ） */
 function readContent(type) {
+
+  // ★★★ 入力欄を毎回取得（これが重要） ★★★
+  const input_event = document.getElementById("input_event");
+  const input_emotion = document.getElementById("input_emotion");
+  const input_story = document.getElementById("input_story");
+  const input_body = document.getElementById("input_body");
+
   let text = "";
 
   if (type === "event") {
@@ -272,13 +267,14 @@ function readContent(type) {
   speechSynthesis.speak(utter);
 }
 
+
 /* 終わりの不快指数 */
 function finishDiscomfort() {
   discomfortEnd = Number(document.getElementById("discomfort_input_end").value);
   showSection("save");
 }
 
-/* 記録保存 */
+/* 記録保存（1つだけ） */
 function saveRecord() {
   const today = new Date().toISOString().split("T")[0];
 
