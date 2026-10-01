@@ -316,13 +316,18 @@ function readContent(type) {
     setTimeout(() => showNextSection("body"), 300);
   }
   else if (type === "summary") {
-    text =
-      "出来事は「" + input_event.value + "」。" +
-      "気持ちは「" + emotion_select.value + "」。補足は「" + emotion_extra.value + "」。" +
-      "小説風では「" + input_story.value + "」。" +
-      "身体感覚は「" + input_body.value + "」。";
-    speakText(text);
-    setTimeout(() => showNextSection("summary"), 300);
+
+      const startValue = document.getElementById("discomfort_input").value;
+
+      text =
+        "不快指数は「" + startValue + "」。" +   // ← ここを追加
+        "出来事は「" + input_event.value + "」。" +
+        "気持ちは「" + emotion_select.value + "」。補足は「" + emotion_extra.value + "」。" +
+        "小説風では「" + input_story.value + "」。" +
+        "身体感覚は「" + input_body.value + "」。";
+
+      speakText(text);
+      setTimeout(() => showNextSection("summary"), 300);
   }
 }
 
