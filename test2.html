@@ -73,10 +73,14 @@ body {
 
 /* --- セクション共通 --- */
 .section {
-  display: none;
-  margin-top: 20px;
-  text-align: left;
+  opacity: 0;
+  transition: opacity 0.3s ease;
 }
+
+.section.visible {
+  opacity: 1;
+}
+
 
 .section textarea,
 .section input,
@@ -238,13 +242,20 @@ let discomfortStart = null;
 let discomfortEnd = null;
 
 /* セクション順序 */
-const sectionOrder = ["event", "emotion", "story", "body", "summary", "end"];
-
 function showNextSection(current) {
-  const nextIndex = sectionOrder.indexOf(current) + 1;
-  if (nextIndex < sectionOrder.length) {
-    showSection(sectionOrder[nextIndex]);
-  }
+  const next = {
+    event: "emotion",
+    emotion: "story",
+    story: "body",
+    body: "summary",
+    summary: "end"
+  };
+
+  showSection(next[current]);
+}
+
+function showSection(name) {
+  document.getElementById("section_" + name).classList.add("visible");
 }
 
 /* 不快指数：始め */
