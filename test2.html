@@ -273,10 +273,17 @@ function setDiscomfortEnd() {
   discomfortEnd = Number(document.getElementById("discomfort_input_end").value);
 }
 
-/* セクション切り替え */
+const sectionOrder = ["event", "emotion", "story", "body", "summary", "end"];
+
+function showNextSection(current) {
+  const nextIndex = sectionOrder.indexOf(current) + 1;
+  if (nextIndex < sectionOrder.length) {
+    showSection(sectionOrder[nextIndex]);
+  }
+}
+
 function showSection(name) {
-  document.querySelectorAll('.section').forEach(sec => sec.style.display = "none");
-  document.getElementById("section_" + name).style.display = "block";
+  document.getElementById("section_" + name).classList.add("visible");
 }
 
 /* 読み上げ（1つだけ） */
@@ -331,6 +338,8 @@ function speakText(text) {
   if (selectedVoice) utter.voice = selectedVoice;
 
   speechSynthesis.speak(utter);
+    // 読み上げ後に次のセクションを表示
+  setTimeout(() => showNextSection(type), 300);
 }
 
 /* 終わりの不快指数 */
