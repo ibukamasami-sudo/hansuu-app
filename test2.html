@@ -9,14 +9,25 @@ body {
   color: #eee;
   font-family: sans-serif;
   display: flex;
-  justify-content: center;
+  flex-direction: column; /* ← 縦方向に並べる */
+  align-items: center;    /* ← 中央寄せ */
   padding-top: 40px;
 }
 
 .container {
   width: 300px;
   text-align: center;
+  margin-bottom: 20px; /* ← 下に余白を追加 */
 }
+
+#stepMessage,
+#eventSection,
+#emotionSection {
+  width: 300px; /* ← ハートと同じ幅に揃える */
+  text-align: left;
+}
+
+
 
 .heart-wrapper {
   position: relative;
@@ -73,6 +84,21 @@ body {
   background: #666;
 }
 
+.emotion-tag {
+  display: inline-block;
+  background: #444;
+  color: #eee;
+  padding: 5px 10px;
+  margin: 4px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.emotion-tag:hover {
+  background: #666;
+}
+
+
 
 </style>
 </head>
@@ -122,9 +148,10 @@ body {
   <button id="readEventBtn">読み上げる</button>
 </div>
 
-<!-- 気持ち選択欄（最初は非表示） -->
+<!-- 気持ち選択欄 -->
 <div id="emotionSection" style="margin-top:20px; display:none;">
   <p>気持ちを選んでください。</p>
+
   <select id="emotionSelect">
     <option value="">選択してください</option>
     <option value="怒り">怒り</option>
@@ -134,7 +161,24 @@ body {
     <option value="混乱">混乱</option>
     <option value="孤独">孤独</option>
   </select>
+  <button id="addEmotionBtn">追加</button>
+
+  <input id="customEmotion" type="text" placeholder="気持ちを追加する">
+  <button id="customEmotionBtn">追加する</button>
+
+  <!-- 選んだ気持ち一覧 -->
+  <div id="emotionList" style="margin-top:10px;"></div>
+
+  <!-- 読み上げボタン（自動読み上げなら非表示にできる） -->
+  <button id="readEmotionBtn">気持ちを読み上げる</button>
 </div>
+
+<!-- 小説風の言語化欄 -->
+<div id="storySection" style="margin-top:20px; display:none;">
+  <p>その時の気持ちを、小説のように詳しく言語化してください。</p>
+  <textarea id="storyInput" rows="5" style="width:100%;"></textarea>
+</div>
+
 
 
 <script>
@@ -196,6 +240,64 @@ document.getElementById("readEventBtn").onclick = function() {
 
   speechSynthesis.speak(utter);
 };
+
+let selectedEmotions = [];
+
+/* プルダウンから追加 */
+document.getElementById("addEmotionBtn").onclick = function() {
+  const value = document.getElementById("emotionSelect").value;
+  if (value && !selectedEmotions.includes(value)) {
+    selectedEmotions.push(value);
+    renderEmotionTags();
+  }
+};
+
+/* 自分で追加 */
+document.getElementById("customEmotionBtn").onclick = function() {
+  const value = document.getElementById("customEmotion").value.trim();
+  if (value && !selectedEmotions.includes(value)) {
+    selectedEmotions.push(value);
+    document.getElementById("customEmotion").value = "";
+    renderEmotionTags();
+  }
+};
+
+/* タグ表示（削除機能つき） */
+function renderEmotionTags() {
+  const list = document.getElementById("emotionList");
+  list.innerHTML = "";
+
+  selectedEmotions.forEach(emotion => {
+    const tag = document.createElement("span");
+    tag.className = "emotion-tag";
+    tag.textContent = emotion;
+
+    // ← タップで削除
+    tag.onclick = function() {
+      selectedEmotions = selectedEmotions.filter(e => e !== emotion);
+      renderEmotionTags();
+    };
+
+    list.appendChild(tag);
+  });
+}
+
+/* 読み上げ（決定ボタン方式） */
+document.getElementById("readEmotionBtn").onclick = function() {
+  readEmotion();
+};
+
+/* 読み上げ処理 */
+function readEmotion() {
+  const text = selectedEmotions.join("、");
+  const utter = new SpeechSynthesisUtterance(text);
+  speechSynthesis.speak(utter);
+
+  utter.onend = function() {
+    document.getElementById("storySection").style.display = "block";
+  };
+}
+
 
 
 </script>
