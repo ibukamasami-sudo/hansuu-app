@@ -220,12 +220,35 @@ button {
 </body>
 
 <script>
+function loadVoices() {
+  voices = speechSynthesis.getVoices();
+  const select = document.getElementById("voiceSelect");
+  select.innerHTML = ""; // ← 重複防止
+
+  let defaultIndex = 0;
+
+  voices.forEach((v, i) => {
+    const opt = document.createElement("option");
+    opt.value = i;
+    opt.textContent = v.name;
+    select.appendChild(opt);
+
+    // ★ 日本語の声を自動選択
+    if (v.lang.startsWith("ja")) {
+      defaultIndex = i;
+    }
+  });
+
+  select.value = defaultIndex; // ← 日本語を初期選択
+}
+
 
 /*ハート*/
 function selectNum(n) {
   const curtain = document.querySelector('.black-curtain');
   curtain.style.height = (n * 10) + '%';
 }
+
 
 function selectNum(n) {
   const curtain = document.querySelector('.black-curtain');
@@ -238,11 +261,13 @@ function selectNum(n) {
   // 不快指数欄に反映
   document.getElementById("discomfort_input").value = n;
 
-  // --- ここから追加：読み上げ処理 ---
-  const msg = `不快指数は${n}ですね。次の質問に答えてください。`;
+  // ★ 先に表示してしまう（声が出なくてもOK）
+  document.getElementById("stepBlock").classList.add("visible");
+
+  // --- 読み上げ処理 ---
+  const msg = `不快指数は${n}ですね。下の質問に答えてください。`;
   const utter = new SpeechSynthesisUtterance(msg);
 
-  // 声とスピードを既存の voiceSelect / voice_speed から取得
   const voiceIndex = document.getElementById("voiceSelect").value;
   const speed = Number(document.getElementById("voice_speed").value);
 
@@ -251,11 +276,6 @@ function selectNum(n) {
 
   speechSynthesis.cancel();
   speechSynthesis.speak(utter);
-
-  // --- 読み上げ終了後にブロック表示 ---
-  utter.onend = () => {
-    document.getElementById("stepBlock").classList.add("visible");
-  };
 }
 
 
