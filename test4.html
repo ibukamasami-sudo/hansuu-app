@@ -223,7 +223,7 @@ button {
 function loadVoices() {
   voices = speechSynthesis.getVoices();
   const select = document.getElementById("voiceSelect");
-  select.innerHTML = ""; // ← 重複防止
+  select.innerHTML = "";
 
   let defaultIndex = 0;
 
@@ -233,14 +233,15 @@ function loadVoices() {
     opt.textContent = v.name;
     select.appendChild(opt);
 
-    // ★ 日本語の声を自動選択
-    if (v.lang.startsWith("ja")) {
+    // ★ 日本語の声を優先選択
+    if (v.lang.startsWith("ja") || v.name.includes("日本語")) {
       defaultIndex = i;
     }
   });
 
-  select.value = defaultIndex; // ← 日本語を初期選択
+  select.value = defaultIndex; // ← 自動で日本語を選択
 }
+
 
 
 /*ハート*/
@@ -254,17 +255,15 @@ function selectNum(n) {
   const curtain = document.querySelector('.black-curtain');
   curtain.style.height = (n * 10) + '%';
 
-  // 数字ボタンの active 表示
   document.querySelectorAll('.num-btn').forEach(btn => btn.classList.remove('active'));
   event.target.classList.add('active');
 
-  // 不快指数欄に反映
   document.getElementById("discomfort_input").value = n;
 
-  // ★ 先に表示してしまう（声が出なくてもOK）
+  // ★ 先に表示（声が出なくてもOK）
   document.getElementById("stepBlock").classList.add("visible");
 
-  // --- 読み上げ処理 ---
+  // 読み上げ
   const msg = `不快指数は${n}ですね。下の質問に答えてください。`;
   const utter = new SpeechSynthesisUtterance(msg);
 
