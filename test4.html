@@ -255,6 +255,7 @@ loadVoices();
 speechSynthesis.onvoiceschanged = loadVoices;
 
 function readAll() {
+  const event = document.getElementById("event").value;
   const emotions = selectedEmotions.join("、");
   const feeling = document.getElementById("feelingText").value;
   const body = document.getElementById("bodyText").value;
@@ -262,7 +263,7 @@ function readAll() {
   const voiceIndex = document.getElementById("voiceSelect").value;
 
   const text =
-    `${emotions}を感じていて、${feeling}という気持ちがあって、体は「${body}」。なるほど、十分味わえた所で、この感情を今、手放しますか？`;
+    `${emotions}といった出来事がきっかけで、${emotions}を感じていて、${feeling}という気持ちがあって、体は「${body}」。なるほど、十分味わえた所で、この感情を今、手放しますか？`;
 
   const utter = new SpeechSynthesisUtterance(text);
   utter.rate = rate;
