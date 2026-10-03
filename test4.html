@@ -239,7 +239,7 @@ function selectNum(n) {
   document.getElementById("discomfort_input").value = n;
 
   // --- ここから追加：読み上げ処理 ---
-  const msg = `不快指数は${n}ですね。下の質問に答えてください。`;
+  const msg = `不快指数は${n}ですね。次の質問に答えてください。`;
   const utter = new SpeechSynthesisUtterance(msg);
 
   // 声とスピードを既存の voiceSelect / voice_speed から取得
