@@ -233,14 +233,17 @@ function loadVoices() {
     opt.textContent = v.name;
     select.appendChild(opt);
 
-    // ★ 日本語の声を優先選択
     if (v.lang.startsWith("ja") || v.name.includes("日本語")) {
       defaultIndex = i;
     }
   });
 
-  select.value = defaultIndex; // ← 自動で日本語を選択
+  select.value = defaultIndex;
 }
+
+loadVoices();                         // ← まず1回読み込む
+speechSynthesis.onvoiceschanged = loadVoices;   // ← 声が本当に来たらもう1回読み込む
+
 
 
 
@@ -318,18 +321,6 @@ function addEmotion() {
   }
 }
 
-function loadVoices() {
-  voices = speechSynthesis.getVoices();
-  const select = document.getElementById("voiceSelect");
-  voices.forEach((v, i) => {
-    const opt = document.createElement("option");
-    opt.value = i;
-    opt.textContent = v.name;
-    select.appendChild(opt);
-  });
-}
-loadVoices();
-speechSynthesis.onvoiceschanged = loadVoices;
 
 function readAll() {
   const event = document.getElementById("event").value;
