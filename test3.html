@@ -77,6 +77,10 @@ body {
   background: #333;
   color: white;
 }
+button {
+  margin-top: 10px;
+  padding: 6px 10px;
+}
 </style>
 </head>
 <body>
@@ -102,6 +106,9 @@ body {
   </div>
 
 </div>
+
+  <button onclick="setDiscomfortStart()">不快指数：始め</button>
+  <button onclick="setDiscomfortEnd()">不快指数：終わり</button>
 
 <h2>味わいステップ（単体）</h2>
 
@@ -154,6 +161,12 @@ body {
 <button onclick="readAll()">全部読み上げる</button>
 
 <script>
+/*ハート*/
+function selectNum(n) {
+  const curtain = document.querySelector('.black-curtain');
+  curtain.style.height = (n * 10) + '%';
+}
+/*気持ちのセレクト*/
 let selectedEmotions = [];
 let voices = [];
 
