@@ -162,8 +162,9 @@ button {
   <select id="voiceSelect"></select>
   <label>読み上げスピード</label>
 <input id="voice_speed" type="number" min="0.5" max="2" step="0.1" value="1">
+<audio id="announceAudio"></audio>
 
-  <!-- ここから出来事以下のブロック -->
+<!-- ここから出来事以下のブロック -->
   <div id="stepBlock" class="section">
 
     <!-- 出来事 -->
@@ -255,26 +256,21 @@ function selectNum(n) {
   const curtain = document.querySelector('.black-curtain');
   curtain.style.height = (n * 10) + '%';
 
+  // 数字ボタンの active 表示
   document.querySelectorAll('.num-btn').forEach(btn => btn.classList.remove('active'));
   event.target.classList.add('active');
 
+  // 不快指数欄に反映
   document.getElementById("discomfort_input").value = n;
 
-  // ★ 先に表示（声が出なくてもOK）
+  // ★ MP3アナウンスを再生
+  const audio = document.getElementById("announceAudio");
+  audio.src = "henoj_1.mp3";   // ← ここで流したいMP3を指定
+  audio.currentTime = 0;       // 毎回頭から再生
+  audio.play();
+
+  // ★ 音が出なくても即表示（読み上げに依存しない）
   document.getElementById("stepBlock").classList.add("visible");
-
-  // 読み上げ
-  const msg = `不快指数は${n}ですね。下の質問に答えてください。`;
-  const utter = new SpeechSynthesisUtterance(msg);
-
-  const voiceIndex = document.getElementById("voiceSelect").value;
-  const speed = Number(document.getElementById("voice_speed").value);
-
-  utter.voice = voices[voiceIndex];
-  utter.rate = speed;
-
-  speechSynthesis.cancel();
-  speechSynthesis.speak(utter);
 }
 
 
