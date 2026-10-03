@@ -10,13 +10,15 @@ body {
   color: #eee;
   font-family: sans-serif;
   display: flex;
-  justify-content: center;
+  flex-direction: column; /* ← 縦並びに変更 */
+  align-items: center;    /* ← 中央寄せ */
   padding-top: 40px;
 }
 
 .container {
   width: 300px;
   text-align: center;
+  margin-bottom: 20px;
 }
 
 /* --- ハート部分 --- */
@@ -106,6 +108,18 @@ button {
 }
  .selected { background: #333; color: rgb(176, 77, 77); }
 
+/* 出来事以下のブロック */
+.section {
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+  width: 300px; /* ← 幅を固定して中央に */
+}
+
+.section.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
 
 </style>
 </head>
@@ -119,14 +133,6 @@ button {
   <div class="black-curtain"></div>
 </div>
 
-<!-- 声の種類とスピード -->
-<div style="margin-top:10px;">
-  <label>声の種類</label>
-  <select id="voice_select"></select>
-
-  <label>読み上げスピード</label>
-  <input id="voice_speed" type="number" min="0.5" max="2" step="0.1" value="1">
-</div>
 
 <!-- 数字ボタン -->
 <div class="numbers">
@@ -152,8 +158,9 @@ button {
   <button onclick="setDiscomfortEnd()">不快指数：終わり</button>
 </div>
 
-<div id="stepBlock" class="section"></div>
+
 <!-- 出来事 -->
+<div id="stepBlock" class="section">
 <section>
   <h2>出来事</h2>
   <label>出来事を入力してください</label>
@@ -204,7 +211,7 @@ button {
 </select>
 
 
-
+</div>
 <hr>
 
 <!-- 読み上げ -->
@@ -218,6 +225,24 @@ function selectNum(n) {
   const curtain = document.querySelector('.black-curtain');
   curtain.style.height = (n * 10) + '%';
 }
+
+function setDiscomfortStart() {
+  const value = Number(document.getElementById("discomfort_input").value);
+  discomfortStart = value;
+
+  const msg = `不快指数は${value}ですね。振り返りながら次の質問に答えてください。`;
+  const utter = new SpeechSynthesisUtterance(msg);
+  utter.rate = Number(document.getElementById("voice_speed").value);
+  utter.voice = voices[document.getElementById("voiceSelect").value];
+
+  speechSynthesis.cancel();
+  speechSynthesis.speak(utter);
+
+  utter.onend = () => {
+    document.getElementById("stepBlock").classList.add("visible");
+  };
+}
+
 /*気持ちのセレクト*/
 let selectedEmotions = [];
 let voices = [];
