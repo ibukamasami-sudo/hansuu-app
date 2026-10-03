@@ -227,6 +227,38 @@ function selectNum(n) {
   curtain.style.height = (n * 10) + '%';
 }
 
+function selectNum(n) {
+  const curtain = document.querySelector('.black-curtain');
+  curtain.style.height = (n * 10) + '%';
+
+  // 数字ボタンの active 表示
+  document.querySelectorAll('.num-btn').forEach(btn => btn.classList.remove('active'));
+  event.target.classList.add('active');
+
+  // 不快指数欄に反映
+  document.getElementById("discomfort_input").value = n;
+
+  // --- ここから追加：読み上げ処理 ---
+  const msg = `不快指数は${n}ですね。下の質問に答えてください。`;
+  const utter = new SpeechSynthesisUtterance(msg);
+
+  // 声とスピードを既存の voiceSelect / voice_speed から取得
+  const voiceIndex = document.getElementById("voiceSelect").value;
+  const speed = Number(document.getElementById("voice_speed").value);
+
+  utter.voice = voices[voiceIndex];
+  utter.rate = speed;
+
+  speechSynthesis.cancel();
+  speechSynthesis.speak(utter);
+
+  // --- 読み上げ終了後にブロック表示 ---
+  utter.onend = () => {
+    document.getElementById("stepBlock").classList.add("visible");
+  };
+}
+
+
 function setDiscomfortStart() {
   const value = Number(document.getElementById("discomfort_input").value);
   discomfortStart = value;
