@@ -127,95 +127,101 @@ button {
 <body>
 <div class="container">
 
-<!-- ハート -->
-<div class="heart-wrapper">
-  <img src="heart-mask.png" class="heart-mask">
-  <div class="black-curtain"></div>
-</div>
+  <!-- ハート -->
+  <div class="heart-wrapper">
+    <img src="heart-mask.png" class="heart-mask">
+    <div class="black-curtain"></div>
+  </div>
+
+  <!-- 数字ボタン -->
+  <div class="numbers">
+    <div class="num-btn" onclick="selectNum(0)">0</div>
+    <div class="num-btn" onclick="selectNum(1)">1</div>
+    <div class="num-btn" onclick="selectNum(2)">2</div>
+    <div class="num-btn" onclick="selectNum(3)">3</div>
+    <div class="num-btn" onclick="selectNum(4)">4</div>
+    <div class="num-btn" onclick="selectNum(5)">5</div>
+    <div class="num-btn" onclick="selectNum(6)">6</div>
+    <div class="num-btn" onclick="selectNum(7)">7</div>
+    <div class="num-btn" onclick="selectNum(8)">8</div>
+    <div class="num-btn" onclick="selectNum(9)">9</div>
+    <div class="num-btn" onclick="selectNum(10)">10</div>
+  </div>
+
+  <!-- 不快指数 -->
+  <div style="margin-top:20px;">
+    不快指数（0〜10）
+    <input id="discomfort_input" type="number" min="0" max="10">
+
+    <button onclick="setDiscomfortStart()">不快指数：始め</button>
+    <button onclick="setDiscomfortEnd()">不快指数：終わり</button>
+  </div>
+
+  <!-- 読み上げに使う声（ID重複を避けるためここに1つだけ） -->
+  <label>声：</label>
+  <select id="voiceSelect"></select>
+
+  <!-- ここから出来事以下のブロック -->
+  <div id="stepBlock" class="section">
+
+    <!-- 出来事 -->
+    <section>
+      <h2>出来事</h2>
+      <label>出来事を入力してください</label>
+      <textarea id="event"></textarea>
+      <button onclick="readContent('event')">出来事を読み上げる</button>
+    </section>
+
+    <p><strong>どんな気持ちだった？選んでみて。</strong></p>
+    <div id="emotionArea">
+      <span class="emotion-btn" onclick="toggleEmotion(this)">怒り</span>
+      <span class="emotion-btn" onclick="toggleEmotion(this)">不安</span>
+      <span class="emotion-btn" onclick="toggleEmotion(this)">悲しみ</span>
+      <span class="emotion-btn" onclick="toggleEmotion(this)">イライラ</span>
+      <span class="emotion-btn" onclick="toggleEmotion(this)">孤独</span>
+      <span class="emotion-btn" onclick="toggleEmotion(this)">罪悪感</span>
+    </div>
+
+    <input type="text" id="emotionAdd" placeholder="感情を追加">
+    <button onclick="addEmotion()">追加</button>
+
+    <hr>
+
+    <!-- 小説のように気持ちを表現 -->
+    <p><strong>その時の気持ちを、小説みたいに表現してみて？</strong></p>
+    <textarea id="feelingText" rows="3"></textarea>
+
+    <hr>
+
+    <!-- 身体の変化 -->
+    <p><strong>今この時を思い出して、体にはどんな変化があった？</strong></p>
+    <textarea id="bodyText" rows="3"></textarea>
+
+    <hr>
+
+    <!-- 読み上げ設定 -->
+    <p><strong>読み上げ設定</strong></p>
+
+    <label>速度：</label>
+    <input type="range" id="rate" min="0.5" max="2" step="0.1" value="1">
+
+    <label>BGM：</label>
+    <select id="bgmSelect">
+      <option value="">なし</option>
+      <option value="calm.mp3">落ち着く音</option>
+      <option value="soft.mp3">やわらかい音</option>
+    </select>
+
+    <hr>
+
+    <!-- 読み上げ -->
+    <button onclick="readAll()">全部読み上げる</button>
+
+  </div><!-- stepBlock 終わり -->
+
+</div><!-- container 終わり -->
 
 
-<!-- 数字ボタン -->
-<div class="numbers">
-  <div class="num-btn" onclick="selectNum(0)">0</div>
-  <div class="num-btn" onclick="selectNum(1)">1</div>
-  <div class="num-btn" onclick="selectNum(2)">2</div>
-  <div class="num-btn" onclick="selectNum(3)">3</div>
-  <div class="num-btn" onclick="selectNum(4)">4</div>
-  <div class="num-btn" onclick="selectNum(5)">5</div>
-  <div class="num-btn" onclick="selectNum(6)">6</div>
-  <div class="num-btn" onclick="selectNum(7)">7</div>
-  <div class="num-btn" onclick="selectNum(8)">8</div>
-  <div class="num-btn" onclick="selectNum(9)">9</div>
-  <div class="num-btn" onclick="selectNum(10)">10</div>
-</div>
-
-<!-- 不快指数 -->
-<div style="margin-top:20px;">
-  不快指数（0〜10）  
-  <input id="discomfort_input" type="number" min="0" max="10">
-
-  <button onclick="setDiscomfortStart()">不快指数：始め</button>
-  <button onclick="setDiscomfortEnd()">不快指数：終わり</button>
-</div>
-
-
-<!-- 出来事 -->
-<div id="stepBlock" class="section">
-<section>
-  <h2>出来事</h2>
-  <label>出来事を入力してください</label>
-  <textarea id="event"></textarea>
-  <button onclick="readContent('event')">出来事を読み上げる</button>
-</section>
-
-<p><strong>どんな気持ちだった？選んでみて。</strong></p>
-<div id="emotionArea">
-  <span class="emotion-btn" onclick="toggleEmotion(this)">怒り</span>
-  <span class="emotion-btn" onclick="toggleEmotion(this)">不安</span>
-  <span class="emotion-btn" onclick="toggleEmotion(this)">悲しみ</span>
-  <span class="emotion-btn" onclick="toggleEmotion(this)">イライラ</span>
-  <span class="emotion-btn" onclick="toggleEmotion(this)">孤独</span>
-  <span class="emotion-btn" onclick="toggleEmotion(this)">罪悪感</span>
-</div>
-
-<input type="text" id="emotionAdd" placeholder="感情を追加">
-<button onclick="addEmotion()">追加</button>
-
-<hr>
-
-<!-- 小説のように気持ちを表現 -->
-<p><strong>その時の気持ちを、小説みたいに表現してみて？</strong></p>
-<textarea id="feelingText" rows="3" cols="40"></textarea>
-
-<hr>
-
-<!-- 身体の変化 -->
-<p><strong>今この時を思い出して、体にはどんな変化があった？</strong></p>
-<textarea id="bodyText" rows="3" cols="40"></textarea>
-
-<hr>
-
-<!-- 読み上げ設定 -->
-<p><strong>読み上げ設定</strong></p>
-<label>速度：</label>
-<input type="range" id="rate" min="0.5" max="2" step="0.1" value="1">
-
-<label>声：</label>
-<select id="voiceSelect"></select>
-
-<label>BGM：</label>
-<select id="bgmSelect">
-  <option value="">なし</option>
-  <option value="calm.mp3">落ち着く音</option>
-  <option value="soft.mp3">やわらかい音</option>
-</select>
-
-
-</div>
-<hr>
-
-<!-- 読み上げ -->
-<button onclick="readAll()">全部読み上げる</button>
 
 
 <script>
