@@ -102,9 +102,20 @@ button {
   border: 1px solid #666;
   border-radius: 6px;
   cursor: pointer;
-  background: #f9f9f9;
+  background: #210137;
 }
  .selected { background: #333; color: rgb(176, 77, 77); }
+
+.section {
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.section.visible {
+  opacity: 1;
+  pointer-events: auto;
+} 
 </style>
 </head>
 
@@ -150,6 +161,7 @@ button {
   <button onclick="setDiscomfortEnd()">不快指数：終わり</button>
 </div>
 
+<div id="stepBlock" class="section"></div>
 <!-- 出来事 -->
 <section>
   <h2>出来事</h2>
@@ -200,6 +212,8 @@ button {
   <option value="soft.mp3">やわらかい音</option>
 </select>
 
+</div>
+
 <hr>
 
 <!-- 読み上げ -->
@@ -212,6 +226,27 @@ button {
 function selectNum(n) {
   const curtain = document.querySelector('.black-curtain');
   curtain.style.height = (n * 10) + '%';
+}
+
+function setDiscomfortStart() {
+  const value = Number(document.getElementById("discomfort_input").value);
+
+  // 不快指数を保持
+  discomfortStart = value;
+
+  // 音声メッセージ
+  const msg = `不快指数は${value}ですね。振り返りながら次の質問に答えてください。`;
+  const utter = new SpeechSynthesisUtterance(msg);
+  utter.rate = Number(document.getElementById("voice_speed").value);
+  utter.voice = voices[document.getElementById("voiceSelect").value];
+
+  speechSynthesis.cancel();
+  speechSynthesis.speak(utter);
+
+  // 読み上げ終了後にブロックを表示
+  utter.onend = () => {
+    document.getElementById("stepBlock").classList.add("visible");
+  };
 }
 /*気持ちのセレクト*/
 let selectedEmotions = [];
