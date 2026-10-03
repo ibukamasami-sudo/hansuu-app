@@ -348,7 +348,6 @@ function readContent(type) {
 
   if (type === "summary") {
     const startValue = getValue("discomfort_input");
-
     sentence =
       "不快指数は「" + startValue + "」。" +
       "出来事は「" + getValue("event") + "」。" +
@@ -358,7 +357,7 @@ function readContent(type) {
   } else {
     const text = getValue(type);
     sentence = templates[type].replace("{text}", text);
-    parts.push(sentence);
+    parts[type] = sentence; // ←ここを変更
   }
 
   speakText(sentence, type);
