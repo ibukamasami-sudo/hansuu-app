@@ -95,6 +95,15 @@ button {
   margin-top: 10px;
   padding: 6px 10px;
 }
+#emotion {
+  padding: 8px;
+  min-height: 40px;
+  border: 1px solid #ccc;
+  background: #fafafa;
+  margin-top: 6px;
+  white-space: pre-wrap;
+  color: #333;
+}
 </style>
 </head>
 
@@ -141,16 +150,18 @@ button {
 </div>
 
 <!-- 出来事 -->
-<div id="section_event" class="section">
-  <div>きっかけになった出来事を入力してください</div>
-  <textarea id="input_event"></textarea>
+<section>
+  <h2>出来事</h2>
+  <label>出来事を入力してください</label>
+  <textarea id="event"></textarea>
   <button onclick="readContent('event')">出来事を読み上げる</button>
-</div>
+</section>
 
-<!-- 気持ち（選択式＋補足） -->
-<div id="section_emotion" class="section">
-  <div>その時の気持ちを選んでください</div>
+<!-- 気持ち -->
+<section>
+  <h2>気持ち</h2>
 
+  <label>気持ちを選んでください</label>
   <select id="emotion_select">
     <option value="">選択してください</option>
     <option value="怒り">怒り</option>
@@ -161,30 +172,36 @@ button {
     <option value="孤独">孤独</option>
   </select>
 
-  <div style="margin-top:6px;">補足（自由入力）</div>
+  <label>補足（自由入力）</label>
   <textarea id="emotion_extra"></textarea>
 
+  <!-- 統合表示欄（ID を emotion に統一） -->
+  <div id="emotion" class="emotion-display"></div>
+
+  <button onclick="updateEmotion()">気持ちを統合する</button>
   <button onclick="readContent('emotion')">気持ちを読み上げる</button>
-</div>
+</section>
 
 <!-- 小説風 -->
-<div id="section_story" class="section">
-  <div>小説風に言語化してください</div>
-  <textarea id="input_story"></textarea>
-  <button onclick="readContent('story')">小説風を読み上げる</button>
-</div>
+<section>
+  <h2>小説風</h2>
+  <label>小説風に書いてください</label>
+  <textarea id="story"></textarea>
+  <button onclick="readContent('story')">小説風に読み上げる</button>
+</section>
 
 <!-- 身体感覚 -->
-<div id="section_body" class="section">
-  <div>身体感覚を入力してください</div>
-  <textarea id="input_body"></textarea>
+<section>
+  <h2>身体感覚</h2>
+  <label>身体感覚を入力してください</label>
+  <textarea id="body"></textarea>
   <button onclick="readContent('body')">身体感覚を読み上げる</button>
-</div>
+</section>
 
-<!-- 第一章のまとめ読み上げボタン -->
-<div id="section_summary" class="section">
-  <button onclick="readContent('summary')">全てつなげて読み上げる</button>
-</div>
+<!-- 最後にまとめて読み上げる -->
+<section>
+  <button onclick="readAll()">全部まとめて読み上げる</button>
+</section>
 
 <!-- ★★★ 第二章：案内文＋ボタン（ここから書く） ★★★ -->
 <div id="chapter2_intro" style="display:none;">
@@ -272,6 +289,7 @@ function toggleHeart() {
 /* セクション順序（ここだけで管理） */
 const sections = ["event", "emotion", "story", "body", "summary", "end"];
 
+
 /* 次のセクションへ */
 function showNextSection(current) {
   const nextIndex = sections.indexOf(current) + 1;
@@ -296,36 +314,56 @@ function setDiscomfortEnd() {
   discomfortEnd = Number(document.getElementById("discomfort_input_end").value);
 }
 
-/* 入力値を取る共通関数 */
-const getValue = name => document.getElementById("input_" + name)?.value || "";
+// 気持ちの統合
+function updateEmotion() {
+  const emo = document.getElementById("emotion_select").value;
+  const extra = document.getElementById("emotion_extra").value;
+
+  const finalEmotion = emo + (extra ? "、" + extra : "");
+  document.getElementById("emotion").textContent = finalEmotion;
+}
+
+const templates = {
+  event: "出来事は「{text}」",
+  emotion: "気持ちは「{text}」",
+  story: "小説風に言うと「{text}」",
+  body: "身体感覚は「{text}」"
+};
 
 /* 読み上げ中フラグ */
 let isSpeaking = false;
 
-/* セクション読み上げ（短い版） */
+let parts = [];
+
+const getValue = id => {
+  const el = document.getElementById(id);
+  return el?.value || el?.textContent || "";
+};
+
 function readContent(type) {
   if (isSpeaking) return;
   isSpeaking = true;
 
-  let text = "";
+  let sentence = "";
 
   if (type === "summary") {
-    const startValue = document.getElementById("discomfort_input").value;
+    const startValue = getValue("discomfort_input");
 
-    text =
+    sentence =
       "不快指数は「" + startValue + "」。" +
       "出来事は「" + getValue("event") + "」。" +
-      "気持ちは「" + getValue("emotion") + "」。補足は「" + getValue("emotion_extra") + "」。" +
+      "気持ちは「" + getValue("emotion") + "」。" +
       "小説風では「" + getValue("story") + "」。" +
       "身体感覚は「" + getValue("body") + "」。";
   } else {
-    text = getValue(type);
+    const text = getValue(type);
+    sentence = templates[type].replace("{text}", text);
+    parts.push(sentence);
   }
 
-  speakText(text, type);
+  speakText(sentence, type);
 }
 
-/* 読み上げ共通処理 */
 function speakText(text, type) {
   const utter = new SpeechSynthesisUtterance(text);
   utter.rate = Number(document.getElementById("voice_speed").value);
@@ -340,6 +378,11 @@ function speakText(text, type) {
   };
 
   speechSynthesis.speak(utter);
+}
+
+function readAll() {
+  const finalText = parts.join("。") + "。";
+  speakText(finalText);
 }
 
 /* 再表示ボタン */
