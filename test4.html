@@ -95,14 +95,14 @@ button {
   margin-top: 10px;
   padding: 6px 10px;
 }
-#emotion {
-  padding: 8px;
-  min-height: 40px;
-  border: 1px solid #ccc;
-  background: #fafafa;
-  margin-top: 6px;
-  white-space: pre-wrap;
-  color: #333;
+.emotion-btn {
+  display: inline-block;
+  margin: 4px;
+  padding: 6px 12px;
+  border: 1px solid #666;
+  border-radius: 6px;
+  cursor: pointer;
+  background: #f9f9f9;
 }
 </style>
 </head>
@@ -314,6 +314,64 @@ function setDiscomfortStart() {
 function setDiscomfortEnd() {
   discomfortEnd = Number(document.getElementById("discomfort_input_end").value);
 }
+function toggleEmotion(el) {
+  const emotion = el.textContent;
+  if (selectedEmotions.includes(emotion)) {
+    selectedEmotions = selectedEmotions.filter(e => e !== emotion);
+    el.classList.remove("selected");
+  } else {
+    selectedEmotions.push(emotion);
+    el.classList.add("selected");
+  }
+}
+
+function addEmotion() {
+  const add = document.getElementById("emotionAdd").value.trim();
+  if (add) {
+    const area = document.getElementById("emotionArea");
+    const span = document.createElement("span");
+    span.className = "emotion-btn";
+    span.textContent = add;
+    span.onclick = function() { toggleEmotion(span); };
+    area.appendChild(span);
+    document.getElementById("emotionAdd").value = "";
+  }
+}
+
+function loadVoices() {
+  voices = speechSynthesis.getVoices();
+  const select = document.getElementById("voiceSelect");
+  voices.forEach((v, i) => {
+    const opt = document.createElement("option");
+    opt.value = i;
+    opt.textContent = v.name;
+    select.appendChild(opt);
+  });
+}
+
+loadVoices();
+speechSynthesis.onvoiceschanged = loadVoices;
+
+function readAll() {
+  const emotions = selectedEmotions.join("、");
+  const feeling = document.getElementById("feelingText").value;
+  const body = document.getElementById("bodyText").value;
+  const rate = document.getElementById("rate").value;
+  const voiceIndex = document.getElementById("voiceSelect").value;
+
+  const text =
+    `${emotions}を感じていて、${feeling}という気持ちがあって、体は「${body}」。なるほど、十分味わえた所で、この感情を今、手放しますか？`;
+
+  const utter = new SpeechSynthesisUtterance(text);
+  utter.rate = rate;
+  utter.voice = voices[voiceIndex];
+
+  speechSynthesis.cancel();
+  speechSynthesis.speak(utter);
+}
+let selectedEmotions = [];
+//let voices = [];
+
 function toggleEmotion(el) {
   const emotion = el.textContent;
   if (selectedEmotions.includes(emotion)) {
