@@ -263,7 +263,7 @@ function readAll() {
   const voiceIndex = document.getElementById("voiceSelect").value;
 
   const text =
-    `${emotions}といった出来事がきっかけで、${emotions}を感じていて、${feeling}という気持ちがあって、体は「${body}」。なるほど、十分味わえた所で、この感情を今、手放しますか？`;
+    `${event}といった出来事がきっかけで、${emotions}を感じていて、${feeling}という気持ちがあって、身体感覚は${body}」。なるほど、十分味わえた所で、この感情を今、手放しますか？`;
 
   const utter = new SpeechSynthesisUtterance(text);
   utter.rate = rate;
