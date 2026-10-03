@@ -228,26 +228,7 @@ function selectNum(n) {
   curtain.style.height = (n * 10) + '%';
 }
 
-function setDiscomfortStart() {
-  const value = Number(document.getElementById("discomfort_input").value);
 
-  // 不快指数を保持
-  discomfortStart = value;
-
-  // 音声メッセージ
-  const msg = `不快指数は${value}ですね。振り返りながら次の質問に答えてください。`;
-  const utter = new SpeechSynthesisUtterance(msg);
-  utter.rate = Number(document.getElementById("voice_speed").value);
-  utter.voice = voices[document.getElementById("voiceSelect").value];
-
-  speechSynthesis.cancel();
-  speechSynthesis.speak(utter);
-
-  // 読み上げ終了後にブロックを表示
-  utter.onend = () => {
-    document.getElementById("stepBlock").classList.add("visible");
-  };
-}
 /*気持ちのセレクト*/
 let selectedEmotions = [];
 let voices = [];
