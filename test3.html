@@ -9,37 +9,28 @@ body {
   color: #eee;
   font-family: sans-serif;
   display: flex;
-  justify-content: center;
+  flex-direction: column; /* ← 縦並びに変更 */
+  align-items: center;    /* ← 中央寄せ */
   padding-top: 40px;
 }
 
 .container {
   width: 300px;
   text-align: center;
+  margin-bottom: 20px; /* ← 下に余白を追加 */
 }
 
 .heart-wrapper {
   position: relative;
   width: 300px;
   height: 300px;
-  background: #ec9292; /* ← ほんのり薄ピンク */
-  overflow: none;
-
-  /* ここから追加 */
+  background: #ec9292;
   display: flex;
   justify-content: center;
   align-items: center;
+  overflow: hidden; /* ← noneではなくhidden */
 }
 
-/* ハート画像は固定・前面 */
-.heart-mask {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  z-index: 2; /* 前面に固定 */
-}
-
-/* 黒い幕は背面で上昇 */
 .black-curtain {
   position: absolute;
   bottom: 0;
@@ -48,7 +39,7 @@ body {
   height: 0;
   background: black;
   opacity: 0.8;
-  z-index: 1; /* 背面に配置 */
+  z-index: 1;
   transition: height 0.3s ease;
 }
 
@@ -72,16 +63,20 @@ body {
   background: #666;
 }
 
-  .emotion-btn {
-    display: inline-block;
-    margin: 4px;
-    padding: 6px 12px;
-    border: 1px solid #666;
-    border-radius: 6px;
-    cursor: pointer;
-    background: #f9f9f9;
-  }
-  .selected { background: #333; color: white; }
+.emotion-btn {
+  display: inline-block;
+  margin: 4px;
+  padding: 6px 12px;
+  border: 1px solid #666;
+  border-radius: 6px;
+  cursor: pointer;
+  background: #f9f9f9;
+}
+
+.selected {
+  background: #333;
+  color: white;
+}
 </style>
 </head>
 <body>
