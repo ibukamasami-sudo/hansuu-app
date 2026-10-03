@@ -206,7 +206,6 @@ button {
 
 <script>
 
-
 /* ★★★ 声の読み込み（必須） ★★★ */
 let voices = [];
 
@@ -230,7 +229,7 @@ function fillVoiceList() {
   });
 }
 
-/* 数字ボタン：選択状態＋入力欄に反映＋黒幕 */
+/* 数字ボタン：黒幕＋不快指数 */
 function selectNum(n) {
   document.querySelector('.black-curtain').style.height = (n * 10) + '%';
   document.getElementById("discomfort_input").value = n;
@@ -243,19 +242,32 @@ function selectNum(n) {
 let discomfortStart = null;
 let discomfortEnd = null;
 
-/* セクション順序 */
-function showNextSection(current) {
-  const next = {
-    event: "emotion",
-    emotion: "story",
-    story: "body",
-    body: "summary",
-    summary: "end"
-  };
+/* ★★★ ハートの表示／非表示 ★★★ */
+function toggleHeart() {
+  const wrapper = document.querySelector('.heart-wrapper');
+  const btn = document.getElementById('hideHeartBtn');
 
-  showSection(next[current]);
+  if (wrapper.style.display === 'none') {
+    wrapper.style.display = 'flex';
+    btn.textContent = 'ハートを非表示にする';
+  } else {
+    wrapper.style.display = 'none';
+    btn.textContent = 'ハートを表示する';
+  }
 }
 
+/* セクション順序（ここだけで管理） */
+const sections = ["event", "emotion", "story", "body", "summary", "end"];
+
+/* 次のセクションへ */
+function showNextSection(current) {
+  const nextIndex = sections.indexOf(current) + 1;
+  if (nextIndex < sections.length) {
+    showSection(sections[nextIndex]);
+  }
+}
+
+/* セクション表示 */
 function showSection(name) {
   document.getElementById("section_" + name).classList.add("visible");
 }
@@ -271,68 +283,37 @@ function setDiscomfortEnd() {
   discomfortEnd = Number(document.getElementById("discomfort_input_end").value);
 }
 
-const sectionOrder = ["event", "emotion", "story", "body", "summary", "end"];
+/* 入力値を取る共通関数 */
+const getValue = name => document.getElementById("input_" + name)?.value || "";
 
-function showNextSection(current) {
-  const nextIndex = sectionOrder.indexOf(current) + 1;
-  if (nextIndex < sectionOrder.length) {
-    showSection(sectionOrder[nextIndex]);
-  }
-}
+/* 読み上げ中フラグ */
+let isSpeaking = false;
 
-function showSection(name) {
-  document.getElementById("section_" + name).classList.add("visible");
-}
-
-/* 読み上げ（1つだけ） */
+/* セクション読み上げ（短い版） */
 function readContent(type) {
-
-  const input_event = document.getElementById("input_event");
-  const emotion_select = document.getElementById("emotion_select");
-  const emotion_extra = document.getElementById("emotion_extra");
-  const input_story = document.getElementById("input_story");
-  const input_body = document.getElementById("input_body");
+  if (isSpeaking) return;
+  isSpeaking = true;
 
   let text = "";
 
-  if (type === "event") {
-    text = input_event.value;
-    speakText(text);
-    setTimeout(() => showNextSection("event"), 300);
-  }
-  else if (type === "emotion") {
-    text = emotion_select.value + "。" + emotion_extra.value;
-    speakText(text);
-    setTimeout(() => showNextSection("emotion"), 300);
-  }
-  else if (type === "story") {
-    text = input_story.value;
-    speakText(text);
-    setTimeout(() => showNextSection("story"), 300);
-  }
-  else if (type === "body") {
-    text = input_body.value;
-    speakText(text);
-    setTimeout(() => showNextSection("body"), 300);
-  }
-  else if (type === "summary") {
+  if (type === "summary") {
+    const startValue = document.getElementById("discomfort_input").value;
 
-      const startValue = document.getElementById("discomfort_input").value;
-
-      text =
-        "不快指数は「" + startValue + "」。" +   // ← ここを追加
-        "出来事は「" + input_event.value + "」。" +
-        "気持ちは「" + emotion_select.value + "」。補足は「" + emotion_extra.value + "」。" +
-        "小説風では「" + input_story.value + "」。" +
-        "身体感覚は「" + input_body.value + "」。";
-
-      speakText(text);
-      setTimeout(() => showNextSection("summary"), 300);
+    text =
+      "不快指数は「" + startValue + "」。" +
+      "出来事は「" + getValue("event") + "」。" +
+      "気持ちは「" + getValue("emotion") + "」。補足は「" + getValue("emotion_extra") + "」。" +
+      "小説風では「" + getValue("story") + "」。" +
+      "身体感覚は「" + getValue("body") + "」。";
+  } else {
+    text = getValue(type);
   }
+
+  speakText(text, type);
 }
 
 /* 読み上げ共通処理 */
-function speakText(text) {
+function speakText(text, type) {
   const utter = new SpeechSynthesisUtterance(text);
   utter.rate = Number(document.getElementById("voice_speed").value);
 
@@ -340,9 +321,12 @@ function speakText(text) {
   const selectedVoice = voices.find(v => v.name === selectedName);
   if (selectedVoice) utter.voice = selectedVoice;
 
+  utter.onend = () => {
+    isSpeaking = false;
+    showNextSection(type);
+  };
+
   speechSynthesis.speak(utter);
-    // 読み上げ後に次のセクションを表示
-  setTimeout(() => showNextSection(type), 300);
 }
 
 /* 終わりの不快指数 */
@@ -357,11 +341,11 @@ function saveRecord() {
 
   const record = {
     date: today,
-    event: input_event.value,
-    emotion: emotion_select.value,
-    emotion_extra: emotion_extra.value,
-    story: input_story.value,
-    body: input_body.value,
+    event: getValue("event"),
+    emotion: getValue("emotion"),
+    emotion_extra: getValue("emotion_extra"),
+    story: getValue("story"),
+    body: getValue("body"),
     discomfortStart,
     discomfortEnd
   };
@@ -373,6 +357,7 @@ function saveRecord() {
   document.getElementById("records_view").textContent =
     JSON.stringify(records, null, 2);
 }
+
 </script>
 
 </body>
