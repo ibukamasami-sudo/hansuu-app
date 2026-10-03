@@ -336,7 +336,8 @@ function readAll() {
   const emotions = selectedEmotions.join("、");
   const feeling = document.getElementById("feelingText").value;
   const body = document.getElementById("bodyText").value;
-  const rate = document.getElementById("rate").value;
+
+  const rate = Number(document.getElementById("voice_speed").value);
   const voiceIndex = document.getElementById("voiceSelect").value;
 
   const text =
@@ -349,6 +350,7 @@ function readAll() {
   speechSynthesis.cancel();
   speechSynthesis.speak(utter);
 }
+
 </script>
 
 </html>
