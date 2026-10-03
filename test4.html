@@ -229,7 +229,12 @@ button {
 </div>
 
 <script>
- 
+
+/*ハート*/
+function selectNum(n) {
+  const curtain = document.querySelector('.black-curtain');
+  curtain.style.height = (n * 10) + '%';  
+}
 
 /* ★★★ 声の読み込み（必須） ★★★ */
 let voices = [];
