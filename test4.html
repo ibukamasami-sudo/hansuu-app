@@ -229,33 +229,7 @@ button {
 </div>
 
 <script>
-  let selectedEmotions = [];
-let voices = [];
-
-function toggleEmotion(el) {
-  const emotion = el.textContent;
-  if (selectedEmotions.includes(emotion)) {
-    selectedEmotions = selectedEmotions.filter(e => e !== emotion);
-    el.classList.remove("selected");
-  } else {
-    selectedEmotions.push(emotion);
-    el.classList.add("selected");
-  }
-}
-
-function addEmotion() {
-  const add = document.getElementById("emotionAdd").value.trim();
-  if (add) {
-    const area = document.getElementById("emotionArea");
-    const span = document.createElement("span");
-    span.className = "emotion-btn";
-    span.textContent = add;
-    span.onclick = function() { toggleEmotion(span); };
-    area.appendChild(span);
-    document.getElementById("emotionAdd").value = "";
-  }
-}
-
+ 
 
 /* ★★★ 声の読み込み（必須） ★★★ */
 let voices = [];
@@ -335,135 +309,60 @@ function setDiscomfortStart() {
 function setDiscomfortEnd() {
   discomfortEnd = Number(document.getElementById("discomfort_input_end").value);
 }
-
-// 気持ちの統合
-function updateEmotion() {
-  const emo = document.getElementById("emotion_select").value;
-  const extra = document.getElementById("emotion_extra").value;
-
-  const finalEmotion = emo + (extra ? "、" + extra : "");
-  document.getElementById("emotion").textContent = finalEmotion;
-}
-
-const templates = {
-  event: "出来事は「{text}」",
-  emotion: "気持ちは「{text}」",
-  story: "小説風に言うと「{text}」",
-  body: "身体感覚は「{text}」"
-};
-
-/* 読み上げ中フラグ */
-let isSpeaking = false;
-
-let parts = [];
-
-const getValue = id => {
-  const el = document.getElementById(id);
-  return el?.value || el?.textContent || "";
-};
-
-function readContent(type) {
-  if (isSpeaking) return;
-  isSpeaking = true;
-
-  let sentence = "";
-
-  if (type === "summary") {
-    const startValue = getValue("discomfort_input");
-    sentence =
-      "不快指数は「" + startValue + "」。" +
-      "出来事は「" + getValue("event") + "」。" +
-      "気持ちは「" + getValue("emotion") + "」。" +
-      "小説風では「" + getValue("story") + "」。" +
-      "身体感覚は「" + getValue("body") + "」。";
+function toggleEmotion(el) {
+  const emotion = el.textContent;
+  if (selectedEmotions.includes(emotion)) {
+    selectedEmotions = selectedEmotions.filter(e => e !== emotion);
+    el.classList.remove("selected");
   } else {
-    const text = getValue(type);
-    sentence = templates[type].replace("{text}", text);
-    parts[type] = sentence; // ←ここを変更
+    selectedEmotions.push(emotion);
+    el.classList.add("selected");
   }
-
-  speakText(sentence, type);
 }
 
-function speakText(text, type) {
-  const utter = new SpeechSynthesisUtterance(text);
-  utter.rate = Number(document.getElementById("voice_speed").value);
-
-  const selectedName = document.getElementById("voice_select").value;
-  const selectedVoice = voices.find(v => v.name === selectedName);
-  if (selectedVoice) utter.voice = selectedVoice;
-
-  utter.onend = () => {
-    isSpeaking = false;
-    showNextSection(type);
-  };
-
-  speechSynthesis.speak(utter);
+function addEmotion() {
+  const add = document.getElementById("emotionAdd").value.trim();
+  if (add) {
+    const area = document.getElementById("emotionArea");
+    const span = document.createElement("span");
+    span.className = "emotion-btn";
+    span.textContent = add;
+    span.onclick = function() { toggleEmotion(span); };
+    area.appendChild(span);
+    document.getElementById("emotionAdd").value = "";
+  }
 }
+
+function loadVoices() {
+  voices = speechSynthesis.getVoices();
+  const select = document.getElementById("voiceSelect");
+  voices.forEach((v, i) => {
+    const opt = document.createElement("option");
+    opt.value = i;
+    opt.textContent = v.name;
+    select.appendChild(opt);
+  });
+}
+loadVoices();
+speechSynthesis.onvoiceschanged = loadVoices;
 
 function readAll() {
-  const finalText = parts.join("。") + "。";
-  speakText(finalText);
+  const emotions = selectedEmotions.join("、");
+  const feeling = document.getElementById("feelingText").value;
+  const body = document.getElementById("bodyText").value;
+  const rate = document.getElementById("rate").value;
+  const voiceIndex = document.getElementById("voiceSelect").value;
+
+  const text =
+    `${emotions}を感じていて、${feeling}という気持ちがあって、体は「${body}」。なるほど、十分味わえた所で、この感情を今、手放しますか？`;
+
+  const utter = new SpeechSynthesisUtterance(text);
+  utter.rate = rate;
+  utter.voice = voices[voiceIndex];
+
+  speechSynthesis.cancel();
+  speechSynthesis.speak(utter);
 }
-
-/* 再表示ボタン */
-document.querySelectorAll('.reopen-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    const target = btn.dataset.target;
-    document.getElementById("section_" + target).style.display = "block";
-  });
-});
-
-/* BGM再生 */
-
-let bgmAudio = null;
-
-document.getElementById("btn_play_bgm").onclick = () => {
-  const file = document.getElementById("bgm_select").value;
-  if (!file) return;
-
-  if (bgmAudio) bgmAudio.pause();
-  bgmAudio = new Audio(file);
-  bgmAudio.loop = true;
-  bgmAudio.play();
-};
-
-document.getElementById("btn_stop_bgm").onclick = () => {
-  if (bgmAudio) bgmAudio.pause();
-};
-
-
-
-/* 終わりの不快指数 */
-function finishDiscomfort() {
-  discomfortEnd = Number(document.getElementById("discomfort_input_end").value);
-  showSection("save");
-}
-
-/* 記録保存 */
-function saveRecord() {
-  const today = new Date().toISOString().split("T")[0];
-
-  const record = {
-    date: today,
-    event: getValue("event"),
-    emotion: getValue("emotion"),
-    emotion_extra: getValue("emotion_extra"),
-    story: getValue("story"),
-    body: getValue("body"),
-    discomfortStart,
-    discomfortEnd
-  };
-
-  let records = JSON.parse(localStorage.getItem("records") || "[]");
-  records.push(record);
-  localStorage.setItem("records", JSON.stringify(records));
-
-  document.getElementById("records_view").textContent =
-    JSON.stringify(records, null, 2);
-}
-
-
 
 </script>
 
