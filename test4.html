@@ -157,11 +157,7 @@ button {
   <button onclick="readContent('event')">出来事を読み上げる</button>
 </section>
 
-<!-- 気持ち -->
-<section>
-  <h2>気持ち</h2>
-
- <p><strong>どんな気持ちだった？選んでみて。</strong></p>
+<p><strong>どんな気持ちだった？選んでみて。</strong></p>
 <div id="emotionArea">
   <span class="emotion-btn" onclick="toggleEmotion(this)">怒り</span>
   <span class="emotion-btn" onclick="toggleEmotion(this)">不安</span>
@@ -174,204 +170,52 @@ button {
 <input type="text" id="emotionAdd" placeholder="感情を追加">
 <button onclick="addEmotion()">追加</button>
 
-</section>
+<hr>
 
-<!-- 小説風 -->
-<section>
-  <h2>小説風</h2>
-  <label>小説風に書いてください</label>
-  <textarea id="story"></textarea>
-  <button onclick="readContent('story')">小説風に読み上げる</button>
-</section>
+<!-- 小説のように気持ちを表現 -->
+<p><strong>その時の気持ちを、小説みたいに表現してみて？</strong></p>
+<textarea id="feelingText" rows="3" cols="40"></textarea>
 
-<!-- 身体感覚 -->
-<section>
-  <h2>身体感覚</h2>
-  <label>身体感覚を入力してください</label>
-  <textarea id="body"></textarea>
-  <button onclick="readContent('body')">身体感覚を読み上げる</button>
-</section>
+<hr>
 
-<!-- 最後にまとめて読み上げる -->
-<section>
-  <button onclick="readAll()">全部まとめて読み上げる</button>
-</section>
+<!-- 身体の変化 -->
+<p><strong>今この時を思い出して、体にはどんな変化があった？</strong></p>
+<textarea id="bodyText" rows="3" cols="40"></textarea>
 
-<!-- ★★★ 第二章：案内文＋ボタン（ここから書く） ★★★ -->
-<div id="chapter2_intro" style="display:none;">
-  <p>
-    この出来事からこの気持ちを持つのは、自然なことです。<br>
-    何度も聞いて、味わい尽くしてください。<br>
-    必要に応じて、BGMも選べます。<br>
-    内容に違和感があれば書き換えることもできます。<br>
-    十分に味わえたら、納得ボタンを押してください。
-  </p>
+<hr>
 
-  <button id="btn_replay">もう一度聞く</button>
-  <button id="btn_show_inputs">入力欄を再表示する</button>
-    <div id="chapter2_reopen" style="display:none;">
-    <button class="reopen-btn" data-target="event">出来事</button>
-    <button class="reopen-btn" data-target="emotion">気持ち</button>
-    <button class="reopen-btn" data-target="story">小説風</button>
-    <button class="reopen-btn" data-target="body">身体感覚</button>
-    </div>
-  <button id="btn_agree">納得する</button>
+<!-- 読み上げ設定 -->
+<p><strong>読み上げ設定</strong></p>
+<label>速度：</label>
+<input type="range" id="rate" min="0.5" max="2" step="0.1" value="1">
 
-  <!-- BGM選択 -->
-  <select id="bgm_select">
-    <option value="">BGMなし</option>
-    <option value="bgm1.mp3">やさしいピアノ</option>
-    <option value="bgm2.mp3">静かなギター</option>
-    <option value="bgm3.mp3">雨の音</option>
-  </select>
-  <button id="btn_play_bgm">BGMを流す</button>
-  <button id="btn_stop_bgm">停止</button>
-</div>
+<label>声：</label>
+<select id="voiceSelect"></select>
+
+<label>BGM：</label>
+<select id="bgmSelect">
+  <option value="">なし</option>
+  <option value="calm.mp3">落ち着く音</option>
+  <option value="soft.mp3">やわらかい音</option>
+</select>
+
+<hr>
+
+<!-- 読み上げ -->
+<button onclick="readAll()">全部読み上げる</button>
+
 
 <script>
 
 /*ハート*/
 function selectNum(n) {
   const curtain = document.querySelector('.black-curtain');
-  curtain.style.height = (n * 10) + '%';  
+  curtain.style.height = (n * 10) + '%';
 }
-
-/* ★★★ 声の読み込み（必須） ★★★ */
+/*気持ちのセレクト*/
+let selectedEmotions = [];
 let voices = [];
 
-function loadVoices() {
-  voices = speechSynthesis.getVoices();
-  if (voices.length > 0) fillVoiceList();
-}
-
-speechSynthesis.onvoiceschanged = loadVoices;
-window.onload = loadVoices;
-
-/* 声リストをUIに入れる */
-function fillVoiceList() {
-  const sel = document.getElementById("voice_select");
-  sel.innerHTML = "";
-  voices.forEach(v => {
-    const opt = document.createElement("option");
-    opt.value = v.name;
-    opt.textContent = v.name;
-    sel.appendChild(opt);
-  });
-}
-
-/* 数字ボタン：黒幕＋不快指数 */
-function selectNum(n) {
-  document.querySelector('.black-curtain').style.height = (n * 10) + '%';
-  document.getElementById("discomfort_input").value = n;
-
-  document.querySelectorAll('.num-btn').forEach(btn => btn.classList.remove('active'));
-  const clicked = document.querySelector(`.num-btn:nth-child(${n + 1})`);
-  if (clicked) clicked.classList.add('active');
-}
-
-let discomfortStart = null;
-let discomfortEnd = null;
-
-/* ★★★ ハートの表示／非表示 ★★★ */
-function toggleHeart() {
-  const wrapper = document.querySelector('.heart-wrapper');
-  const btn = document.getElementById('hideHeartBtn');
-
-  if (wrapper.style.display === 'none') {
-    wrapper.style.display = 'flex';
-    btn.textContent = 'ハートを非表示にする';
-  } else {
-    wrapper.style.display = 'none';
-    btn.textContent = 'ハートを表示する';
-  }
-}
-
-/* セクション順序（ここだけで管理） */
-const sections = ["event", "emotion", "story", "body", "summary", "end"];
-
-
-/* 次のセクションへ */
-function showNextSection(current) {
-  const nextIndex = sections.indexOf(current) + 1;
-  if (nextIndex < sections.length) {
-    showSection(sections[nextIndex]);
-  }
-}
-
-/* セクション表示 */
-function showSection(name) {
-  document.getElementById("section_" + name).classList.add("visible");
-}
-
-
-/* 不快指数：始め */
-function setDiscomfortStart() {
-  discomfortStart = Number(document.getElementById("discomfort_input").value);
-  showSection("event");
-}
-
-/* 不快指数：終わり */
-function setDiscomfortEnd() {
-  discomfortEnd = Number(document.getElementById("discomfort_input_end").value);
-}
-function toggleEmotion(el) {
-  const emotion = el.textContent;
-  if (selectedEmotions.includes(emotion)) {
-    selectedEmotions = selectedEmotions.filter(e => e !== emotion);
-    el.classList.remove("selected");
-  } else {
-    selectedEmotions.push(emotion);
-    el.classList.add("selected");
-  }
-}
-
-function addEmotion() {
-  const add = document.getElementById("emotionAdd").value.trim();
-  if (add) {
-    const area = document.getElementById("emotionArea");
-    const span = document.createElement("span");
-    span.className = "emotion-btn";
-    span.textContent = add;
-    span.onclick = function() { toggleEmotion(span); };
-    area.appendChild(span);
-    document.getElementById("emotionAdd").value = "";
-  }
-}
-
-function loadVoices() {
-  voices = speechSynthesis.getVoices();
-  const select = document.getElementById("voiceSelect");
-  voices.forEach((v, i) => {
-    const opt = document.createElement("option");
-    opt.value = i;
-    opt.textContent = v.name;
-    select.appendChild(opt);
-  });
-}
-
-loadVoices();
-speechSynthesis.onvoiceschanged = loadVoices;
-
-function readAll() {
-  const emotions = selectedEmotions.join("、");
-  const feeling = document.getElementById("feelingText").value;
-  const body = document.getElementById("bodyText").value;
-  const rate = document.getElementById("rate").value;
-  const voiceIndex = document.getElementById("voiceSelect").value;
-
-  const text =
-    `${emotions}を感じていて、${feeling}という気持ちがあって、体は「${body}」。なるほど、十分味わえた所で、この感情を今、手放しますか？`;
-
-  const utter = new SpeechSynthesisUtterance(text);
-  utter.rate = rate;
-  utter.voice = voices[voiceIndex];
-
-  speechSynthesis.cancel();
-  speechSynthesis.speak(utter);
-}
-let selectedEmotions = [];
-//let voices = [];
-
 function toggleEmotion(el) {
   const emotion = el.textContent;
   if (selectedEmotions.includes(emotion)) {
@@ -426,7 +270,6 @@ function readAll() {
   speechSynthesis.cancel();
   speechSynthesis.speak(utter);
 }
-
 </script>
 
 </body>
