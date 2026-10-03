@@ -181,27 +181,40 @@ button {
   <button onclick="readContent('body')">身体感覚を読み上げる</button>
 </div>
 
-<!-- 全部まとめて読み上げ -->
+<!-- 第一章のまとめ読み上げボタン -->
 <div id="section_summary" class="section">
   <button onclick="readContent('summary')">全てつなげて読み上げる</button>
 </div>
 
-<!-- 終わりの不快指数 -->
-<div id="section_end" class="section">
-  今の不快指数を入力してください  
-  <input id="discomfort_input_end" type="number" min="0" max="10">
-  <button onclick="finishDiscomfort()">終わりを記録する</button>
-</div>
+<!-- ★★★ 第二章：案内文＋ボタン（ここから書く） ★★★ -->
+<div id="chapter2_intro" style="display:none;">
+  <p>
+    この出来事からこの気持ちを持つのは、自然なことです。<br>
+    何度も聞いて、味わい尽くしてください。<br>
+    必要に応じて、BGMも選べます。<br>
+    内容に違和感があれば書き換えることもできます。<br>
+    十分に味わえたら、納得ボタンを押してください。
+  </p>
 
-<!-- 記録 -->
-<div id="section_save" class="section">
-  記録しますか？
-  <button onclick="saveRecord()">記録する</button>
-</div>
+  <button id="btn_replay">もう一度聞く</button>
+  <button id="btn_show_inputs">入力欄を再表示する</button>
+    <div id="chapter2_reopen" style="display:none;">
+    <button class="reopen-btn" data-target="event">出来事</button>
+    <button class="reopen-btn" data-target="emotion">気持ち</button>
+    <button class="reopen-btn" data-target="story">小説風</button>
+    <button class="reopen-btn" data-target="body">身体感覚</button>
+    </div>
+  <button id="btn_agree">納得する</button>
 
-<!-- 保存された記録 -->
-<pre id="records_view" style="margin-top:20px;"></pre>
-
+  <!-- BGM選択 -->
+  <select id="bgm_select">
+    <option value="">BGMなし</option>
+    <option value="bgm1.mp3">やさしいピアノ</option>
+    <option value="bgm2.mp3">静かなギター</option>
+    <option value="bgm3.mp3">雨の音</option>
+  </select>
+  <button id="btn_play_bgm">BGMを流す</button>
+  <button id="btn_stop_bgm">停止</button>
 </div>
 
 <script>
@@ -329,6 +342,34 @@ function speakText(text, type) {
   speechSynthesis.speak(utter);
 }
 
+/* 再表示ボタン */
+document.querySelectorAll('.reopen-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const target = btn.dataset.target;
+    document.getElementById("section_" + target).style.display = "block";
+  });
+});
+
+/* BGM再生 */
+
+let bgmAudio = null;
+
+document.getElementById("btn_play_bgm").onclick = () => {
+  const file = document.getElementById("bgm_select").value;
+  if (!file) return;
+
+  if (bgmAudio) bgmAudio.pause();
+  bgmAudio = new Audio(file);
+  bgmAudio.loop = true;
+  bgmAudio.play();
+};
+
+document.getElementById("btn_stop_bgm").onclick = () => {
+  if (bgmAudio) bgmAudio.pause();
+};
+
+
+
 /* 終わりの不快指数 */
 function finishDiscomfort() {
   discomfortEnd = Number(document.getElementById("discomfort_input_end").value);
@@ -357,6 +398,8 @@ function saveRecord() {
   document.getElementById("records_view").textContent =
     JSON.stringify(records, null, 2);
 }
+
+
 
 </script>
 
