@@ -264,11 +264,11 @@ function selectNum(n) {
 
   // ★ MP3アナウンスを再生
   const audio = document.getElementById("announceAudio");
-  audio.src = "henoj_2.mp3";   // ← ここで流したいMP3を指定
-  audio.currentTime = 0;       // 毎回頭から再生
+  audio.src = "henoj_1.mp3";
+  audio.currentTime = 0;
   audio.play();
 
-  // ★ 音が出なくても即表示（読み上げに依存しない）
+  // ★ 下のブロックを表示
   document.getElementById("stepBlock").classList.add("visible");
 }
 
