@@ -238,7 +238,6 @@ function showGuide(text, mp3) {
 }
 
 window.onload = () => {
-  // セッション内で一度だけ案内を流す
   if (!sessionStorage.getItem("playedGuide")) {
     showGuide("1から10までの不快指数を入力してください", "henoj_1.mp3");
     sessionStorage.setItem("playedGuide", "true");
