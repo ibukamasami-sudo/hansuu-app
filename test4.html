@@ -228,9 +228,13 @@ function showGuide(text, mp3) {
   const msg = document.getElementById("messageArea");
   const audio = document.getElementById("announceAudio");
 
-  msg.innerText = text;   // ← 文字列の表示
-  audio.src = mp3;        // ← 音声の切り替え
-  audio.play();           // ← 再生
+  msg.innerText = text;
+  msg.classList.add("fade-in");
+
+  msg.addEventListener("animationend", () => {
+    audio.src = mp3;
+    audio.play();
+  }, { once: true });
 }
 
 window.onload = () => {
