@@ -230,16 +230,19 @@ function showGuide(text, mp3) {
 
   msg.innerText = text;
 
-  // テキストが出てから音声を少し遅らせて再生
   setTimeout(() => {
     audio.src = mp3;
     audio.play();
-  }, 500); // ← 0.5秒後に再生（調整可能）
+  }, 500);
 }
 
 window.onload = () => {
   if (!sessionStorage.getItem("playedGuide")) {
-    showGuide("1から10までの不快指数を入力してください", "henoj_1.mp3");
+
+    // ★ 最初だけテキスト案内（音声なし）
+    const msg = document.getElementById("messageArea");
+    msg.innerText = "1から10までの不快指数を入力してください";
+
     sessionStorage.setItem("playedGuide", "true");
   }
 };
@@ -290,15 +293,16 @@ function selectNum(n) {
   // 不快指数欄に反映
   document.getElementById("discomfort_input").value = n;
 
-  // ★ MP3アナウンスを再生
-  const audio = document.getElementById("announceAudio");
-  audio.src = "henoj_2.mp3";
-  audio.currentTime = 0;
-  audio.play();
+  // ★ 案内文を動的に作る
+  const guideText = `不快指数は ${n} ですね、次の質問に答えてください。`;
+
+  // ★ MP3アナウンスを再生（showGuide に統一）
+  showGuide(guideText, "henoj_2.mp3");
 
   // ★ 下のブロックを表示
   document.getElementById("stepBlock").classList.add("visible");
 }
+
 
 
 function setDiscomfortStart() {
