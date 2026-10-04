@@ -272,7 +272,7 @@ function showGuide(text, mp3) {
   const msg = document.getElementById("messageArea");
   const audio = document.getElementById("announceAudio");
 
-  msg.innerText = text;
+  msg.innerHTML = text;   // ← ここを innerHTML に変更！
   msg.classList.add("fade-in");
 
   setTimeout(() => {
@@ -394,7 +394,7 @@ function readAll() {
   const voiceIndex = document.getElementById("voiceSelect").value;
 
   const text =
-    `${event}といった出来事がきっかけで、${emotions}を感じていて、${feeling}という気持ちがあって、身体感覚は${body}」。なるほど、十分味わえた所で、この感情を今、手放しますか？`;
+    `${event}といった出来事がきっかけで、${emotions}を感じていて、${feeling}という気持ちがあって、身体感覚は${body}」ですね。こういう気持ちを持つのはごく当たり前です。打ち消そうとせず堂々と浸ってみてください。もう十分という気持ちになったら。納得ボタンを押してください。`;
 
   const utter = new SpeechSynthesisUtterance(text);
   utter.rate = rate;
