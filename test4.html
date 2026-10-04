@@ -272,7 +272,7 @@ function showGuide(text, mp3) {
   const msg = document.getElementById("messageArea");
   const audio = document.getElementById("announceAudio");
 
-  msg.innerText = text;
+  msg.innerHTML = text;   // ← ここを innerHTML に変更！
   msg.classList.add("fade-in");
 
   setTimeout(() => {
@@ -326,7 +326,7 @@ function selectNum(event, n) {
 
   document.getElementById("discomfort_input").value = n;
 
-  const guideText = `不快指数は ${n} ですね、次の質問に答えてください。`;
+  const guideText = `不快指数は ${n}ですね<br>次の質問に答えてください。`;
 
   requestAnimationFrame(() => {
     requestAnimationFrame(() => {
@@ -343,7 +343,7 @@ function setDiscomfortStart() {
   const value = Number(document.getElementById("discomfort_input").value);
   discomfortStart = value;
 
-  const msg = `不快指数は${value}ですね。振り返りながら次の質問に答えてください。`;
+  const msg = `不快指数は${value}ですね。<br>振り返りながら次の質問に答えてください。`;
   const utter = new SpeechSynthesisUtterance(msg);
   utter.rate = Number(document.getElementById("voice_speed").value);
   utter.voice = voices[document.getElementById("voiceSelect").value];
