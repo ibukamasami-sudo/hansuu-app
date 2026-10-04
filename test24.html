@@ -270,17 +270,6 @@ function showGuide(text, mp3) {
   }, 500);
 }
 
-window.onload = () => {
-  if (!sessionStorage.getItem("playedGuide")) {
-
-    // ★ 最初だけテキスト案内（音声なし）
-    const msg = document.getElementById("messageArea");
-    msg.innerText = "1から10までの不快指数を入力してください";
-
-    sessionStorage.setItem("playedGuide", "true");
-  }
-};
-
 
 function loadVoices() {
   voices = speechSynthesis.getVoices();
