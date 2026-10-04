@@ -229,20 +229,22 @@ function showGuide(text, mp3) {
   const audio = document.getElementById("announceAudio");
 
   msg.innerText = text;
-  msg.classList.add("fade-in");
 
-  msg.addEventListener("animationend", () => {
+  // テキストが出てから音声を少し遅らせて再生
+  setTimeout(() => {
     audio.src = mp3;
     audio.play();
-  }, { once: true });
+  }, 500); // ← 0.5秒後に再生（調整可能）
 }
 
 window.onload = () => {
+  // セッション内で一度だけ案内を流す
   if (!sessionStorage.getItem("playedGuide")) {
     showGuide("1から10までの不快指数を入力してください", "henoj_1.mp3");
     sessionStorage.setItem("playedGuide", "true");
   }
 };
+
 
 function loadVoices() {
   voices = speechSynthesis.getVoices();
