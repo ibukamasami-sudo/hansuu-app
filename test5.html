@@ -59,13 +59,14 @@ body {
 }
 
 .num-btn {
-  width: 38px;
-  height: 38px;
-  margin: 2px;
+  width: 40px;
+  height: 40px;
+  margin: 4px;
+  border: none;
   border-radius: 8px;
   background-color: #f5f5f5;
   color: #333;
-  font-size: 16px;
+  font-size: 20px;
   cursor: pointer;
   transition: all 0.2s ease;
 }
@@ -73,8 +74,9 @@ body {
 
 /* マウスを乗せたとき */
 .num-btn:hover {
-  background-color: #ffe0e0; /* 淡いピンク */
-  transform: scale(1.1);     /* 少し大きく */
+  background-color: #ffe0e0;
+  /* transform を消す */
+  /* transform: scale(1.1); */
 }
 
 .num-btn.active {
@@ -316,19 +318,17 @@ function selectNum(n) {
 
 
 function selectNum(event, n) {
-  // まず色を確定
+  const curtain = document.querySelector('.black-curtain');
+  curtain.style.height = (n * 10) + '%';
+
   document.querySelectorAll('.num-btn').forEach(btn => btn.classList.remove('active'));
   event.target.classList.add('active');
 
-  // 不快指数欄に反映
   document.getElementById("discomfort_input").value = n;
 
-  // 案内文を作成
-  const guideText = `不快指数は ${n} ですね、次の質問に答えてください。`;
+  const guideText = `不快指数は ${n} <br>ですね次の質問に答えてください。`;
 
-  // ★ まず1回描画を確定させる
   requestAnimationFrame(() => {
-    // ★ その次のフレームで音声と案内を出す
     requestAnimationFrame(() => {
       showGuide(guideText, "henoj_2.mp3");
       document.getElementById("stepBlock").classList.add("visible");
@@ -343,7 +343,7 @@ function setDiscomfortStart() {
   const value = Number(document.getElementById("discomfort_input").value);
   discomfortStart = value;
 
-  const msg = `不快指数は${value}ですね。振り返りながら次の質問に答えてください。`;
+  const msg = `不快指数は${value}ですね。<br>振り返りながら次の質問に答えてください。`;
   const utter = new SpeechSynthesisUtterance(msg);
   utter.rate = Number(document.getElementById("voice_speed").value);
   utter.voice = voices[document.getElementById("voiceSelect").value];
