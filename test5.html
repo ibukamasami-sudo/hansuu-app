@@ -326,12 +326,16 @@ function selectNum(event, n) {
   // 案内文を作成
   const guideText = `不快指数は ${n} ですね、次の質問に答えてください。`;
 
-  // ★ 少し遅らせて音声再生（色が先に反映される）
-  setTimeout(() => {
-    showGuide(guideText, "henoj_2.mp3");
-    document.getElementById("stepBlock").classList.add("visible");
-  }, 200); // ← 0.2秒後に実行
+  // ★ まず1回描画を確定させる
+  requestAnimationFrame(() => {
+    // ★ その次のフレームで音声と案内を出す
+    requestAnimationFrame(() => {
+      showGuide(guideText, "henoj_2.mp3");
+      document.getElementById("stepBlock").classList.add("visible");
+    });
+  });
 }
+
 
 
 
