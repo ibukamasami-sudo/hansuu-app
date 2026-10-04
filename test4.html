@@ -125,6 +125,10 @@ button {
 </head>
 
 <body>
+
+<div id="messageArea" class="guide-text"></div>
+<audio id="announceAudio"></audio>
+
 <div class="container">
 
   <!-- ハート -->
@@ -162,7 +166,7 @@ button {
   <select id="voiceSelect"></select>
   <label>読み上げスピード</label>
 <input id="voice_speed" type="number" min="0.5" max="2" step="0.1" value="1">
-<audio id="announceAudio"></audio>
+
 
 <!-- ここから出来事以下のブロック -->
   <div id="stepBlock" class="section">
@@ -220,6 +224,22 @@ button {
 </body>
 
 <script>
+function showGuide(text, mp3) {
+  const msg = document.getElementById("messageArea");
+  const audio = document.getElementById("announceAudio");
+
+  msg.innerText = text;   // ← 文字列の表示
+  audio.src = mp3;        // ← 音声の切り替え
+  audio.play();           // ← 再生
+}
+
+window.onload = () => {
+  if (!sessionStorage.getItem("playedGuide")) {
+    showGuide("1から10までの不快指数を入力してください", "start_guide.mp3");
+    sessionStorage.setItem("playedGuide", "true");
+  }
+};
+
 function loadVoices() {
   voices = speechSynthesis.getVoices();
   const select = document.getElementById("voiceSelect");
