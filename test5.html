@@ -475,38 +475,40 @@ function onAgree() {
 
 
 /* 手放しステップ：納得ボタンを押したらスライダーを表示 */
-function showReleaseStep() {
-  const slider = document.getElementById("releaseSlider");
-  const releaseComment = document.getElementById("releaseComment");
+function releaseHeart(n) {
+  const curtain = document.querySelector('.black-curtain');
+  const heart = document.querySelector('.heart-mask');   // PNGの枠線
+  const wrapper = document.querySelector('.heart-wrapper');
+  const body = document.body;
 
-  slider.style.display = "block";          // スライダーを表示
-  showGuide("バーを動かして<br>ハートをクリーンにしてください", "henoj_2.mp3");
-  //releaseComment.style.display = "block";  // コメント欄を表示
+  // 黒幕の高さを減らす
+  curtain.style.height = (n * 10) + '%';
+
+  // 0になったら黄色ハート＋白枠演出
+  if (n == 0) {
+
+    // 黒幕をふわっと消す
+    curtain.style.transition = "opacity 0.8s ease";
+    curtain.style.opacity = "0";
+
+    // 🌼 枠線（PNG）を白に見せる
+    heart.style.transition = "filter 0.8s ease";
+    heart.style.filter = "brightness(300%) saturate(0%)";
+
+    // 🌼 ハートの中だけ黄色にする（背景色）
+    wrapper.style.transition = "background 0.8s ease";
+    wrapper.style.background = "#fff27a"; // レモン色
+
+    // 🌼 全体の背景は白
+    body.style.background = "#ffffff";
+
+    // 黒幕を完全に消す
+    setTimeout(() => {
+      curtain.style.display = "none";
+    }, 800);
+  }
 }
 
-/* 手放しスライダー：ハートの黒を減らす */
-if (n == 0) {
-
-  // 黒幕をふわっと消す
-  curtain.style.transition = "opacity 0.8s ease";
-  curtain.style.opacity = "0";
-
-  // 🌼 枠線（PNG）を白に見せる
-  heart.style.transition = "filter 0.8s ease";
-  heart.style.filter = "brightness(300%) saturate(0%)";
-
-  // 🌼 ハートの中だけ黄色にする（背景色）
-  wrapper.style.transition = "background 0.8s ease";
-  wrapper.style.background = "#fff27a"; // レモン色
-
-  // 🌼 全体の背景は白
-  body.style.background = "#ffffff";
-
-  // 黒幕を完全に消す
-  setTimeout(() => {
-    curtain.style.display = "none";
-  }, 800);
-}
 
 /* スライダーと連動 */
 document.getElementById("releaseSlider").addEventListener("input", e => {
