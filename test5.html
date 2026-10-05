@@ -177,6 +177,14 @@ label, select, input {
 .tts-setting input {
   width: 160px;
 }
+#releaseSlider {
+  display: none;        /* ← 中央寄せのために block に */
+  width: 80%;            /* ← 画面幅の8割。存在感アップ */
+  max-width: 400px;      /* ← 大きすぎ防止（好みで調整） */
+  margin: 20px auto;     /* ← 中央に配置＋上下余白 */
+  height: 40px;          /* ← 太めにしてインパクト */
+  accent-color: #ec9292; /* ← ハート色と統一 */
+}
 
 </style>
 </head>
@@ -212,8 +220,7 @@ label, select, input {
 
 <input id="releaseSlider" 
        type="range" 
-       min="0" max="10" step="1" value="10"
-       style="display:none;">
+       min="0" max="10" step="1" value="10">
 
 <div id="messageArea" class="guide-text fade-in">
   不快指数を入力してください
@@ -439,7 +446,8 @@ function showReleaseStep() {
   const releaseComment = document.getElementById("releaseComment");
 
   slider.style.display = "block";          // スライダーを表示
-  releaseComment.style.display = "block";  // コメント欄を表示
+  showGuide("バーを動かして<br>ハートをクリーンにしてください", "henoj_2.mp3");
+  //releaseComment.style.display = "block";  // コメント欄を表示
 }
 
 /* 手放しスライダー：ハートの黒を減らす */
