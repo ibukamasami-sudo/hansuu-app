@@ -186,6 +186,10 @@ label, select, input {
   accent-color: #ec9292; /* ← ハート色と統一 */
 }
 
+.heart-mask {
+  transition: filter 0.8s ease; /* ← これだけ追加すればOK */
+}
+
 </style>
 </head>
 
@@ -453,21 +457,34 @@ function showReleaseStep() {
 /* 手放しスライダー：ハートの黒を減らす */
 function releaseHeart(n) {
   const curtain = document.querySelector('.black-curtain');
-  const heart = document.querySelector('.heart-mask');
+  const heart = document.querySelector('.heart-mask');   // ← PNGの枠線
+  const wrapper = document.querySelector('.heart-wrapper'); // ← 背景
 
+  // 黒幕の高さを減らす
   curtain.style.height = (n * 10) + '%';
 
-  // 0になったらハートがふわっと消える演出
+  // 0になったら黒幕を消して、ハート枠と背景をレモン色に変える
   if (n == 0) {
-    heart.style.transition = "transform 0.8s ease, opacity 0.8s ease";
-    heart.style.transform = "scale(1.8)";
-    heart.style.opacity = "0";
 
+    // 黒幕をふわっと消す
+    curtain.style.transition = "opacity 0.8s ease";
+    curtain.style.opacity = "0";
+
+    // ハート枠（PNG）をレモン色に変化
+    heart.style.transition = "filter 0.8s ease";
+    heart.style.filter = "hue-rotate(55deg) saturate(250%) brightness(130%)";
+
+    // 背景もレモン色に
+    wrapper.style.transition = "background 0.8s ease";
+    wrapper.style.background = "#fff27a"; // レモン色
+
+    // 黒幕を完全に消す
     setTimeout(() => {
-      heart.style.display = "none";
+      curtain.style.display = "none";
     }, 800);
   }
 }
+
 
 /* スライダーと連動 */
 document.getElementById("releaseSlider").addEventListener("input", e => {
