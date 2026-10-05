@@ -447,7 +447,7 @@ function readAll() {
 function onAgree() {
   const slider = document.getElementById("releaseSlider");
   const numbers = document.querySelector('.numbers');
-  const questions = document.querySelector('.question-area'); // 質問欄
+  const questions = document.querySelector('#stepBlock'); // 質問欄
   const readAll = document.querySelector('.read-all'); // 全体を読む欄
   const heart = document.querySelector('.heart-wrapper');
 
@@ -485,39 +485,28 @@ function showReleaseStep() {
 }
 
 /* 手放しスライダー：ハートの黒を減らす */
-function releaseHeart(n) {
-  const curtain = document.querySelector('.black-curtain');
-  const heart = document.querySelector('.heart-mask');   // PNGの枠線
-  const wrapper = document.querySelector('.heart-wrapper');
-  const body = document.body;
+if (n == 0) {
 
-  // 黒幕の高さを減らす
-  curtain.style.height = (n * 10) + '%';
+  // 黒幕をふわっと消す
+  curtain.style.transition = "opacity 0.8s ease";
+  curtain.style.opacity = "0";
 
-  // 0になったら白演出を発動
-  if (n == 0) {
+  // 🌼 枠線（PNG）を白に見せる
+  heart.style.transition = "filter 0.8s ease";
+  heart.style.filter = "brightness(300%) saturate(0%)";
 
-    // 黒幕をふわっと消す
-    curtain.style.transition = "opacity 0.8s ease";
-    curtain.style.opacity = "0";
+  // 🌼 ハートの中だけ黄色にする（背景色）
+  wrapper.style.transition = "background 0.8s ease";
+  wrapper.style.background = "#fff27a"; // レモン色
 
-    // ハート枠（PNG）を白に見せる
-    heart.style.transition = "filter 0.8s ease";
-    heart.style.filter = "brightness(300%) saturate(0%)";
+  // 🌼 全体の背景は白
+  body.style.background = "#ffffff";
 
-    // ハートの後ろの背景も白に
-    wrapper.style.background = "#ffffff";
-
-    // 全体の背景も白に
-    body.style.background = "#ffffff";
-
-    // 黒幕を完全に消す
-    setTimeout(() => {
-      curtain.style.display = "none";
-    }, 800);
-  }
+  // 黒幕を完全に消す
+  setTimeout(() => {
+    curtain.style.display = "none";
+  }, 800);
 }
-
 
 /* スライダーと連動 */
 document.getElementById("releaseSlider").addEventListener("input", e => {
