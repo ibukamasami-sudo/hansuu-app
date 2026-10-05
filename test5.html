@@ -300,7 +300,7 @@ label, select, input {
     <!-- 読み上げ -->
     <button onclick="readAll()">全部読み上げる</button>
 
-    <button onclick="showReleaseStep()">納得</button>
+    <button onclick="onAgree()">納得</button>
 
   </div><!-- stepBlock 終わり -->
 
@@ -444,6 +444,36 @@ function readAll() {
   speechSynthesis.speak(utter);
 }
 
+function onAgree() {
+  const slider = document.getElementById("releaseSlider");
+  const numbers = document.querySelector('.numbers');
+  const questions = document.querySelector('.question-area'); // 質問欄
+  const readAll = document.querySelector('.read-all'); // 全体を読む欄
+  const heart = document.querySelector('.heart-wrapper');
+
+  // 数字ボタン・質問欄・全体を読むを消す
+  if (numbers) numbers.style.display = "none";
+  if (questions) questions.style.display = "none";
+  if (readAll) readAll.style.display = "none";
+
+  // スライダーを表示
+  slider.style.display = "block";
+
+  // ハートの位置へスクロール（目線を上へ）
+  heart.scrollIntoView({ behavior: "smooth", block: "center" });
+
+  // ハートを少しだけ拡大して視線誘導
+  heart.style.transition = "transform 0.3s ease";
+  heart.style.transform = "scale(1.1)";
+  setTimeout(() => {
+    heart.style.transform = "scale(1.0)";
+  }, 300);
+
+  // アナウンス欄を上に表示
+  showGuide("バーを動かしてハートをクリーンにしてください", "henoj_2.mp3");
+}
+
+
 /* 手放しステップ：納得ボタンを押したらスライダーを表示 */
 function showReleaseStep() {
   const slider = document.getElementById("releaseSlider");
@@ -457,26 +487,29 @@ function showReleaseStep() {
 /* 手放しスライダー：ハートの黒を減らす */
 function releaseHeart(n) {
   const curtain = document.querySelector('.black-curtain');
-  const heart = document.querySelector('.heart-mask');   // ← PNGの枠線
-  const wrapper = document.querySelector('.heart-wrapper'); // ← 背景
+  const heart = document.querySelector('.heart-mask');   // PNGの枠線
+  const wrapper = document.querySelector('.heart-wrapper');
+  const body = document.body;
 
   // 黒幕の高さを減らす
   curtain.style.height = (n * 10) + '%';
 
-  // 0になったら黒幕を消して、ハート枠と背景をレモン色に変える
+  // 0になったら白演出を発動
   if (n == 0) {
 
     // 黒幕をふわっと消す
     curtain.style.transition = "opacity 0.8s ease";
     curtain.style.opacity = "0";
 
-    // ハート枠（PNG）をレモン色に変化
+    // ハート枠（PNG）を白に見せる
     heart.style.transition = "filter 0.8s ease";
-    heart.style.filter = "hue-rotate(55deg) saturate(250%) brightness(130%)";
+    heart.style.filter = "brightness(300%) saturate(0%)";
 
-    // 背景もレモン色に
-    wrapper.style.transition = "background 0.8s ease";
-    wrapper.style.background = "#fff27a"; // レモン色
+    // ハートの後ろの背景も白に
+    wrapper.style.background = "#ffffff";
+
+    // 全体の背景も白に
+    body.style.background = "#ffffff";
 
     // 黒幕を完全に消す
     setTimeout(() => {
