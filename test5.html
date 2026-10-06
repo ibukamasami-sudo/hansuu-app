@@ -424,6 +424,8 @@ function addEmotion() {
 }
 
 
+let hasPlayedGuide = false;  // ★ 一回目かどうか判定するフラグ
+
 function readAll() {
   const event = document.getElementById("event").value;
   const emotions = selectedEmotions.join("、");
@@ -442,7 +444,28 @@ function readAll() {
 
   speechSynthesis.cancel();
   speechSynthesis.speak(utter);
-  showGuide("繰り返し聞いてください", "tugihe.mp3");
+
+  // ★★★ 読み上げが終わったら実行される処理 ★★★
+  utter.onend = function() {
+
+    if (!hasPlayedGuide) {
+      // 一回目だけ流す案内音声
+      showGuide("繰り返し聞いてください", "tugihe.mp3");
+
+      // ★ ボタンの言葉を「もう一度」に変更
+      const btn = document.getElementById("readAllButton");
+      if (btn) btn.textContent = "もう一度";
+
+      hasPlayedGuide = true;  // 次回からは別の案内へ
+
+    } else {
+      // 二回目以降の案内（音声はまだ作っていないとのことなのでメッセージだけ）
+      showGuide("必要に応じて内容を変えたり<br>不快指数の数値の変更をしてください。","repeat2.mp3");
+
+      // 音声を作ったらここに追加
+      // showGuide("もう一度聞きますか？", "repeat2.mp3");
+    }
+  };
 }
 
 function onAgree() {
