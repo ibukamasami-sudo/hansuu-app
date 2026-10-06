@@ -589,14 +589,11 @@ function releaseHeart(n) {
 }
 
 function onReleaseComplete() {
-  // お疲れさまでした案内
   showGuide("お疲れさまでした。下の内容を保存します。", "finish.mp3");
 
-  // 今日の日付
   const today = new Date();
   const dateText = today.toLocaleDateString("ja-JP");
 
-  // 記録欄に値を入れる
   document.getElementById("recordDate").textContent = `日付：${dateText}`;
   document.getElementById("recordFirst").textContent = `最初の不快指数：${firstDiscomfort}`;
   document.getElementById("recordEvent").textContent = `出来事：${document.getElementById("event").value}`;
@@ -606,7 +603,12 @@ function onReleaseComplete() {
 
   // 記録欄を表示
   document.getElementById("recordBox").style.display = "block";
+
+  // ★ ボタンを表示する
+  document.getElementById("resetBtn").style.display = "inline-block";
+  document.getElementById("reframeBtn").style.display = "inline-block";
 }
+
 
 function resetToStart() {
   // スライダー非表示
