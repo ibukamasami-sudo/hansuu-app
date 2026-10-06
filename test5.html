@@ -434,7 +434,7 @@ function readAll() {
   const voiceIndex = document.getElementById("voiceSelect").value;
 
   const text =
-    `${event}といった出来事がきっかけで、${emotions}を感じていて、${feeling}という気持ちがあって、身体感覚は${body}」ですね。こういう気持ちを持つのはごく当たり前です。打ち消そうとせず堂々と浸ってみてください。もう十分という気持ちになったら。納得ボタンを押してください。`;
+    `${event}といった出来事がきっかけで、${emotions}を感じていて、${feeling}という気持ちがあって、身体感覚は${body}」ですね。`;
 
   const utter = new SpeechSynthesisUtterance(text);
   utter.rate = rate;
@@ -442,6 +442,7 @@ function readAll() {
 
   speechSynthesis.cancel();
   speechSynthesis.speak(utter);
+  showGuide("繰り返し聞いてください", "tugihe.mp3");
 }
 
 function onAgree() {
