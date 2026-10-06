@@ -577,9 +577,13 @@ function releaseHeart(n) {
     // 🌼 全体の背景は白
     body.style.background = "#ffffff";
 
-    // 黒幕を完全に消す
+    // 黒幕を完全に消す → 演出が終わったら onReleaseComplete を呼ぶ
     setTimeout(() => {
       curtain.style.display = "none";
+
+      // ★★★ ここで最後の章へ進む ★★★
+      onReleaseComplete();
+
     }, 800);
   }
 }
