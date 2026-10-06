@@ -205,6 +205,18 @@ label, select, input {
     <div class="black-curtain"></div>
   </div>
 
+  <div id="recordBox" class="record-box" style="display:none;">
+  <h3>今日の記録</h3>
+  <p id="recordDate"></p>
+  <p id="recordFirst"></p>
+  <p id="recordEvent"></p>
+  <p id="recordEmotion"></p>
+  <p id="recordNovel"></p>
+  <p id="recordBody"></p>
+
+  <p class="record-save-message">この内容を今日の日付で記録します。</p>
+</div>
+
   <!-- 数字ボタン -->
   <div class="numbers">
 <button class="num-btn" onclick="selectNum(event, 0)">0</button>
@@ -297,10 +309,29 @@ label, select, input {
 
     <hr>
 
-    <!-- 読み上げ -->
-    <button onclick="readAll()" id="readAllButton" class="readAll">全部読み上げる</button>
+ <div class="action-buttons">
 
-    <button onclick="onAgree()" id="onAgreeButton"  class="onAgree">次へ</button>
+  <!-- 第1フェーズ：読み上げ -->
+  <button onclick="readAll()" id="readAllButton" class="readAll">
+    全部読み上げる
+  </button>
+
+  <!-- 第2フェーズ：質問へ進む -->
+  <button onclick="onAgree()" id="onAgreeButton" class="onAgree">
+    次へ
+  </button>
+
+  <!-- 第3フェーズ：手放し後に表示 -->
+  <button onclick="resetToStart()" id="resetBtn" class="reset-btn" style="display:none;">
+    最初に戻る
+  </button>
+
+  <!-- 第4フェーズ：リフレーミング（未来の機能） -->
+  <button onclick="goReframe()" id="reframeBtn" class="reframe-btn" style="display:none;">
+    リフレーミング
+  </button>
+
+</div>
 
   </div><!-- stepBlock 終わり -->
 
@@ -552,6 +583,65 @@ function releaseHeart(n) {
     }, 800);
   }
 }
+
+function onReleaseComplete() {
+  // お疲れさまでした案内
+  showGuide("お疲れさまでした。下の内容を保存します。", "finish.mp3");
+
+  // 今日の日付
+  const today = new Date();
+  const dateText = today.toLocaleDateString("ja-JP");
+
+  // 記録欄に値を入れる
+  document.getElementById("recordDate").textContent = `日付：${dateText}`;
+  document.getElementById("recordFirst").textContent = `最初の不快指数：${firstDiscomfort}`;
+  document.getElementById("recordEvent").textContent = `出来事：${document.getElementById("event").value}`;
+  document.getElementById("recordEmotion").textContent = `気持ち：${selectedEmotions.join("、")}`;
+  document.getElementById("recordNovel").textContent = `小説風：${document.getElementById("feelingText").value}`;
+  document.getElementById("recordBody").textContent = `身体感覚：${document.getElementById("bodyText").value}`;
+
+  // 記録欄を表示
+  document.getElementById("recordBox").style.display = "block";
+}
+
+function resetToStart() {
+  // スライダー非表示
+  const slider = document.getElementById("releaseSlider");
+  slider.style.display = "none";
+
+  // 数字ボタンを再表示
+  const numbers = document.querySelector('.numbers');
+  if (numbers) numbers.style.display = "block";
+
+  // 質問欄を非表示
+  const questions = document.querySelector('#stepBlock');
+  if (questions) questions.style.display = "none";
+
+  // 全体読み上げボタンを初期状態に戻す
+  const readAllBtn = document.getElementById("readAllButton");
+  if (readAllBtn) readAllBtn.textContent = "全部読み上げる";
+
+  // ハートを初期状態に戻す
+  const heart = document.querySelector('.heart-wrapper');
+  heart.style.transform = "scale(1.0)";
+
+  // 黒幕を初期化
+  const curtain = document.querySelector('.black-curtain');
+  curtain.style.height = "0%";
+
+  // 記録欄を非表示
+  const recordBox = document.getElementById("recordBox");
+  if (recordBox) recordBox.style.display = "none";
+
+  // フラグを初期化（読み上げ一回目に戻す）
+  hasPlayedGuide = false;
+  firstDiscomfort = null;
+
+  // ガイド欄を初期化
+  showGuide("最初の状態に戻りました。数字を選んでください。", null);
+}
+
+
 
 
 /* スライダーと連動 */
