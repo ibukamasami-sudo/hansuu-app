@@ -366,15 +366,27 @@ function selectNum(event, n) {
 
   document.getElementById("discomfort_input").value = n;
 
-  const guideText = `不快指数は ${n}ですね<br>次の質問に答えてください。`;
+  // ★★★ ここから分岐を追加するだけ ★★★
+  if (hasPlayedGuide) {
+    // 二回目以降：不快指数の入力へ進む
+    showGuide(`不快指数は ${n}ですね。<br>出来るだけ少なくなるまで繰り返し聞いてください。`, "repeat3.mp3");
 
-  requestAnimationFrame(() => {
+    // ここでハートの下の入力ブロックを表示する
+    document.getElementById("heartInputBlock").classList.add("visible");
+
+  } else {
+    // 一回目：今まで通りの案内
+    const guideText = `不快指数は ${n}ですね<br>次の質問に答えてください。`;
+
     requestAnimationFrame(() => {
-      showGuide(guideText, "henoj_2.mp3");
-      document.getElementById("stepBlock").classList.add("visible");
+      requestAnimationFrame(() => {
+        showGuide(guideText, "henoj_2.mp3");
+        document.getElementById("stepBlock").classList.add("visible");
+      });
     });
-  });
+  }
 }
+
 
 
 
