@@ -356,6 +356,7 @@ function selectNum(n) {
   curtain.style.height = (n * 10) + '%';
 }
 
+let firstDiscomfort = null;  // ★ 追加：最初の不快指数を保存する変数
 
 function selectNum(event, n) {
   const curtain = document.querySelector('.black-curtain');
@@ -365,6 +366,10 @@ function selectNum(event, n) {
   event.target.classList.add('active');
 
   document.getElementById("discomfort_input").value = n;
+
+    if (firstDiscomfort === null) {
+    firstDiscomfort = n;
+  }
 
   // ★★★ ここから分岐を追加するだけ ★★★
   if (hasPlayedGuide) {
@@ -386,9 +391,6 @@ function selectNum(event, n) {
     });
   }
 }
-
-
-
 
 
 function setDiscomfortStart() {
@@ -483,30 +485,36 @@ function readAll() {
 function onAgree() {
   const slider = document.getElementById("releaseSlider");
   const numbers = document.querySelector('.numbers');
-  const questions = document.querySelector('#stepBlock'); // 質問欄
-  const readAll = document.querySelector('.read-all'); // 全体を読む欄
+  const questions = document.querySelector('#stepBlock');
+  const readAll = document.querySelector('.read-all');
   const heart = document.querySelector('.heart-wrapper');
+  const curtain = document.querySelector('.black-curtain'); // ★ 黒幕を取得
 
   // 数字ボタン・質問欄・全体を読むを消す
   if (numbers) numbers.style.display = "none";
   if (questions) questions.style.display = "none";
   if (readAll) readAll.style.display = "none";
 
+  // ★ 最初の不快指数を反映（黒幕を元の高さに戻す）
+  if (firstDiscomfort !== null) {
+    curtain.style.height = (firstDiscomfort * 10) + '%';
+  }
+
   // スライダーを表示
   slider.style.display = "block";
 
-  // ハートの位置へスクロール（目線を上へ）
+  // ハートの位置へスクロール
   heart.scrollIntoView({ behavior: "smooth", block: "center" });
 
-  // ハートを少しだけ拡大して視線誘導
+  // ハートを少し拡大
   heart.style.transition = "transform 0.3s ease";
   heart.style.transform = "scale(1.1)";
   setTimeout(() => {
     heart.style.transform = "scale(1.0)";
   }, 300);
 
-  // アナウンス欄を上に表示
-  showGuide("バーを動かしてハートをクリーンにしてください", "henoj_2.mp3");
+  // ★ アナウンス欄に「最初の不快指数は ○ です」
+  showGuide(`最初の不快指数は ${firstDiscomfort} です。<br>バーを動かしてハートをクリーンにしてください`, "repeat4.mp3");
 }
 
 
