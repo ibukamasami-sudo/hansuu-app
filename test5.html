@@ -211,11 +211,13 @@ label, select, input {
 }
 
 .reset-btn, .reframe-btn {
+  display: none;
   opacity: 0;
   transition: opacity 0.8s ease;
 }
 
 .reset-btn.show, .reframe-btn.show {
+  display: inline-block;
   opacity: 1;
 }
 
@@ -635,8 +637,8 @@ function onReleaseComplete() {
   document.getElementById("recordBox").style.display = "block";
 
   // ★ ボタンを表示する
-  document.getElementById("resetBtn").style.display = "inline-block";
-  document.getElementById("reframeBtn").style.display = "inline-block";
+  resetBtn.classList.add("show");
+  reframeBtn.classList.add("show");
 
 }
 
