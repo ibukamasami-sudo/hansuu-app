@@ -340,19 +340,34 @@ label, select, input {
     </select>
 
     <hr>
+    
+  <!-- 第2フェーズ：質問 -->
+<div id="stepBlock">
+  <!-- 第1フェーズ：読み上げ -->
+  <button onclick="readAll()" id="readAllButton" class="readAll">
+    全部読み上げる
+  </button>
+
+  <!-- 第2フェーズ：質問へ進む -->
+  <button onclick="onAgree()" id="onAgreeButton" class="onAgree">
+    次へ
+  </button>
+</div>  
 
   </div><!-- stepBlock 終わり -->
 
-<!-- 第2フェーズ：質問 -->
-<div id="stepBlock">
-  <button id="retryBtn">もう一度</button>
-  <button id="nextBtn">次へ</button>
-</div>
+
 
 <!-- 第3フェーズ：手放し後 -->
 <div id="releaseBlock" style="display:none;">
-  <button id="resetBtn" class="reset-btn">最初に戻る</button>
-  <button id="reframeBtn" class="reframe-btn">リフレーミング</button>
+  <button onclick="resetToStart()" id="resetBtn" class="reset-btn" style="display:none;">
+    最初に戻る
+  </button>
+
+  <!-- 第4フェーズ：リフレーミング（未来の機能） -->
+  <button onclick="goReframe()" id="reframeBtn" class="reframe-btn" style="display:none;">
+    リフレーミング
+  </button>
 </div>
 
 </div><!-- container 終わり -->
