@@ -341,29 +341,19 @@ label, select, input {
 
     <hr>
 
- <div class="action-buttons">
+  </div><!-- stepBlock 終わり -->
 
-  <!-- 第1フェーズ：読み上げ -->
-  <button onclick="readAll()" id="readAllButton" class="readAll">
-    全部読み上げる
-  </button>
-
-  <!-- 第2フェーズ：質問へ進む -->
-  <button onclick="onAgree()" id="onAgreeButton" class="onAgree">
-    次へ
-  </button>
+<!-- 第2フェーズ：質問 -->
+<div id="stepBlock">
+  <button id="retryBtn">もう一度</button>
+  <button id="nextBtn">次へ</button>
 </div>
 
-
-  </div><!-- stepBlock 終わり -->
-    <!-- 第3フェーズ：手放し後に表示 -->
-<button onclick="resetToStart()" id="resetBtn" class="reset-btn">
-  最初に戻る
-</button>
-
-<button onclick="goReframe()" id="reframeBtn" class="reframe-btn">
-  リフレーミング
-</button>
+<!-- 第3フェーズ：手放し後 -->
+<div id="releaseBlock" style="display:none;">
+  <button id="resetBtn" class="reset-btn">最初に戻る</button>
+  <button id="reframeBtn" class="reframe-btn">リフレーミング</button>
+</div>
 
 </div><!-- container 終わり -->
 </body>
@@ -635,7 +625,9 @@ function onReleaseComplete() {
   document.getElementById("recordBox").style.display = "block";
 
   // ★ ボタンを表示する
-  document.getElementById("stepBlock").style.display = "block";
+  document.getElementById("stepBlock").style.display = "none"; // 質問フェーズを消す
+  document.getElementById("releaseBlock").style.display = "block"; // 手放し後フェーズを表示
+
   resetBtn.classList.add("show");
   reframeBtn.classList.add("show");
 
