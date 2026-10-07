@@ -352,8 +352,11 @@ label, select, input {
   <button onclick="onAgree()" id="onAgreeButton" class="onAgree">
     次へ
   </button>
+</div>
 
-  <!-- 第3フェーズ：手放し後に表示 -->
+
+  </div><!-- stepBlock 終わり -->
+    <!-- 第3フェーズ：手放し後に表示 -->
 <button onclick="resetToStart()" id="resetBtn" class="reset-btn">
   最初に戻る
 </button>
@@ -361,10 +364,6 @@ label, select, input {
 <button onclick="goReframe()" id="reframeBtn" class="reframe-btn">
   リフレーミング
 </button>
-
-</div>
-
-  </div><!-- stepBlock 終わり -->
 
 </div><!-- container 終わり -->
 </body>
@@ -636,6 +635,7 @@ function onReleaseComplete() {
   document.getElementById("recordBox").style.display = "block";
 
   // ★ ボタンを表示する
+  document.getElementById("stepBlock").style.display = "block";
   resetBtn.classList.add("show");
   reframeBtn.classList.add("show");
 
