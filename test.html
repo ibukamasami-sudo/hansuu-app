@@ -360,16 +360,16 @@ label, select, input {
 
 <!-- 第3フェーズ：手放し後 -->
 <div id="releaseBlock" style="display:none;">
-  <button onclick="resetToStart()" id="resetBtn" class="reset-btn" style="display:none;">
+  <button onclick="resetToStart()" id="resetBtn" class="reset-btn">
     最初に戻る
   </button>
 
   <!-- 第4フェーズ：リフレーミング（未来の機能） -->
-  <button onclick="goReframe()" id="reframeBtn" class="reframe-btn" style="display:none;">
+  <button onclick="goReframe()" id="reframeBtn" class="reframe-btn">
     リフレーミング
   </button>
 </div>
-
+  
 </div><!-- container 終わり -->
 </body>
 
@@ -642,7 +642,7 @@ function onReleaseComplete() {
   // ★ ボタンを表示する
   document.getElementById("stepBlock").style.display = "none"; // 質問フェーズを消す
   document.getElementById("releaseBlock").style.display = "block"; // 手放し後フェーズを表示
-
+  
   resetBtn.classList.add("show");
   reframeBtn.classList.add("show");
 
