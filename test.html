@@ -361,9 +361,9 @@ label, select, input {
   </button>
 
   <!-- 第2フェーズ：質問へ進む -->
-  <button onclick="onAgree()" id="onAgreeButton" class="onAgree">
-    次へ
-  </button>
+  <button onclick="onAgree()" id="onAgreeButton" class="onAgree" style="display:none;">
+  次へ
+</button>
 </div>  
 
   </div><!-- stepBlock 終わり -->
@@ -548,7 +548,10 @@ function readAll() {
       const btn = document.getElementById("readAllButton");
       if (btn) btn.textContent = "もう一度";
 
-      hasPlayedGuide = true;  // 次回からは別の案内へ
+          const nextBtn = document.getElementById("onAgreeButton");
+    if (nextBtn) nextBtn.style.display = "inline-block";
+
+         hasPlayedGuide = true;  // 次回からは別の案内へ
 
     } else {
       // 二回目以降の案内（音声はまだ作っていないとのことなのでメッセージだけ）
