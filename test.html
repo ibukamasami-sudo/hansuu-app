@@ -52,6 +52,31 @@ body {
   transition: height 0.3s ease;
 }
 
+body.default-bg { background: #aaa; }
+
+.heart-wrapper.default { background: #ec9292; }
+
+.heart-mask.default { filter: none; }
+
+.black-curtain.default {
+  opacity: 0.8;
+  display: block;
+}
+
+body.release-bg { background: #ffffff; }
+
+.heart-wrapper.release { background: #fff27a; }
+
+.heart-mask.release {
+  filter: brightness(300%) saturate(0%);
+}
+
+.black-curtain.release {
+  opacity: 0;
+  display: none;
+}
+
+
 .numbers {
   display: flex;
   justify-content: center;
@@ -237,17 +262,16 @@ label, select, input {
 </style>
 </head>
 
-<body>
-
-
+<body class="default-bg">
 
 <div class="container">
 
   <!-- ハート -->
-  <div class="heart-wrapper">
-    <img src="heart-mask.png" class="heart-mask">
-    <div class="black-curtain"></div>
+  <div class="heart-wrapper default">
+    <img src="heart-mask.png" class="heart-mask default">
+    <div class="black-curtain default"></div>
   </div>
+
 
   <div id="recordBox" class="record-box" style="display:none;">
   <h3>今日の記録</h3>
@@ -602,38 +626,36 @@ function onAgree() {
 /* 手放しステップ：納得ボタンを押したらスライダーを表示 */
 function releaseHeart(n) {
   const curtain = document.querySelector('.black-curtain');
-  const heart = document.querySelector('.heart-mask');   // PNGの枠線
+  const heart = document.querySelector('.heart-mask');
   const wrapper = document.querySelector('.heart-wrapper');
   const body = document.body;
 
   // 黒幕の高さを減らす
   curtain.style.height = (n * 10) + '%';
 
-  // 0になったら黄色ハート＋白枠演出
+  // 0になったら release 状態へ切り替え
   if (n == 0) {
 
-    // 黒幕をふわっと消す
+    // 黒幕をふわっと消す（transition は残してOK）
     curtain.style.transition = "opacity 0.8s ease";
     curtain.style.opacity = "0";
 
-    // 🌼 枠線（PNG）を白に見せる
-    heart.style.transition = "filter 0.8s ease";
-    heart.style.filter = "brightness(300%) saturate(0%)";
+    // ★★★ ここが重要：style をいじらず、クラスを切り替える ★★★
+    body.classList.remove("default-bg");
+    body.classList.add("release-bg");
 
-    // 🌼 ハートの中だけ黄色にする（背景色）
-    wrapper.style.transition = "background 0.8s ease";
-    wrapper.style.background = "#fff27a"; // レモン色
+    wrapper.classList.remove("default");
+    wrapper.classList.add("release");
 
-    // 🌼 全体の背景は白
-    body.style.background = "#ffffff";
+    heart.classList.remove("default");
+    heart.classList.add("release");
+
+    curtain.classList.remove("default");
+    curtain.classList.add("release");
 
     // 黒幕を完全に消す → 演出が終わったら onReleaseComplete を呼ぶ
     setTimeout(() => {
-      curtain.style.display = "none";
-
-      // ★★★ ここで最後の章へ進む ★★★
       onReleaseComplete();
-
     }, 800);
   }
 }
@@ -671,7 +693,7 @@ function resetToStart() {
 
   // 数字ボタンを再表示
   const numbers = document.querySelector('.numbers');
-  if (numbers) numbers.style.display = "block";
+if (numbers) numbers.style.display = "flex";
 
   // 質問欄を非表示
   const questions = document.querySelector('#stepBlock');
@@ -681,26 +703,39 @@ function resetToStart() {
   const readAllBtn = document.getElementById("readAllButton");
   if (readAllBtn) readAllBtn.textContent = "全部読み上げる";
 
-  // ハートを初期状態に戻す
-  const heart = document.querySelector('.heart-wrapper');
-  heart.style.transform = "scale(1.0)";
+  // ハートのスケールだけは演出なので戻す
+  const heartWrapper = document.querySelector('.heart-wrapper');
+  heartWrapper.style.transform = "scale(1.0)";
 
-  // 黒幕を初期化
+  // 黒幕の高さだけは演出なので戻す
   const curtain = document.querySelector('.black-curtain');
   curtain.style.height = "0%";
+
+  // ★★★ 状態を default に戻す（ここが最重要）★★★
+  document.body.classList.remove("release-bg");
+  document.body.classList.add("default-bg");
+
+  heartWrapper.classList.remove("release");
+  heartWrapper.classList.add("default");
+
+  const heartMask = document.querySelector('.heart-mask');
+  heartMask.classList.remove("release");
+  heartMask.classList.add("default");
+
+  curtain.classList.remove("release");
+  curtain.classList.add("default");
 
   // 記録欄を非表示
   const recordBox = document.getElementById("recordBox");
   if (recordBox) recordBox.style.display = "none";
 
-  // フラグを初期化（読み上げ一回目に戻す）
+  // フラグを初期化
   hasPlayedGuide = false;
   firstDiscomfort = null;
 
   // ガイド欄を初期化
   showGuide("最初の状態に戻りました。数字を選んでください。", null);
 }
-
 
 
 
