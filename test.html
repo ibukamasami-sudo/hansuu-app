@@ -378,7 +378,7 @@ label, select, input {
     <hr>
     
   <!-- 第2フェーズ：質問 -->
-<div id="stepBlock">
+<div id="stepButtons">
   <!-- 第1フェーズ：読み上げ -->
   <button onclick="readAll()" id="readAllButton" class="readAll">
     全部読み上げる
@@ -490,7 +490,8 @@ function selectNum(event, n) {
 
         const step = document.getElementById("stepBlock");  // ← 追加
         step.style.display = "block";                       // ← 追加
-        step.classList.add("visible");                      // ← 既存のまま
+        step.classList.add("visible");
+
       });
     });
   }
