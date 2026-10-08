@@ -482,13 +482,15 @@ function selectNum(event, n) {
     document.getElementById("heartInputBlock").classList.add("visible");
 
   } else {
-    // 一回目：今まで通りの案内
     const guideText = `不快指数は ${n}ですね<br>次の質問に答えてください。`;
 
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
         showGuide(guideText, "henoj_2.mp3");
-        document.getElementById("stepBlock").classList.add("visible");
+
+        const step = document.getElementById("stepBlock");  // ← 追加
+        step.style.display = "block";                       // ← 追加
+        step.classList.add("visible");                      // ← 既存のまま
       });
     });
   }
@@ -696,8 +698,13 @@ function resetToStart() {
 if (numbers) numbers.style.display = "flex";
 
   // 質問欄を非表示
-  const questions = document.querySelector('#stepBlock');
-  if (questions) questions.style.display = "none";
+
+  const releaseBlock = document.getElementById("releaseBlock");
+if (releaseBlock) releaseBlock.style.display = "none";
+
+// 質問欄を表示する
+const questions = document.querySelector('#stepBlock');
+if (questions) questions.style.display = "block";
 
   // 全体読み上げボタンを初期状態に戻す
   const readAllBtn = document.getElementById("readAllButton");
