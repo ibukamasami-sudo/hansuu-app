@@ -568,7 +568,8 @@ function readAll() {
       const btn = document.getElementById("readAllButton");
       if (btn) btn.textContent = "もう一度";
 
-          const nextBtn = document.getElementById("onAgreeButton");
+     // ★ このタイミングで「次へ」を出す（あなたの希望）
+    const nextBtn = document.getElementById("onAgreeButton");
     if (nextBtn) nextBtn.style.display = "inline-block";
 
          hasPlayedGuide = true;  // 次回からは別の案内へ
