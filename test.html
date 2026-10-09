@@ -568,6 +568,8 @@ function readAll() {
       const btn = document.getElementById("readAllButton");
       if (btn) btn.textContent = "もう一度";
 
+     // ★ releaseBlock を開く（これがないと次へは絶対に出ない）
+      document.getElementById("releaseBlock").style.display = "block";
      // ★ このタイミングで「次へ」を出す（あなたの希望）
     const nextBtn = document.getElementById("onAgreeButton");
     if (nextBtn) nextBtn.style.display = "inline-block";
