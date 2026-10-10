@@ -380,7 +380,7 @@ label, select, input {
   <!-- 第1フェーズ：読み上げ -->
   <div id="listenButtons">
     <button id="readAllButton" class="readAll" onclick="readAll()">全文を読み上げる</button>
-    <button id="nextBtn" class="onAgree" style="display:none;" onclick="goNextPhase()">
+    <button id="nextBtn" class="onAgree" style="display:none;" onclick="onAgree()">
   次へ
 </button>
   </div>
@@ -585,7 +585,7 @@ function readAll() {
     }
   };
 }
-
+// 次へボタン↓
 function onAgree() {
   const slider = document.getElementById("releaseSlider");
   const numbers = document.querySelector('.numbers');
