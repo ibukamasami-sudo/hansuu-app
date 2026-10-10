@@ -380,7 +380,9 @@ label, select, input {
   <!-- 第1フェーズ：読み上げ -->
   <div id="listenButtons">
     <button id="readAllButton" class="readAll" onclick="readAll()">全文を読み上げる</button>
-    <button id="nextBtn" style="display:none;">次へ</button>
+    <button id="nextBtn" class="onAgree" style="display:none;" onclick="goNextPhase()">
+  次へ
+</button>
   </div>
 
   </div><!-- stepBlock 終わり -->
