@@ -61,6 +61,7 @@ body.default-bg { background: #aaa; }
 .black-curtain.default {
   opacity: 0.8;
   display: block;
+  height: 0;   /* ← これが必要だった */  
 }
 
 body.release-bg { background: #ffffff; }
@@ -727,7 +728,8 @@ if (questions) questions.style.display = "none";
   heartMask.classList.add("default");
 
   curtain.classList.remove("release");
-  curtain.classList.add("default");
+  curtain.style.height = "0%";   // ← これは「初期状態に戻す」ために必要
+  //curtain.classList.add("default");
 
   // 記録欄を非表示
   const recordBox = document.getElementById("recordBox");
