@@ -116,8 +116,12 @@ body.release-bg { background: #ffffff; }
   transition: opacity 0.3s ease;
 }
 
+.section {
+  display: none;
+}
+
 .section.visible {
-  opacity: 1;
+  display: block;
 }
 
 
@@ -252,6 +256,11 @@ label, select, input {
 
 .readAll:hover, .onAgree:hover, .reset-btn:hover, .reframe-btn:hover {
   background-color: #ffbaba;
+}
+
+.reset-btn, .reframe-btn {
+  opacity: 1;
+  transition: opacity 0.8s ease;
 }
 
 .reset-btn, .reframe-btn {
