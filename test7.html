@@ -383,7 +383,7 @@ label, select, input {
     <button onclick="goReframe()" id="reframeBtn" class="pink_btn no_show">
     リフレーミング
   </button>
-    <button id="nextBtn" class="pink_btn no_show" onclick="onAgree()">
+    <button id="nextBtn" class="pink_btn no_show" onclick="tugihe()">
   気持ちを手放す
   </button>
   </div>
@@ -392,6 +392,9 @@ label, select, input {
 
 <!-- 固定ボタン -->
 <div id="fixedBtnBox">
+  <button id="kiroku_Btn" class="pink_btn no_show" onclick="kiroku_save()">
+  記録する
+</button>
   <button id="resetBtn" class="pink_btn no_show" onclick="resetToStart()">
     最初に戻る
   </button>
@@ -419,6 +422,7 @@ document.addEventListener("DOMContentLoaded", () => {
   btn_kanri("initial");
 });
 
+//説明とアナウンス
 function showGuide(text, mp3) {
   const msg = document.getElementById("messageArea");
 
@@ -433,7 +437,7 @@ function showGuide(text, mp3) {
   }, 500);
 }
 
-
+//声準備
 function loadVoices() {
   voices = speechSynthesis.getVoices();
   const select = document.getElementById("voiceSelect");
@@ -460,9 +464,9 @@ speechSynthesis.onvoiceschanged = loadVoices;   // ← 声が本当に来たら�
 
 
 /*ボタンを変数に入れる*/
-const readAllButton = document.getElementById("readAllButton");
-const reframeBtn = document.getElementById("reframeBtn");
-const nextBtn = document.getElementById("nextBtn");
+//const readAllButton = document.getElementById("readAllButton");
+//const reframeBtn = document.getElementById("reframeBtn");
+//const nextBtn = document.getElementById("nextBtn");
 
 
 /*ハートの幕の上げ下げ*/
@@ -612,7 +616,7 @@ function readAll() {
   };
 }
 // 次へボタン↓
-function onAgree() {
+function tugihe() {
   const slider = document.getElementById("releaseSlider");
   const numbers = document.querySelector('.numbers');
   const questions = document.querySelector('#stepBlock');
@@ -679,15 +683,19 @@ function releaseHeart(n) {
     curtain.classList.remove("default");
     curtain.classList.add("release");
 
-    // 黒幕を完全に消す → 演出が終わったら onReleaseComplete を呼ぶ
+    // 黒幕を完全に消す → 演出が終わったら tebanasi_to_kiroku を呼ぶ
     setTimeout(() => {
-      onReleaseComplete();
+      tebanasi_to_kiroku();
     }, 800);
   }
 }
 //スライドバーを動かして手放した時
-function onReleaseComplete() {
+function tebanasi_to_kiroku() {
   showGuide("お疲れさまでした。下の内容を保存します。", "finish.mp3");
+
+setTimeout(() => {
+  showGuide("カレンダーに記録したいなら、記録ボタンを押してください。", "kiroku.anounce.mp3");
+}, 1000);
 
   const today = new Date();
   const dateText = today.toLocaleDateString("ja-JP");
@@ -702,18 +710,19 @@ function onReleaseComplete() {
   // 記録欄を表示
   document.getElementById("recordBox").style.display = "block";
 
-  // ★ ボタンを表示する
   document.getElementById("stepBlock").style.display = "none"; // 質問フェーズを消す
 
   btn_kanri("slider");
+
+  // スライダー非表示
+  const slider = document.getElementById("releaseSlider");
+  slider.style.display = "none";
   
 }
 
 //最初に戻る
 function resetToStart() {
-  // スライダー非表示
-  const slider = document.getElementById("releaseSlider");
-  slider.style.display = "none";
+
 
   // 数字ボタンを再表示
   const numbers = document.querySelector('.numbers');
@@ -802,7 +811,7 @@ function readStop() {
   // -------------------------------
   speechSynthesis.cancel();  // → 読み上げ途中でも即停止
 }
-
+//リフレーミングの質問はここに付け足し
 const reframeList = [
   {
     text: "前の日、宝くじが100万円当たっていたとして？",
@@ -818,6 +827,7 @@ const reframeList = [
   }
 ];
 
+//リフレーミング関数始まり
 function goReframe() {
   const i = Math.floor(Math.random() * reframeList.length);
   const q = reframeList[i]; // ← return しない
@@ -830,6 +840,28 @@ function goReframe() {
     showGuide("もう一度、不快指数を入力してください", "henoj_3.mp3");
   }, 4000);
 }
+
+function kiroku_save() {
+  const today = new Date().toLocaleDateString("ja-JP");
+
+  const record = {
+    date: today,
+    event: document.getElementById("event").value,
+    emotion: selectedEmotions.join("、"),
+    story: document.getElementById("feelingText").value,
+    body: document.getElementById("bodyText").value,
+    discomfortStart: firstDiscomfort,
+    discomfortEnd: 0
+  };
+
+  const records = JSON.parse(localStorage.getItem("records")) || [];
+  records.push(record);
+
+  localStorage.setItem("records", JSON.stringify(records));
+
+  alert("記録しました");
+}
+
 
 //ボタン管理関数
 function btn_kanri(phase) {
@@ -871,6 +903,7 @@ function btn_kanri(phase) {
     // スライダーを動かした時：始めに戻る
     case "slider":
       showAuto("resetBtn");
+      showAuto("kiroku_Btn");
       break;
 
     // 始めに戻るを押した時：初期状態へ
