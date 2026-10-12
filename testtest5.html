@@ -600,11 +600,11 @@ function readAll() {
       const btn = document.getElementById("readAllButton");
       if (btn) btn.textContent = "もう一度";
 
-     // ★ releaseBlock を開く（これがないと次へは絶対に出ない）
-      //document.getElementById("releaseBlock").style.display = "block";
-     // ★ このタイミングで「次へ」を出す（あなたの希望）
+     // ★ 次へリフレボタン表示
     const nextBtn = document.getElementById("nextBtn");
     if (nextBtn) nextBtn.style.display = "inline-block";
+    const reframeBtn = document.getElementById("reframeBtn");
+    if (reframeBtn) reframeBtn.style.display = "inline-block";
 
          hasPlayedGuide = true;  // 次回からは別の案内へ
 
