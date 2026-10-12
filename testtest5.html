@@ -493,13 +493,17 @@ function selectNum(event, n) {
 
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
-        showGuide(guideText, "henoj_2.mp3");
-
-        const step = document.getElementById("stepBlock");  // ← 追加
-        step.style.display = "block";                       // ← 追加
+          // stepBlock を表示する
+        const step = document.getElementById("stepBlock");
+        step.style.display = "block";
         step.classList.add("visible");
-        //readAllButton.style.display = "inline-block";
-        if (readAllButton) readAllButton.classList.add("yes_show_inline");
+
+        // ★ ここでボタンを出す（showGuide より後）
+        readAllButton.classList.remove("no_show");
+        readAllButton.classList.add("yes_show_inline");
+
+        // ガイドを再生する
+        showGuide(guideText, "henoj_2.mp3");
 
       });
     });
