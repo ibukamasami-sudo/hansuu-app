@@ -416,7 +416,7 @@ label, select, input {
 <script>
 //非表示ボタンの初期設定（説明を止める以外非表示）
 document.addEventListener("DOMContentLoaded", () => {
-  botandasu("initial");
+  btn_kanri("initial");
 });
 
 function showGuide(text, mp3) {
@@ -507,7 +507,7 @@ function selectNum(event, n) {
         // ★ ここでボタンを出す（showGuide より後）
         //readAllButton.classList.remove("no_show");
         //readAllButton.classList.add("yes_show_inline");
-        botandasu("input") 
+        btn_kanri("input") 
 
         // ガイドを再生する
         showGuide(guideText, "henoj_2.mp3");
@@ -589,7 +589,7 @@ function readAll() {
 
     if (!hasPlayedGuide) {
       // 一回目だけ流す案内音声
-      botandasu("taste") 
+      btn_kanri("taste") 
       showGuide("繰り返し聞いてください", "tugihe.mp3");
 
       // ★ ボタンの言葉を「もう一度」に変更
@@ -616,7 +616,6 @@ function onAgree() {
   const slider = document.getElementById("releaseSlider");
   const numbers = document.querySelector('.numbers');
   const questions = document.querySelector('#stepBlock');
-  //const readAll = document.querySelector('.read-all');
   const heart = document.querySelector('.heart-wrapper');
   const curtain = document.querySelector('.black-curtain'); // ★ 黒幕を取得
 
@@ -624,9 +623,7 @@ function onAgree() {
   if (numbers) numbers.style.display = "none";
   if (questions) questions.style.display = "none";
 
-  botandasu("release");
-  //if (readAll) readAll.style.display = "none";
-  //if (nextBtn) nextBtn.classList.add("no_show");
+  btn_kanri("release");
 
   // ★ 最初の不快指数を反映（黒幕を元の高さに戻す）
   if (firstDiscomfort !== null) {
@@ -688,7 +685,7 @@ function releaseHeart(n) {
     }, 800);
   }
 }
-//スライドバーを押して手放した時
+//スライドバーを動かして手放した時
 function onReleaseComplete() {
   showGuide("お疲れさまでした。下の内容を保存します。", "finish.mp3");
 
@@ -708,10 +705,7 @@ function onReleaseComplete() {
   // ★ ボタンを表示する
   document.getElementById("stepBlock").style.display = "none"; // 質問フェーズを消す
 
-  
-  const resetBtn = document.getElementById("resetBtn");// 最初に戻るボタンを表示
-  resetBtn.classList.remove("no_show");
-  resetBtn.classList.add("yes_show_inline");
+  btn_kanri("slider");
   
 }
 
@@ -720,8 +714,6 @@ function resetToStart() {
   // スライダー非表示
   const slider = document.getElementById("releaseSlider");
   slider.style.display = "none";
-
-
 
   // 数字ボタンを再表示
   const numbers = document.querySelector('.numbers');
@@ -735,8 +727,10 @@ function resetToStart() {
   if (questions) questions.style.display = "none";
 
   // 全体読み上げボタンを初期状態に戻す
-  const readAllBtn = document.getElementById("readAllButton");
-  if (readAllBtn) readAllBtn.textContent = "全部読み上げる";
+  //const readAllBtn = document.getElementById("readAllButton");
+  //if (readAllBtn) readAllBtn.textContent = "全部読み上げる";
+
+  btn_kanri("reset");
 
   // ハートのスケールを戻す
   const heartWrapper = document.querySelector('.heart-wrapper');
@@ -838,13 +832,13 @@ function goReframe() {
 }
 
 //ボタン管理関数
-function botandasu(phase) {
+function btn_kanri(phase) {
 
   // まず全部消す（説明を止めるは常駐なので触らない）
   hideAuto("readAllButton");
   hideAuto("reframeBtn");
   hideAuto("nextBtn");
-  hideAuto("restartBtn");
+  hideAuto("resetBtn");
 
   switch (phase) {
 
@@ -876,7 +870,7 @@ function botandasu(phase) {
 
     // スライダーを動かした時：始めに戻る
     case "slider":
-      showAuto("restartBtn");
+      showAuto("resetBtn");
       break;
 
     // 始めに戻るを押した時：初期状態へ
