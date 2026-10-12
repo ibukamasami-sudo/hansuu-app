@@ -236,8 +236,6 @@ label, select, input {
   display: none;
 }
 
-
-
 .action-buttons {
   text-align: center;
   margin-top: 20px;
@@ -435,15 +433,15 @@ label, select, input {
 <script>
 function showGuide(text, mp3) {
   const msg = document.getElementById("messageArea");
-  const audio = document.getElementById("announceAudio");
 
-  msg.innerHTML = text;   // ← ここを innerHTML に変更！
+  msg.innerHTML = text;
   msg.classList.add("fade-in");
 
+  // ★ここを変更：announceAudio を使わず currentAudio にする
   setTimeout(() => {
-    audio.src = mp3;
-    audio.currentTime = 0;
-    audio.play();
+    currentAudio = new Audio(mp3);   // ← ここが一番大事！
+    currentAudio.currentTime = 0;
+    currentAudio.play();
   }, 500);
 }
 
