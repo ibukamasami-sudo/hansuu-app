@@ -396,7 +396,7 @@ label, select, input {
     最初に戻る
   </button>
 
-  <button id="readStopBtn" class="pink_btn no_show" onclick="readStop()">
+  <button id="readStopBtn" class="pink_btn yes_show_inline" onclick="readStop()">
     説明を止める
   </button>
 
@@ -589,8 +589,9 @@ function readAll() {
       if (btn) btn.textContent = "もう一度";
 
      // ★ 次へリフレボタン表示
-      if (nextBtn) nextBtn.classList.add("yes_show_inline");
       if (reframeBtn) reframeBtn.classList.add("yes_show_inline");
+      if (nextBtn) nextBtn.classList.add("yes_show_inline");
+     
          hasPlayedGuide = true;  // 次回からは別の案内へ
 
     } else {
