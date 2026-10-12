@@ -331,7 +331,7 @@ label, select, input {
 
 
 <!-- ここから出来事以下のブロック -->
-  <div id="stepBlock" class="section no_show">
+  <div id="stepBlock" class="section">
 
     <!-- 出来事 -->
     <section>
@@ -722,8 +722,7 @@ function resetToStart() {
   document.querySelectorAll('.num-btn').forEach(btn => btn.classList.remove('active'));
 
   // 質問欄を非表示
-  const step = document.getElementById("stepBlock");
-  step.style.display = "none";
+  document.getElementById("stepBlock").style.display = "none"; // 質問フェーズを消す
 
   // 全体読み上げボタンを初期状態に戻す
   const readAllBtn = document.getElementById("readAllButton");
