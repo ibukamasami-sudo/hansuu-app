@@ -616,15 +616,17 @@ function onAgree() {
   const slider = document.getElementById("releaseSlider");
   const numbers = document.querySelector('.numbers');
   const questions = document.querySelector('#stepBlock');
-  const readAll = document.querySelector('.read-all');
+  //const readAll = document.querySelector('.read-all');
   const heart = document.querySelector('.heart-wrapper');
   const curtain = document.querySelector('.black-curtain'); // ★ 黒幕を取得
 
   // 数字ボタン・質問欄・全体を読むを消す
   if (numbers) numbers.style.display = "none";
   if (questions) questions.style.display = "none";
-  if (readAll) readAll.style.display = "none";
-  if (nextBtn) nextBtn.classList.add("no_show");
+
+  botandasu("release");
+  //if (readAll) readAll.style.display = "none";
+  //if (nextBtn) nextBtn.classList.add("no_show");
 
   // ★ 最初の不快指数を反映（黒幕を元の高さに戻す）
   if (firstDiscomfort !== null) {
