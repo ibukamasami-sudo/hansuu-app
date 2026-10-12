@@ -590,7 +590,7 @@ function readAll() {
     if (!hasPlayedGuide) {
       // 一回目だけ流す案内音声
       btn_kanri("taste") 
-      showGuide("繰り返し聞いてください", "tugihe.mp3");
+      showGuide("繰り返し聞いてください", "ref_01.mp3");
 
       // ★ ボタンの言葉を「もう一度」に変更
       //const btn = document.getElementById("readAllButton");
@@ -805,16 +805,16 @@ function readStop() {
 
 const reframeList = [
   {
-    text: "もしも、前の日に100万円拾っていたら、この出来事をどう感じていましたか？",
-    mp3: "henoj_1.mp3"
+    text: "前の日、宝くじが100万円当たっていたとして？",
+    mp3: "rel_04.mp3"
   },
   {
-    text: "もしも、相手の余命があと1日だったら、この出来事はどう見えますか？",
-    mp3: "henoj_2.mp3"
+    text: "相手の余命があと一か月だったとして？",
+    mp3: "ref_02.mp3"
   },
   {
-    text: "もしも、あなたがこの出来事を映画のワンシーンとして見ていたら、どう感じますか？",
-    mp3: "henoj_3.mp3"
+    text: "明日からリフレッシュ休暇で一か月休めるとして？",
+    mp3: "ref_03.mp3"
   }
 ];
 
