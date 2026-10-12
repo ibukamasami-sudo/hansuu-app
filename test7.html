@@ -416,7 +416,7 @@ label, select, input {
 <script>
 //非表示ボタンの初期設定（説明を止める以外非表示）
 document.addEventListener("DOMContentLoaded", () => {
-  updateButtons("initial");
+  botandasu("initial");
 });
 
 function showGuide(text, mp3) {
@@ -507,7 +507,7 @@ function selectNum(event, n) {
         // ★ ここでボタンを出す（showGuide より後）
         //readAllButton.classList.remove("no_show");
         //readAllButton.classList.add("yes_show_inline");
-        updateButtons("input") 
+        botandasu("input") 
 
         // ガイドを再生する
         showGuide(guideText, "henoj_2.mp3");
@@ -589,15 +589,16 @@ function readAll() {
 
     if (!hasPlayedGuide) {
       // 一回目だけ流す案内音声
+      botandasu("taste") 
       showGuide("繰り返し聞いてください", "tugihe.mp3");
 
       // ★ ボタンの言葉を「もう一度」に変更
-      const btn = document.getElementById("readAllButton");
-      if (btn) btn.textContent = "もう一度";
+      //const btn = document.getElementById("readAllButton");
+      //if (btn) btn.textContent = "もう一度";
 
      // ★ 次へリフレボタン表示
-      if (reframeBtn) reframeBtn.classList.add("yes_show_inline");
-      if (nextBtn) nextBtn.classList.add("yes_show_inline");
+      //if (reframeBtn) reframeBtn.classList.add("yes_show_inline");
+      //if (nextBtn) nextBtn.classList.add("yes_show_inline");
      
          hasPlayedGuide = true;  // 次回からは別の案内へ
 
@@ -835,7 +836,7 @@ function goReframe() {
 }
 
 //ボタン管理関数
-function updateButtons(phase) {
+function botandasu(phase) {
 
   // まず全部消す（説明を止めるは常駐なので触らない）
   hideAuto("readAllButton");
