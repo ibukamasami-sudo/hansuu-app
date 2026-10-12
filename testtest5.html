@@ -236,41 +236,36 @@ label, select, input {
   display: none;
 }
 
-.action-buttons {
-  text-align: center;
-  margin-top: 20px;
+.no_show {
+  display: none;
+  opacity: 0;
 }
 
-.readAll, .onAgree, .reset-btn, .reframe-btn {
-  background-color: #ffd6d6; /* 優しいピンク */
+.yes_show_inline {
+  display: inline-block;
+  opacity: 1;
+}
+
+.yes_show_block {
+  display: block;
+  opacity: 1;
+}
+
+.pink_btn {
+  background-color: #ffd6d6;
   border: none;
   border-radius: 8px;
   padding: 10px 20px;
   margin: 8px;
   font-size: 16px;
   cursor: pointer;
-  transition: background 0.3s ease;
+  transition: background 0.3s ease, opacity 0.8s ease;
 }
 
-.readAll:hover, .onAgree:hover, .reset-btn:hover, .reframe-btn:hover {
+.pink_btn:hover {
   background-color: #ffbaba;
 }
 
-.reset-btn, .reframe-btn {
-  opacity: 1;
-  transition: opacity 0.8s ease;
-}
-
-.reset-btn, .reframe-btn {
-  display: none;
-  opacity: 0;
-  transition: opacity 0.8s ease;
-}
-
-.reset-btn.show, .reframe-btn.show {
-  display: inline-block;
-  opacity: 1;
-}
 
 #recordBox {
   display: none;                 /* 初期は非表示 */
@@ -394,13 +389,13 @@ label, select, input {
 
     <hr>
     
-  <!-- 第1フェーズ：読み上げ -->
+  <!-- 出たり出なかったりボタン -->
   <div id="actionBtnBox">
-  <button id="readAllButton" class="readAll" onclick="readAll()">全文を読み上げる</button>
+  <button id="readAllButton" class="pink_btn no_show" onclick="readAll()">全文を読み上げる</button>
     <button onclick="goReframe()" id="reframeBtn" style="display:none;" class="reframe-btn">
     リフレーミング
   </button>
-    <button id="nextBtn" class="onAgree" style="display:none;" onclick="onAgree()">
+    <button id="nextBtn" class="pink_btn no_show" style="display:none;" onclick="onAgree()">
   次へ
   </button>
   </div>
@@ -409,11 +404,11 @@ label, select, input {
 
 <!-- 固定ボタン -->
 <div id="fixedBtnBox">
-  <button id="resetBtn" class="reset-btn" onclick="resetToStart()">
+  <button id="resetBtn" class="pink_btn no_show" onclick="resetToStart()">
     最初に戻る
   </button>
 
-  <button id="readStopBtn" class="readstop-btn" onclick="readStop()">
+  <button id="readStopBtn" class="pink_btn no_show" onclick="readStop()">
     説明を止める
   </button>
 
@@ -601,9 +596,8 @@ function readAll() {
       if (btn) btn.textContent = "もう一度";
 
      // ★ 次へリフレボタン表示
-    if (nextBtn) nextBtn.style.display = "inline-block";
-    if (reframeBtn) reframeBtn.style.display = "inline-block";
-
+      if (nextBtn) nextBtn.classList.add("yes_show_inline");
+      if (reframeBtn) reframeBtn.classList.add("yes_show_inline");
          hasPlayedGuide = true;  // 次回からは別の案内へ
 
     } else {
@@ -628,6 +622,7 @@ function onAgree() {
   if (numbers) numbers.style.display = "none";
   if (questions) questions.style.display = "none";
   if (readAll) readAll.style.display = "none";
+  if (nextBtn) nextBtn.classList.add("no_show");
 
   // ★ 最初の不快指数を反映（黒幕を元の高さに戻す）
   if (firstDiscomfort !== null) {
