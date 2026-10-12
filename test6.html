@@ -52,6 +52,32 @@ body {
   transition: height 0.3s ease;
 }
 
+body.default-bg { background: #aaa; }
+
+.heart-wrapper.default { background: #ec9292; }
+
+.heart-mask.default { filter: none; }
+
+.black-curtain.default {
+  opacity: 0.8;
+  display: block;
+  height: 0;   /* ← これが必要だった */  
+}
+
+body.release-bg { background: #ffffff; }
+
+.heart-wrapper.release { background: #fff27a; }
+
+.heart-mask.release {
+  filter: brightness(300%) saturate(0%);
+}
+
+.black-curtain.release {
+  opacity: 0;
+  display: none;
+}
+
+
 .numbers {
   display: flex;
   justify-content: center;
@@ -66,7 +92,7 @@ body {
   border-radius: 8px;
   background-color: #f5f5f5;
   color: #333;
-  font-size: 16px;
+  font-size: 20px;
   cursor: pointer;
   transition: all 0.2s ease;
 }
@@ -90,8 +116,12 @@ body {
   transition: opacity 0.3s ease;
 }
 
+.section {
+  display: none;
+}
+
 .section.visible {
-  opacity: 1;
+  display: block;
 }
 
 
@@ -159,25 +189,113 @@ label, select, input {
   opacity: 0;
   transition: opacity 0.8s ease;
 }
+.tts-setting {
+  display: grid;
+  grid-template-columns: 120px 1fr; /* 左：ラベル / 右：入力 */
+  grid-row-gap: 8px;
+  grid-column-gap: 10px;
+  align-items: center;
+}
+
+/* ラベルは右寄せにするとテーブル感が出る */
+.tts-setting label {
+  text-align: right;
+}
+
+/* 入力欄は幅をそろえる */
+.tts-setting select,
+.tts-setting input {
+  width: 160px;
+}
+#releaseSlider {
+  display: none;        /* ← 中央寄せのために block に */
+  width: 80%;            /* ← 画面幅の8割。存在感アップ */
+  max-width: 400px;      /* ← 大きすぎ防止（好みで調整） */
+  margin: 20px auto;     /* ← 中央に配置＋上下余白 */
+  height: 40px;          /* ← 太めにしてインパクト */
+  accent-color: #ec9292; /* ← ハート色と統一 */
+}
+
+.heart-mask {
+  transition: filter 0.8s ease; /* ← これだけ追加すればOK */
+}
+/* ボタンの表示関連 */
+#actionBtnBox {
+  display: block; /* 親は常に表示 */
+}
+
+.no_show {
+  display: none;
+  opacity: 0;
+}
+
+.yes_show_inline {
+  display: inline-block;
+  opacity: 1;
+}
+
+.yes_show_block {
+  display: block;
+  opacity: 1;
+}
+
+.pink_btn {
+  background-color: #ffd6d6;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 20px;
+  margin: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background 0.3s ease, opacity 0.8s ease;
+}
+
+.pink_btn:hover {
+  background-color: #ffbaba;
+}
+
+
+#recordBox {
+  display: none;                 /* 初期は非表示 */
+  border: 2px solid #f7d774;     /* 明るい黄色の枠 */
+  background-color: #fff9e6;     /* ほんのりベージュの背景（視認性UP） */
+  color: #c8a84b;                /* 濃いめの黄色ベージュ文字 */
+  padding: 12px;                 /* 少し余白 */
+  font-size: 14px;               /* 文字を少し小さく */
+  line-height: 1.3;              /* 行間を詰める */
+  border-radius: 8px;            /* 角を少し丸く */
+  margin-top: 12px;              /* 上に余白 */
+}
 
 
 </style>
 </head>
 
-<body>
-
-
+<body class="default-bg">
 
 <div class="container">
 
   <!-- ハート -->
-  <div class="heart-wrapper">
-    <img src="heart-mask.png" class="heart-mask">
-    <div class="black-curtain"></div>
+  <div class="heart-wrapper default">
+    <img src="heart-mask.png" class="heart-mask default">
+    <div class="black-curtain default"></div>
   </div>
 
+
+  <div id="recordBox" class="record-box no_show">
+  <h3>今日の記録</h3>
+  <p id="recordDate"></p>
+  <p id="recordFirst"></p>
+  <p id="recordEvent"></p>
+  <p id="recordEmotion"></p>
+  <p id="recordNovel"></p>
+  <p id="recordBody"></p>
+
+  <p class="record-save-message">この内容を今日の日付で記録します。</p>
+</div>
+
   <!-- 数字ボタン -->
-  <div class="numbers">
+  <div id="Mynumbers" class="numbers">
 <button class="num-btn" onclick="selectNum(event, 0)">0</button>
 <button class="num-btn" onclick="selectNum(event, 1)">1</button>
 <button class="num-btn" onclick="selectNum(event, 2)">2</button>
@@ -191,6 +309,12 @@ label, select, input {
 <button class="num-btn" onclick="selectNum(event, 10)">10</button>
   </div>
 
+<p id="releaseComment" style="display:none;"><strong>スライダーでハートを軽くして、気持ちを手放してください。</strong></p>
+
+<input id="releaseSlider" 
+       type="range" 
+       min="0" max="10" step="1" value="10" class="no_show">
+
 <div id="messageArea" class="guide-text fade-in">
   不快指数を入力してください
 </div>
@@ -201,19 +325,13 @@ label, select, input {
     不快指数（0〜10）
     <input id="discomfort_input" type="number" min="0" max="10">
 
-    <button onclick="setDiscomfortStart()">不快指数：始め</button>
-    <button onclick="setDiscomfortEnd()">不快指数：終わり</button>
+  <!--   <button onclick="setDiscomfortStart()">不快指数：始め</button>
+    <button onclick="setDiscomfortEnd()">不快指数：終わり</button>-->
   </div>
-
-  <!-- 読み上げに使う声（ID重複を避けるためここに1つだけ） -->
-  <label>声：</label>
-  <select id="voiceSelect"></select>
-  <label>読み上げスピード</label>
-<input id="voice_speed" type="number" min="0.5" max="2" step="0.1" value="1">
 
 
 <!-- ここから出来事以下のブロック -->
-  <div id="stepBlock" class="section">
+  <div id="stepBlock" class="section no_show">
 
     <!-- 出来事 -->
     <section>
@@ -258,31 +376,60 @@ label, select, input {
     </select>
 
     <hr>
-
-    <!-- 読み上げ -->
-    <button onclick="readAll()">全部読み上げる</button>
+    
+  <!-- 出たり出なかったりボタン -->
+  <div id="actionBtnBox">
+  <button id="readAllButton" class="pink_btn no_show" onclick="readAll()">全文を読み上げる</button>
+    <button onclick="goReframe()" id="reframeBtn" class="pink_btn no_show">
+    リフレーミング
+  </button>
+    <button id="nextBtn" class="pink_btn no_show" onclick="onAgree()">
+  次へ
+  </button>
+  </div>
 
   </div><!-- stepBlock 終わり -->
 
+<!-- 固定ボタン -->
+<div id="fixedBtnBox">
+  <button id="resetBtn" class="pink_btn no_show" onclick="resetToStart()">
+    最初に戻る
+  </button>
+
+  <button id="readStopBtn" class="pink_btn yes_show_inline" onclick="readStop()">
+    説明を止める
+  </button>
+
+  <div class="tts-setting">
+    <label>声：</label>
+    <select id="voiceSelect"></select>
+
+    <label>読み上げスピード</label>
+    <input id="voice_speed" type="number" min="0.5" max="2" step="0.1" value="1">
+  </div>
+</div>
+
+  
 </div><!-- container 終わり -->
 </body>
 
 <script>
+   // 説明欄にメッセージ、自動アナウンス
 function showGuide(text, mp3) {
   const msg = document.getElementById("messageArea");
-  const audio = document.getElementById("announceAudio");
 
-  msg.innerText = text;
+  msg.innerHTML = text;
   msg.classList.add("fade-in");
 
+  // ★ここを変更：announceAudio を使わず currentAudio にする
   setTimeout(() => {
-    audio.src = mp3;
-    audio.currentTime = 0;
-    audio.play();
+    currentAudio = new Audio(mp3);   // ← ここが一番大事！
+    currentAudio.currentTime = 0;
+    currentAudio.play();
   }, 500);
 }
 
-
+//声準備
 function loadVoices() {
   voices = speechSynthesis.getVoices();
   const select = document.getElementById("voiceSelect");
@@ -308,14 +455,19 @@ loadVoices();                         // ← まず1回読み込む
 speechSynthesis.onvoiceschanged = loadVoices;   // ← 声が本当に来たらもう1回読み込む
 
 
+/*ボタンを変数に入れる*/
+const readAllButton = document.getElementById("readAllButton");
+const reframeBtn = document.getElementById("reframeBtn");
+const nextBtn = document.getElementById("nextBtn");
 
 
-/*ハート*/
+/*ハートの幕の上げ下げ*/
 function selectNum(n) {
   const curtain = document.querySelector('.black-curtain');
   curtain.style.height = (n * 10) + '%';
 }
 
+let firstDiscomfort = null;  // ★ 追加：最初の不快指数を保存する変数
 
 function selectNum(event, n) {
   const curtain = document.querySelector('.black-curtain');
@@ -326,24 +478,43 @@ function selectNum(event, n) {
 
   document.getElementById("discomfort_input").value = n;
 
-  const guideText = `不快指数は ${n} ですね、次の質問に答えてください。`;
+    if (firstDiscomfort === null) {
+    firstDiscomfort = n;
+  }
 
-  requestAnimationFrame(() => {
+  // ★★★ ここから分岐を追加するだけ ★★★
+  if (hasPlayedGuide) {
+    // 二回目以降：不快指数の入力へ進む
+    showGuide(`不快指数は ${n}ですね。<br>出来るだけ少なくなるまで繰り返し聞いてください。`, "repeat3.mp3");
+
+    // ここでハートの下の入力ブロックを表示する
+    //document.getElementById("heartInputBlock").classList.add("visible");
+
+  } else {
+    const guideText = `不快指数は ${n}ですね<br>次の質問に答えてください。`;
+
     requestAnimationFrame(() => {
-      showGuide(guideText, "henoj_2.mp3");
-      document.getElementById("stepBlock").classList.add("visible");
+      requestAnimationFrame(() => {
+          // stepBlock を表示する
+        showAuto("stepBlock");
+
+        // ★ 全部読み上げるボタンを出す（showGuide より後）
+        showAuto("readAllButton");
+
+        // ガイドを再生する
+        showGuide(guideText, "henoj_2.mp3");
+
+      });
     });
-  });
+  }
 }
-
-
 
 
 function setDiscomfortStart() {
   const value = Number(document.getElementById("discomfort_input").value);
   discomfortStart = value;
 
-  const msg = `不快指数は${value}ですね。振り返りながら次の質問に答えてください。`;
+  const msg = `不快指数は${value}ですね。<br>振り返りながら次の質問に答えてください。`;
   const utter = new SpeechSynthesisUtterance(msg);
   utter.rate = Number(document.getElementById("voice_speed").value);
   utter.voice = voices[document.getElementById("voiceSelect").value];
@@ -384,6 +555,8 @@ function addEmotion() {
 }
 
 
+let hasPlayedGuide = false;  // ★ 一回目かどうか判定するフラグ
+//全部読み上げる
 function readAll() {
   const event = document.getElementById("event").value;
   const emotions = selectedEmotions.join("、");
@@ -394,7 +567,7 @@ function readAll() {
   const voiceIndex = document.getElementById("voiceSelect").value;
 
   const text =
-    `${event}といった出来事がきっかけで、${emotions}を感じていて、${feeling}という気持ちがあって、身体感覚は${body}」。なるほど、十分味わえた所で、この感情を今、手放しますか？`;
+    `${event}といった出来事がきっかけで、${emotions}を感じていて、${feeling}という気持ちがあって、身体感覚は${body}」ですね。`;
 
   const utter = new SpeechSynthesisUtterance(text);
   utter.rate = rate;
@@ -402,6 +575,271 @@ function readAll() {
 
   speechSynthesis.cancel();
   speechSynthesis.speak(utter);
+
+  // ★★★ 読み上げが終わったら実行される処理 ★★★
+  utter.onend = function() {
+
+    if (!hasPlayedGuide) {
+      // 一回目だけ流す案内音声
+      showGuide("繰り返し聞いてください", "tugihe.mp3");
+
+      // ★ ボタンの言葉を「もう一度」に変更
+      const btn = document.getElementById("readAllButton");
+      if (btn) btn.textContent = "もう一度";
+
+     // ★ 次へリフレボタン表示
+      showAuto("reframeBtn");
+      showAuto("nextBtn");
+  
+         hasPlayedGuide = true;  // 次回からは別の案内へ
+
+    } else {
+      // 二回目以降の案内（音声はまだ作っていないとのことなのでメッセージだけ）
+      showGuide("必要に応じて内容を変えたり<br>不快指数の数値の変更をしてください。","repeat2.mp3");
+
+    }
+  };
+}
+// 次へボタン↓
+function onAgree() {
+  const heart = document.querySelector('.heart-wrapper');
+  const curtain = document.querySelector('.black-curtain'); // ★ 黒幕を取得
+
+  // 数字ボタン・質問欄・全体を読むを消す
+
+  //hideAuto("stepBlock");
+  hideAuto("readAllButton");
+  hideAuto("nextBtn");
+  hideAuto("reframeBtn");
+  // ハートの下のボタンをスライダーに 
+  hideAuto("Mynumbers");
+  showAuto("releaseSlider")
+
+  // ★ 最初の不快指数を反映（黒幕を元の高さに戻す）
+  if (firstDiscomfort !== null) {
+    curtain.style.height = (firstDiscomfort * 10) + '%';
+  }
+
+ 
+  // ハートの位置へスクロール
+  heart.scrollIntoView({ behavior: "smooth", block: "center" });
+
+  // ハートを少し拡大
+  heart.style.transition = "transform 0.3s ease";
+  heart.style.transform = "scale(1.1)";
+  setTimeout(() => {
+    heart.style.transform = "scale(1.0)";
+  }, 300);
+
+  // ★ アナウンス欄に「最初の不快指数は ○ です」
+  showGuide(`最初の不快指数は ${firstDiscomfort} です。<br>バーを動かしてハートをクリーンにしてください`, "repeat4.mp3");
+}
+
+
+/* 手放しステップ：納得ボタンを押したらスライダーを表示 */
+function releaseHeart(n) {
+  const curtain = document.querySelector('.black-curtain');
+  const heart = document.querySelector('.heart-mask');
+  const wrapper = document.querySelector('.heart-wrapper');
+  const body = document.body;
+
+  // 黒幕の高さを減らす
+  curtain.style.height = (n * 10) + '%';
+
+  // 0になったら release 状態へ切り替え
+  if (n == 0) {
+
+    // 黒幕をふわっと消す（transition は残してOK）
+    curtain.classList.remove("release");
+    curtain.classList.add("default");   // ★これが絶対に必要
+    curtain.style.height = "0%";
+
+    // ★★★ ここが重要：style をいじらず、クラスを切り替える ★★★
+    body.classList.remove("default-bg");
+    body.classList.add("release-bg");
+
+    wrapper.classList.remove("default");
+    wrapper.classList.add("release");
+
+    heart.classList.remove("default");
+    heart.classList.add("release");
+
+    curtain.classList.remove("default");
+    curtain.classList.add("release");
+
+    // 黒幕を完全に消す → 演出が終わったら onReleaseComplete を呼ぶ
+    setTimeout(() => {
+      onReleaseComplete();
+    }, 800);
+  }
+}
+
+function onReleaseComplete() {
+  showGuide("お疲れさまでした。下の内容を保存します。", "finish.mp3");
+
+  const today = new Date();
+  const dateText = today.toLocaleDateString("ja-JP");
+
+  document.getElementById("recordDate").textContent = `日付：${dateText}`;
+  document.getElementById("recordFirst").textContent = `最初の不快指数：${firstDiscomfort}`;
+  document.getElementById("recordEvent").textContent = `出来事：${document.getElementById("event").value}`;
+  document.getElementById("recordEmotion").textContent = `気持ち：${selectedEmotions.join("、")}`;
+  document.getElementById("recordNovel").textContent = `小説風：${document.getElementById("feelingText").value}`;
+  document.getElementById("recordBody").textContent = `身体感覚：${document.getElementById("bodyText").value}`;
+
+  // 記録欄を表示
+　showAuto("recordBox")
+  // ★ 質問箱を非表示する
+  hideAuto("stepBlock");
+ 
+  // ★ 最初に戻るボタンを表示
+  showAuto("resetBtn") 
+  
+}
+
+//最初に戻る
+function resetToStart() {
+  // スライダー非表示
+  const slider = document.getElementById("releaseSlider");
+  slider.style.display = "none";
+
+　showAuto("Mynumbers")
+  hideAuto("releaseSlider");  
+
+  if (numbers) numbers.style.display = "flex";
+
+  // ★ 数字ボタンの選択状態をリセット
+  document.querySelectorAll('.num-btn').forEach(btn => btn.classList.remove('active'));
+
+  // 質問欄を非表示
+  showAuto("stepBlock")
+
+  // 全体読み上げボタンを初期状態に戻す
+  const readAllBtn = document.getElementById("readAllButton");
+  if (readAllBtn) readAllBtn.textContent = "全部読み上げる";
+
+  // ハートのスケールを戻す
+  const heartWrapper = document.querySelector('.heart-wrapper');
+  heartWrapper.style.transform = "scale(1.0)";
+
+  // 黒幕を初期状態に戻す
+  const curtain = document.querySelector('.black-curtain');
+  curtain.classList.remove("release");
+  curtain.classList.add("default");
+  curtain.style.height = "0%";
+
+  // 背景とハートのクラスを初期化
+  document.body.classList.remove("release-bg");
+  document.body.classList.add("default-bg");
+
+  heartWrapper.classList.remove("release");
+  heartWrapper.classList.add("default");
+
+  const heartMask = document.querySelector('.heart-mask');
+  heartMask.classList.remove("release");
+  heartMask.classList.add("default");
+
+  // 記録欄を非表示
+  hideAuto("recordBox"); 
+  // 最初に戻るボタンを非表示
+　hideAuto("resetBtn"); 
+
+  // フラグを初期化
+  hasPlayedGuide = false;
+  firstDiscomfort = null;
+
+  // ガイド欄を初期化
+  showGuide("最初の状態に戻りました。数字を選んでください。", null);
+}
+
+/* スライダーと連動 */
+document.getElementById("releaseSlider").addEventListener("input", e => {
+  releaseHeart(e.target.value);
+});
+
+// ===============================
+// ★ 説明を止める（音声停止）
+// ===============================
+let currentAudio = null;  // ◆ MP3（案内音声・効果音）
+let bgmAudio = null;      // ◆ BGM（背景音）
+
+function readStop() {
+
+  // -------------------------------
+  // ◆ BGMを止める（背景音）
+  // -------------------------------
+  if (bgmAudio) {
+    bgmAudio.pause();
+    bgmAudio.currentTime = 0;   // → 次に再生するとき必ず頭から
+  }
+
+  // -------------------------------
+  // ◆ MP3を止める（案内音声）
+  // -------------------------------
+  if (currentAudio) {
+    currentAudio.pause();
+    currentAudio.currentTime = 0;  // → 次に再生するとき必ず頭から
+  }
+
+  // -------------------------------
+  // ◆ SpeechSynthesisを止める（読み上げ）
+  // -------------------------------
+  speechSynthesis.cancel();  // → 読み上げ途中でも即停止
+}
+
+const reframeList = [
+  {
+    text: "もしも、前の日に100万円拾っていたら、この出来事をどう感じていましたか？",
+    mp3: "henoj_1.mp3"
+  },
+  {
+    text: "もしも、相手の余命があと1日だったら、この出来事はどう見えますか？",
+    mp3: "henoj_2.mp3"
+  },
+  {
+    text: "もしも、あなたがこの出来事を映画のワンシーンとして見ていたら、どう感じますか？",
+    mp3: "henoj_3.mp3"
+  }
+];
+
+function goReframe() {
+  const i = Math.floor(Math.random() * reframeList.length);
+  const q = reframeList[i]; // ← return しない
+
+  // リフレーミング質問＋音声を案内
+  showGuide(q.text, q.mp3);
+
+  // リフレーミング後の案内（不快指数の再入力）
+  setTimeout(() => {
+    showGuide("もう一度、不快指数を入力してください", "henoj_3.mp3");
+  }, 4000);
+}
+//表示非表示の関数
+function showAuto(id) {
+  const elem = document.getElementById(id);
+  elem.classList.remove("no_show");
+
+  if (elem.tagName === "BUTTON") {
+    elem.classList.add("yes_show_inline");
+    elem.classList.remove("yes_show_block");
+    return;
+  }
+
+  if (elem.tagName === "INPUT" && elem.type === "range") {
+    elem.classList.add("yes_show_block");
+    elem.classList.remove("yes_show_inline");
+    return;
+  }
+
+  elem.classList.add("yes_show_block");
+  elem.classList.remove("yes_show_inline");
+}
+
+function hideAuto(id) {
+  const elem = document.getElementById(id);
+  elem.classList.add("no_show");
+  elem.classList.remove("yes_show_inline");
+  elem.classList.remove("yes_show_block");
 }
 
 </script>
