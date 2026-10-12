@@ -818,7 +818,7 @@ const reframeList = [
   }
 ];
 
-function goReframe_mp3() {
+function goReframe() {
   const i = Math.floor(Math.random() * reframeList.length);
   const q = reframeList[i]; // ← return しない
 
@@ -843,7 +843,7 @@ function showGuide(text) {
   speechSynthesis.speak(utter);
 }
 
-function goReframe() {
+function goReframe2() {
   const i = Math.floor(Math.random() * reframeList.length);
   const q = reframeList[i];
 
