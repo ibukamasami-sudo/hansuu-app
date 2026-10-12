@@ -831,30 +831,6 @@ function goReframe() {
    }, 4000);
 }
 
-function showGuide(text) {
-  // 説明欄に表示
-  const guide = document.getElementById("guideBox");
-  guide.textContent = text;
-
-  // テキスト読み上げ
-  const utter = new SpeechSynthesisUtterance(text);
-  utter.rate = 1.0;   // 読み上げ速度（あなたの好みに合わせて調整可）
-  utter.pitch = 1.0;  // 声の高さ
-  speechSynthesis.speak(utter);
-}
-
-function goReframe2() {
-  const i = Math.floor(Math.random() * reframeList.length);
-  const q = reframeList[i];
-
-  // リフレーミング質問を読み上げ＋表示
-  showGuide(q.text);
-
-  // 4秒後に次の案内
-  setTimeout(() => {
-    showGuide("もう一度、不快指数を入力してください");
-  }, 4000);
-}
 
 //ボタン管理関数
 function btn_kanri(phase) {
