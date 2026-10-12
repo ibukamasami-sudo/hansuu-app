@@ -538,7 +538,7 @@ function addEmotion() {
 
 
 let hasPlayedGuide = false;  // ★ 一回目かどうか判定するフラグ
-
+//全部読み上げる
 function readAll() {
   const event = document.getElementById("event").value;
   const emotions = selectedEmotions.join("、");
@@ -637,8 +637,9 @@ function releaseHeart(n) {
   if (n == 0) {
 
     // 黒幕をふわっと消す（transition は残してOK）
-    curtain.style.transition = "opacity 0.8s ease";
-    curtain.style.opacity = "0";
+    curtain.classList.remove("release");
+    curtain.classList.add("default");   // ★これが絶対に必要
+    curtain.style.height = "0%";
 
     // ★★★ ここが重要：style をいじらず、クラスを切り替える ★★★
     body.classList.remove("default-bg");
@@ -685,7 +686,7 @@ function onReleaseComplete() {
 
 }
 
-
+//最初に戻る
 function resetToStart() {
   // スライダー非表示
   const slider = document.getElementById("releaseSlider");
@@ -695,7 +696,7 @@ function resetToStart() {
   const numbers = document.querySelector('.numbers');
 if (numbers) numbers.style.display = "flex";
 
-  // 質問欄を非表示
+// 最初に戻るなどのボタンを非表示
 
   const releaseBlock = document.getElementById("releaseBlock");
 if (releaseBlock) releaseBlock.style.display = "none";
