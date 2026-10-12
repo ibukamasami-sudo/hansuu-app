@@ -459,6 +459,7 @@ const readAllButton = document.getElementById("readAllButton");
 const reframeBtn = document.getElementById("reframeBtn");
 const nextBtn = document.getElementById("nextBtn");
 
+
 /*ハートの幕の上げ下げ*/
 function selectNum(n) {
   const curtain = document.querySelector('.black-curtain');
@@ -699,6 +700,7 @@ function onReleaseComplete() {
   document.getElementById("stepBlock").style.display = "none"; // 質問フェーズを消す
   document.getElementById("releaseBlock").style.display = "block"; // 手放し後フェーズを表示
   
+  const resetBtn = document.getElementById("resetBtn");
   resetBtn.classList.add("yes_show_inline");
   
 }
@@ -709,7 +711,7 @@ function resetToStart() {
   const slider = document.getElementById("releaseSlider");
   slider.style.display = "none";
 
-  
+
 
   // 数字ボタンを再表示
   const numbers = document.querySelector('.numbers');
@@ -717,10 +719,6 @@ function resetToStart() {
 
   // ★ 数字ボタンの選択状態をリセット
   document.querySelectorAll('.num-btn').forEach(btn => btn.classList.remove('active'));
-
-  // 最初に戻るなどのボタンを非表示
-  const releaseBlock = document.getElementById("releaseBlock");
-  if (releaseBlock) releaseBlock.style.display = "none";
 
   // 質問欄を非表示
   const questions = document.querySelector('#stepBlock');
@@ -754,6 +752,9 @@ function resetToStart() {
   // 記録欄を非表示
   const recordBox = document.getElementById("recordBox");
   if (recordBox) recordBox.style.display = "none";
+
+  const resetBtn = document.getElementById("resetBtn");
+  if (resetBtn) resetBtn.classList.add("no_show");
 
   // フラグを初期化
   hasPlayedGuide = false;
