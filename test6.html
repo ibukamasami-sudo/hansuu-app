@@ -282,7 +282,7 @@ label, select, input {
   </div>
 
 
-  <div id="recordBox" class="record-box no_show">
+  <div id="recordBox" class="record-box" style="display:none;">
   <h3>今日の記録</h3>
   <p id="recordDate"></p>
   <p id="recordFirst"></p>
@@ -295,7 +295,7 @@ label, select, input {
 </div>
 
   <!-- 数字ボタン -->
-  <div id="Mynumbers" class="numbers">
+  <div class="numbers">
 <button class="num-btn" onclick="selectNum(event, 0)">0</button>
 <button class="num-btn" onclick="selectNum(event, 1)">1</button>
 <button class="num-btn" onclick="selectNum(event, 2)">2</button>
@@ -313,7 +313,7 @@ label, select, input {
 
 <input id="releaseSlider" 
        type="range" 
-       min="0" max="10" step="1" value="10" class="no_show">
+       min="0" max="10" step="1" value="10">
 
 <div id="messageArea" class="guide-text fade-in">
   不快指数を入力してください
@@ -325,8 +325,8 @@ label, select, input {
     不快指数（0〜10）
     <input id="discomfort_input" type="number" min="0" max="10">
 
-  <!--   <button onclick="setDiscomfortStart()">不快指数：始め</button>
-    <button onclick="setDiscomfortEnd()">不快指数：終わり</button>-->
+    <button onclick="setDiscomfortStart()">不快指数：始め</button>
+    <button onclick="setDiscomfortEnd()">不快指数：終わり</button>
   </div>
 
 
@@ -414,7 +414,6 @@ label, select, input {
 </body>
 
 <script>
-   // 説明欄にメッセージ、自動アナウンス
 function showGuide(text, mp3) {
   const msg = document.getElementById("messageArea");
 
@@ -429,7 +428,7 @@ function showGuide(text, mp3) {
   }, 500);
 }
 
-//声準備
+
 function loadVoices() {
   voices = speechSynthesis.getVoices();
   const select = document.getElementById("voiceSelect");
@@ -488,7 +487,7 @@ function selectNum(event, n) {
     showGuide(`不快指数は ${n}ですね。<br>出来るだけ少なくなるまで繰り返し聞いてください。`, "repeat3.mp3");
 
     // ここでハートの下の入力ブロックを表示する
-    //document.getElementById("heartInputBlock").classList.add("visible");
+    document.getElementById("heartInputBlock").classList.add("visible");
 
   } else {
     const guideText = `不快指数は ${n}ですね<br>次の質問に答えてください。`;
@@ -496,18 +495,13 @@ function selectNum(event, n) {
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
           // stepBlock を表示する
-        //showAuto("stepBlock");
-
-        // ★ 全部読み上げるボタンを出す（showGuide より後）
-        showAuto("readAllButton");
-
         const step = document.getElementById("stepBlock");
         step.style.display = "block";
         step.classList.add("visible");
 
         // ★ ここでボタンを出す（showGuide より後）
-        //readAllButton.classList.remove("no_show");
-        //readAllButton.classList.add("yes_show_inline");
+        readAllButton.classList.remove("no_show");
+        readAllButton.classList.add("yes_show_inline");
 
         // ガイドを再生する
         showGuide(guideText, "henoj_2.mp3");
@@ -596,39 +590,43 @@ function readAll() {
       if (btn) btn.textContent = "もう一度";
 
      // ★ 次へリフレボタン表示
-      showAuto("reframeBtn");
-      showAuto("nextBtn");
-  
+      if (reframeBtn) reframeBtn.classList.add("yes_show_inline");
+      if (nextBtn) nextBtn.classList.add("yes_show_inline");
+     
          hasPlayedGuide = true;  // 次回からは別の案内へ
 
     } else {
       // 二回目以降の案内（音声はまだ作っていないとのことなのでメッセージだけ）
       showGuide("必要に応じて内容を変えたり<br>不快指数の数値の変更をしてください。","repeat2.mp3");
 
+      // 音声を作ったらここに追加
+      // showGuide("もう一度聞きますか？", "repeat2.mp3");
     }
   };
 }
 // 次へボタン↓
 function onAgree() {
+  const slider = document.getElementById("releaseSlider");
+  const numbers = document.querySelector('.numbers');
+  const questions = document.querySelector('#stepBlock');
+  const readAll = document.querySelector('.read-all');
   const heart = document.querySelector('.heart-wrapper');
   const curtain = document.querySelector('.black-curtain'); // ★ 黒幕を取得
 
   // 数字ボタン・質問欄・全体を読むを消す
-
-  //hideAuto("stepBlock");
-  hideAuto("readAllButton");
-  hideAuto("nextBtn");
-  hideAuto("reframeBtn");
-  // ハートの下のボタンをスライダーに 
-  hideAuto("Mynumbers");
-  showAuto("releaseSlider")
+  if (numbers) numbers.style.display = "none";
+  if (questions) questions.style.display = "none";
+  if (readAll) readAll.style.display = "none";
+  if (nextBtn) nextBtn.classList.add("no_show");
 
   // ★ 最初の不快指数を反映（黒幕を元の高さに戻す）
   if (firstDiscomfort !== null) {
     curtain.style.height = (firstDiscomfort * 10) + '%';
   }
 
- 
+  // スライダーを表示
+  slider.style.display = "block";
+
   // ハートの位置へスクロール
   heart.scrollIntoView({ behavior: "smooth", block: "center" });
 
@@ -681,7 +679,7 @@ function releaseHeart(n) {
     }, 800);
   }
 }
-
+//スライドバーを押して手放した時
 function onReleaseComplete() {
   showGuide("お疲れさまでした。下の内容を保存します。", "finish.mp3");
 
@@ -696,14 +694,15 @@ function onReleaseComplete() {
   document.getElementById("recordBody").textContent = `身体感覚：${document.getElementById("bodyText").value}`;
 
   // 記録欄を表示
-　showAuto("recordBox")
-  // ★ 質問箱を非表示する
-  const step = document.getElementById("stepBlock");
-  step.style.display = "none";
+  document.getElementById("recordBox").style.display = "block";
+
+  // ★ ボタンを表示する
+  document.getElementById("stepBlock").style.display = "none"; // 質問フェーズを消す
+
   
- 
-  // ★ 最初に戻るボタンを表示
-  showAuto("resetBtn") 
+  const resetBtn = document.getElementById("resetBtn");// 最初に戻るボタンを表示
+  resetBtn.classList.remove("no_show");
+  resetBtn.classList.add("yes_show_inline");
   
 }
 
@@ -713,16 +712,18 @@ function resetToStart() {
   const slider = document.getElementById("releaseSlider");
   slider.style.display = "none";
 
-　showAuto("Mynumbers")
-  hideAuto("releaseSlider");  
 
+
+  // 数字ボタンを再表示
+  const numbers = document.querySelector('.numbers');
   if (numbers) numbers.style.display = "flex";
 
   // ★ 数字ボタンの選択状態をリセット
   document.querySelectorAll('.num-btn').forEach(btn => btn.classList.remove('active'));
 
   // 質問欄を非表示
-  document.getElementById("stepBlock").style.display = "none"; // 質問フェーズを消す
+  const questions = document.querySelector('#stepBlock');
+  if (questions) questions.style.display = "none";
 
   // 全体読み上げボタンを初期状態に戻す
   const readAllBtn = document.getElementById("readAllButton");
@@ -750,9 +751,11 @@ function resetToStart() {
   heartMask.classList.add("default");
 
   // 記録欄を非表示
-  hideAuto("recordBox"); 
-  // 最初に戻るボタンを非表示
-　hideAuto("resetBtn"); 
+  const recordBox = document.getElementById("recordBox");
+  if (recordBox) recordBox.style.display = "none";
+
+  const resetBtn = document.getElementById("resetBtn");
+  if (resetBtn) resetBtn.classList.add("no_show");
 
   // フラグを初期化
   hasPlayedGuide = false;
@@ -824,32 +827,7 @@ function goReframe() {
     showGuide("もう一度、不快指数を入力してください", "henoj_3.mp3");
   }, 4000);
 }
-//表示非表示の関数
-function showAuto(id) {
-  const elem = document.getElementById(id);
-  if (!elem) {
-    console.warn("showAuto: IDが存在しません →", id);
-    return;
-  }
 
-  elem.classList.remove("no_show");
-
-  // ボタンだけ inline、それ以外は block
-  if (elem.tagName === "BUTTON") {
-    elem.classList.add("yes_show_inline");
-    elem.classList.remove("yes_show_block");
-  } else {
-    elem.classList.add("yes_show_block");
-    elem.classList.remove("yes_show_inline");
-  }
-}
-
-function hideAuto(id) {
-  const elem = document.getElementById(id);
-  elem.classList.add("no_show");
-  elem.classList.remove("yes_show_inline");
-  elem.classList.remove("yes_show_block");
-}
 
 </script>
 
