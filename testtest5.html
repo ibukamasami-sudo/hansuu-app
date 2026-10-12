@@ -380,7 +380,7 @@ label, select, input {
   <!-- 出たり出なかったりボタン -->
   <div id="actionBtnBox">
   <button id="readAllButton" class="pink_btn no_show" onclick="readAll()">全文を読み上げる</button>
-    <button onclick="goReframe()" id="reframeBtn" class="pink-btn no_show">
+    <button onclick="goReframe()" id="reframeBtn" class="pink_btn no_show">
     リフレーミング
   </button>
     <button id="nextBtn" class="pink_btn no_show" onclick="onAgree()">
@@ -799,28 +799,29 @@ function readStop() {
 const reframeList = [
   {
     text: "もしも、前の日に100万円拾っていたら、この出来事をどう感じていましたか？",
-    mp3: "reframe_100m.mp3"
+    mp3: "henoj_1.mp3"
   },
   {
     text: "もしも、相手の余命があと1日だったら、この出来事はどう見えますか？",
-    mp3: "reframe_life.mp3"
+    mp3: "henoj_2.mp3"
   },
   {
     text: "もしも、あなたがこの出来事を映画のワンシーンとして見ていたら、どう感じますか？",
-    mp3: "reframe_movie.mp3"
+    mp3: "henoj_3.mp3"
   }
 ];
 
 function goReframe() {
-  const q = pickReframe(); // ランダム質問を取得
+  const i = Math.floor(Math.random() * reframeList.length);
+  const q = reframeList[i]; // ← return しない
 
   // リフレーミング質問＋音声を案内
   showGuide(q.text, q.mp3);
 
   // リフレーミング後の案内（不快指数の再入力）
   setTimeout(() => {
-    showGuide("もう一度、不快指数を入力してください", "reframe_after.mp3");
-  }, 4000); // ← 質問の案内が終わるタイミングに合わせる
+    showGuide("もう一度、不快指数を入力してください", "henoj_3.mp3");
+  }, 4000);
 }
 
 
