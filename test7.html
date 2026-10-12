@@ -825,12 +825,11 @@ function goReframe() {
   // リフレーミング質問＋音声を案内
   showGuide(q.text, q.mp3);
 
-  //  リフレーミング後の案内（不快指数の再入力）
-   setTimeout(() => {
-     showGuide("もう一度、不快指数を入力してください", "henoj_3.mp3");
-   }, 4000);
+  // リフレーミング後の案内（不快指数の再入力）
+  setTimeout(() => {
+    showGuide("もう一度、不快指数を入力してください", "henoj_3.mp3");
+  }, 4000);
 }
-
 
 //ボタン管理関数
 function btn_kanri(phase) {
