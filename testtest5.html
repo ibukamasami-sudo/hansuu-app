@@ -397,7 +397,7 @@ label, select, input {
   <!-- 第1フェーズ：読み上げ -->
   <div id="actionBtnBox">
   <button id="readAllButton" class="readAll" onclick="readAll()">全文を読み上げる</button>
-    <button onclick="goReframe()" id="reframeBtn" class="reframe-btn">
+    <button onclick="goReframe()" id="reframeBtn" style="display:none;" class="reframe-btn">
     リフレーミング
   </button>
     <button id="nextBtn" class="onAgree" style="display:none;" onclick="onAgree()">
@@ -601,9 +601,7 @@ function readAll() {
       if (btn) btn.textContent = "もう一度";
 
      // ★ 次へリフレボタン表示
-    const nextBtn = document.getElementById("nextBtn");
     if (nextBtn) nextBtn.style.display = "inline-block";
-    const reframeBtn = document.getElementById("reframeBtn");
     if (reframeBtn) reframeBtn.style.display = "inline-block";
 
          hasPlayedGuide = true;  // 次回からは別の案内へ
@@ -713,8 +711,7 @@ function onReleaseComplete() {
   document.getElementById("releaseBlock").style.display = "block"; // 手放し後フェーズを表示
   
   resetBtn.classList.add("show");
-  reframeBtn.classList.add("show");
-
+  
 }
 
 //最初に戻る
@@ -809,6 +806,21 @@ function readStop() {
   // -------------------------------
   speechSynthesis.cancel();  // → 読み上げ途中でも即停止
 }
+
+const reframeList = [
+  {
+    text: "もしも、前の日に100万円拾っていたら、この出来事をどう感じていましたか？",
+    mp3: "reframe_100m.mp3"
+  },
+  {
+    text: "もしも、相手の余命があと1日だったら、この出来事はどう見えますか？",
+    mp3: "reframe_life.mp3"
+  },
+  {
+    text: "もしも、あなたがこの出来事を映画のワンシーンとして見ていたら、どう感じますか？",
+    mp3: "reframe_movie.mp3"
+  }
+];
 
 function goReframe() {
   const q = pickReframe(); // ランダム質問を取得
