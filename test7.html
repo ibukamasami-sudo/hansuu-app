@@ -818,16 +818,41 @@ const reframeList = [
   }
 ];
 
-function goReframe() {
+function goReframe_mp3() {
   const i = Math.floor(Math.random() * reframeList.length);
   const q = reframeList[i]; // ← return しない
 
   // リフレーミング質問＋音声を案内
   showGuide(q.text, q.mp3);
 
-  // リフレーミング後の案内（不快指数の再入力）
+  //  リフレーミング後の案内（不快指数の再入力）
+   setTimeout(() => {
+     showGuide("もう一度、不快指数を入力してください", "henoj_3.mp3");
+   }, 4000);
+}
+
+function showGuide(text) {
+  // 説明欄に表示
+  const guide = document.getElementById("guideBox");
+  guide.textContent = text;
+
+  // テキスト読み上げ
+  const utter = new SpeechSynthesisUtterance(text);
+  utter.rate = 1.0;   // 読み上げ速度（あなたの好みに合わせて調整可）
+  utter.pitch = 1.0;  // 声の高さ
+  speechSynthesis.speak(utter);
+}
+
+function goReframe() {
+  const i = Math.floor(Math.random() * reframeList.length);
+  const q = reframeList[i];
+
+  // リフレーミング質問を読み上げ＋表示
+  showGuide(q.text);
+
+  // 4秒後に次の案内
   setTimeout(() => {
-    showGuide("もう一度、不快指数を入力してください", "henoj_3.mp3");
+    showGuide("もう一度、不快指数を入力してください");
   }, 4000);
 }
 
