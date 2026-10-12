@@ -825,22 +825,21 @@ function goReframe() {
 //表示非表示の関数
 function showAuto(id) {
   const elem = document.getElementById(id);
+  if (!elem) {
+    console.warn("showAuto: IDが存在しません →", id);
+    return;
+  }
+
   elem.classList.remove("no_show");
 
+  // ボタンだけ inline、それ以外は block
   if (elem.tagName === "BUTTON") {
     elem.classList.add("yes_show_inline");
     elem.classList.remove("yes_show_block");
-    return;
-  }
-
-  if (elem.tagName === "INPUT" && elem.type === "range") {
+  } else {
     elem.classList.add("yes_show_block");
     elem.classList.remove("yes_show_inline");
-    return;
   }
-
-  elem.classList.add("yes_show_block");
-  elem.classList.remove("yes_show_inline");
 }
 
 function hideAuto(id) {
