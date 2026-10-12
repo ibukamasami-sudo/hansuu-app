@@ -496,14 +496,14 @@ function selectNum(event, n) {
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
           // stepBlock を表示する
-        showAuto("stepBlock");
+        //showAuto("stepBlock");
 
         // ★ 全部読み上げるボタンを出す（showGuide より後）
         showAuto("readAllButton");
 
-        //const step = document.getElementById("stepBlock");
-        //step.style.display = "block";
-        //step.classList.add("visible");
+        const step = document.getElementById("stepBlock");
+        step.style.display = "block";
+        step.classList.add("visible");
 
         // ★ ここでボタンを出す（showGuide より後）
         //readAllButton.classList.remove("no_show");
@@ -698,7 +698,9 @@ function onReleaseComplete() {
   // 記録欄を表示
 　showAuto("recordBox")
   // ★ 質問箱を非表示する
-  hideAuto("stepBlock");
+  const step = document.getElementById("stepBlock");
+  step.style.display = "none";
+  
  
   // ★ 最初に戻るボタンを表示
   showAuto("resetBtn") 
@@ -720,7 +722,8 @@ function resetToStart() {
   document.querySelectorAll('.num-btn').forEach(btn => btn.classList.remove('active'));
 
   // 質問欄を非表示
-  showAuto("stepBlock")
+  const step = document.getElementById("stepBlock");
+  step.style.display = "none";
 
   // 全体読み上げボタンを初期状態に戻す
   const readAllBtn = document.getElementById("readAllButton");
