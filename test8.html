@@ -276,7 +276,7 @@ label, select, input {
   white-space: normal;       /* 改行を許可する */
 }
 
-#resultBox.saved {
+#recordBox.saved {
   background-color: #a5bbf3; /* 優しいピンクなど */
   transition: background-color 0.8s ease;
 }
@@ -405,6 +405,9 @@ label, select, input {
 
   <button id="readStopBtn" class="pink_btn yes_show_inline" onclick="stopAllSounds()">
     説明を止める
+  </button>
+  <button id="toCalender_Btn" class="pink_btn no_show" onclick="toCalender()">
+    カレンダー
   </button>
 
   <div class="tts-setting">
@@ -878,7 +881,9 @@ function kiroku_save() {
   document.getElementById("recordBox").classList.add("saved");
 
   // メッセージを表示
-  showGuide("保存されました<br>カレンダーから確認できます。", "saved.mp3");
+  showGuide("保存されました<br>カレンダーから確認できます。", "hozon_kanryou.mp3");
+  // 保存後の中身を表示
+  console.log(my_hansuu_records);
 }
 
 //ボタン管理関数
@@ -929,6 +934,11 @@ function btn_kanri(kansuumei) {
     case "resetToStart":
       // 全部消す（説明を止めるだけ）
       break;
+
+    // 記録ボタンを押した時：
+    case "kiroku_save":
+      // 全部消す（説明を止めるだけ）
+      break;  
   }
 }
 
