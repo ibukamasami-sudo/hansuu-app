@@ -727,19 +727,19 @@ function tebanasi_to_kiroku() {
   }, 3000);
 
   // ★ 記録データを作る
-  const data = kiroku_data_make();
+  //const data = kiroku_data_make();
 
   // ★ recordBox にまとめて書く（ここがシンプル化の核心）
-  document.getElementById("recordBox").innerHTML = `
-    <h3>今日の記録</h3>
-    <pre>${data.summary}</pre>
-  `;
+  //document.getElementById("recordBox").innerHTML = `
+  //  <h3>今日の記録</h3>
+  //  <pre>${data.summary}</pre>
+  //`;
 
   // 表示切り替え
   document.getElementById("recordBox").style.display = "block";
   document.getElementById("stepBlock").style.display = "none";
 
-  //btn_kanri("slider");
+  btn_kanri("slider");
 
   document.getElementById("releaseSlider").style.display = "none";
 }
