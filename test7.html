@@ -703,7 +703,7 @@ function kiroku_data_make() {
 気持ち：${emotionText}
 小説風：${novelText}
 身体感覚：${bodyText}
-不快指数：${firstDiscomfort} → ${releaseValue}
+始めの不快指数：${firstDiscomfort}
 `;
 
   return {
@@ -713,10 +713,10 @@ function kiroku_data_make() {
     emotion: emotionText,
     novel: novelText,
     body: bodyText,
-    endDiscomfort: releaseValue,
     summary: summaryText
   };
 }
+
 
 //スライドバーを動かして手放した時
 function tebanasi_to_kiroku() {
