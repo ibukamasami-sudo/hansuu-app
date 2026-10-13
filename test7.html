@@ -267,6 +267,11 @@ label, select, input {
   margin-top: 12px;              /* 上に余白 */
 }
 
+#resultBox.saved {
+  background-color: #a5bbf3; /* 優しいピンクなど */
+  transition: background-color 0.8s ease;
+}
+
 
 </style>
 </head>
@@ -399,7 +404,7 @@ label, select, input {
     最初に戻る
   </button>
 
-  <button id="readStopBtn" class="pink_btn yes_show_inline" onclick="readStop()">
+  <button id="readStopBtn" class="pink_btn yes_show_inline" onclick="stopAllSounds()">
     説明を止める
   </button>
 
@@ -429,13 +434,17 @@ function showGuide(text, mp3) {
   msg.innerHTML = text;
   msg.classList.add("fade-in");
 
-  // ★ここを変更：announceAudio を使わず currentAudio にする
+  // ★ 新しい案内音声を鳴らす前に、必ず全部止める
+  stopAllSounds();
+
   setTimeout(() => {
     currentAudio = new Audio(mp3);   // ← ここが一番大事！
     currentAudio.currentTime = 0;
     currentAudio.play();
   }, 500);
 }
+
+
 
 //声準備
 function loadVoices() {
@@ -695,7 +704,7 @@ function tebanasi_to_kiroku() {
 
 setTimeout(() => {
   showGuide("カレンダーに記録したいなら、記録ボタンを押してください。", "kiroku.anounce.mp3");
-}, 1000);
+}, 3000);
 
   const today = new Date();
   const dateText = today.toLocaleDateString("ja-JP");
@@ -722,7 +731,6 @@ setTimeout(() => {
 
 //最初に戻る
 function resetToStart() {
-
 
   // 数字ボタンを再表示
   const numbers = document.querySelector('.numbers');
@@ -782,25 +790,38 @@ document.getElementById("releaseSlider").addEventListener("input", e => {
   releaseHeart(e.target.value);
 });
 
-// ===============================
+
 // ★ 説明を止める（音声停止）
-// ===============================
 let currentAudio = null;  // ◆ MP3（案内音声・効果音）
 let bgmAudio = null;      // ◆ BGM（背景音）
 
+// 全ての音を止める
+function stopAllSounds() {
+  if (bgmAudio) {
+    bgmAudio.pause();
+    bgmAudio.currentTime = 0;
+  }
+
+  if (currentAudio) {
+    currentAudio.pause();
+    currentAudio.currentTime = 0;
+  }
+
+  speechSynthesis.cancel();
+}
+
+
 function readStop() {
 
-  // -------------------------------
   // ◆ BGMを止める（背景音）
-  // -------------------------------
   if (bgmAudio) {
     bgmAudio.pause();
     bgmAudio.currentTime = 0;   // → 次に再生するとき必ず頭から
   }
 
-  // -------------------------------
+
   // ◆ MP3を止める（案内音声）
-  // -------------------------------
+
   if (currentAudio) {
     currentAudio.pause();
     currentAudio.currentTime = 0;  // → 次に再生するとき必ず頭から
@@ -840,27 +861,52 @@ function goReframe() {
     showGuide("もう一度、不快指数を入力してください", "henoj_3.mp3");
   }, 4000);
 }
-
+//記録ボタンを押した時の関数
 function kiroku_save() {
-  const today = new Date().toLocaleDateString("ja-JP");
+  const kiroku_json = kiroku_data_make();
 
-  const record = {
-    date: today,
-    event: document.getElementById("event").value,
-    emotion: selectedEmotions.join("、"),
-    story: document.getElementById("feelingText").value,
-    body: document.getElementById("bodyText").value,
-    discomfortStart: firstDiscomfort,
-    discomfortEnd: 0
-  };
+  const my_hansuu_records = JSON.parse(localStorage.getItem("my_hansuu_records") || "[]");
+  my_hansuu_records.push(kiroku_json);
+  localStorage.setItem("my_hansuu_records", JSON.stringify(my_hansuu_records));
 
-  const records = JSON.parse(localStorage.getItem("records")) || [];
-  records.push(record);
+  // 背景色を変える
+  document.getElementById("resultBox").classList.add("saved");
 
-  localStorage.setItem("records", JSON.stringify(records));
-
-  alert("記録しました");
+  // メッセージを表示
+  showGuide("保存されました。カレンダーから確認できます。", "saved.mp3");
 }
+
+
+
+function kiroku_data_make() {
+  const today = new Date().toISOString().split("T")[0];
+
+  const eventText = document.getElementById("event").value;
+  const emotionText = selectedEmotions.join("、");
+  const novelText = document.getElementById("feelingText").value;
+  const bodyText = document.getElementById("bodyText").value;
+
+  // ★ ここで文章を作る（保存用）
+  const summaryText =
+    `日付：${today}\n` +
+    `出来事：${eventText}\n` +
+    `気持ち：${emotionText}\n` +
+    `小説風：${novelText}\n` +
+    `身体感覚：${bodyText}\n` +
+    `不快指数：${firstDiscomfort} → ${releaseValue}`;
+
+  return {
+    date: today,
+    firstDiscomfort: firstDiscomfort,
+    event: eventText,
+    emotion: emotionText,
+    novel: novelText,
+    body: bodyText,
+    endDiscomfort: releaseValue,
+    summary: summaryText   // ← ★ 文章をここに入れておく
+  };
+}
+
 
 
 //ボタン管理関数
