@@ -258,17 +258,22 @@ label, select, input {
 #recordBox {
   display: none;                 /* 初期は非表示 */
   border: 2px solid #f7d774;     /* 明るい黄色の枠 */
-  background-color: #fff9e6;     /* ほんのりベージュの背景（視認性UP） */
-  color: #c8a84b;                /* 濃いめの黄色ベージュ文字 */
-  padding: 14px;                 /* 少し余白を増やしてゆとりを出す */
-  font-size: 14px;               /* 文字サイズはそのまま */
-  line-height: 1.5;              /* 行間を少し広げて読みやすく */
-  border-radius: 8px;            /* 角を少し丸く */
-  margin-top: 12px;              /* 上に余白 */
-  width: 90%;                    /* 横幅を少し広げてはみ出し防止 */
-  word-wrap: break-word;         /* 長い文章を折り返す */
-  white-space: normal;           /* 改行を許可する */
-  box-sizing: border-box;        /* paddingを含めて幅を計算 */
+  display: none;
+  border: 2px solid #f7d774;
+  background-color: #fff9e6;
+  color: #c8a84b;
+  padding: 14px;
+  font-size: 14px;
+  line-height: 1.5;
+  border-radius: 8px;
+  margin-top: 12px;
+  width: 90%;
+  box-sizing: border-box;
+
+  /* ↓ここを調整 */
+  word-break: break-all;     /* 長い単語や文を強制的に折り返す */
+  overflow-wrap: anywhere;   /* どこでも折り返し可能にする */
+  white-space: normal;       /* 改行を許可する */
 }
 
 #resultBox.saved {
