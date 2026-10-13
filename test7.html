@@ -698,35 +698,60 @@ function releaseHeart(n) {
     }, 800);
   }
 }
+
+function kiroku_data_make() {
+  const today = new Date().toISOString().split("T")[0];
+
+  const eventText = document.getElementById("event").value;
+  const emotionText = selectedEmotions.join("、");
+  const novelText = document.getElementById("feelingText").value;
+  const bodyText = document.getElementById("bodyText").value;
+
+  const summaryText = `
+日付：${today}
+出来事：${eventText}
+気持ち：${emotionText}
+小説風：${novelText}
+身体感覚：${bodyText}
+不快指数：${firstDiscomfort} → ${releaseValue}
+`;
+
+  return {
+    date: today,
+    firstDiscomfort: firstDiscomfort,
+    event: eventText,
+    emotion: emotionText,
+    novel: novelText,
+    body: bodyText,
+    endDiscomfort: releaseValue,
+    summary: summaryText
+  };
+}
+
 //スライドバーを動かして手放した時
 function tebanasi_to_kiroku() {
   showGuide("お疲れさまでした。下の内容を保存します。", "finish.mp3");
 
-setTimeout(() => {
-  showGuide("カレンダーに記録したいなら、記録ボタンを押してください。", "kiroku.anounce.mp3");
-}, 3000);
+  setTimeout(() => {
+    showGuide("カレンダーに記録したいなら、記録ボタンを押してください。", "kiroku.anounce.mp3");
+  }, 3000);
 
-  const today = new Date();
-  const dateText = today.toLocaleDateString("ja-JP");
+  // ★ 記録データを作る
+  const data = kiroku_data_make();
 
-  document.getElementById("recordDate").textContent = `日付：${dateText}`;
-  document.getElementById("recordFirst").textContent = `最初の不快指数：${firstDiscomfort}`;
-  document.getElementById("recordEvent").textContent = `出来事：${document.getElementById("event").value}`;
-  document.getElementById("recordEmotion").textContent = `気持ち：${selectedEmotions.join("、")}`;
-  document.getElementById("recordNovel").textContent = `小説風：${document.getElementById("feelingText").value}`;
-  document.getElementById("recordBody").textContent = `身体感覚：${document.getElementById("bodyText").value}`;
+  // ★ recordBox にまとめて書く（ここがシンプル化の核心）
+  document.getElementById("recordBox").innerHTML = `
+    <h3>今日の記録</h3>
+    <pre>${data.summary}</pre>
+  `;
 
-  // 記録欄を表示
+  // 表示切り替え
   document.getElementById("recordBox").style.display = "block";
-
-  document.getElementById("stepBlock").style.display = "none"; // 質問フェーズを消す
+  document.getElementById("stepBlock").style.display = "none";
 
   btn_kanri("slider");
 
-  // スライダー非表示
-  const slider = document.getElementById("releaseSlider");
-  slider.style.display = "none";
-  
+  document.getElementById("releaseSlider").style.display = "none";
 }
 
 //最初に戻る
@@ -870,44 +895,11 @@ function kiroku_save() {
   localStorage.setItem("my_hansuu_records", JSON.stringify(my_hansuu_records));
 
   // 背景色を変える
-  document.getElementById("resultBox").classList.add("saved");
+  document.getElementById("recordBox").classList.add("saved");
 
   // メッセージを表示
   showGuide("保存されました。カレンダーから確認できます。", "saved.mp3");
 }
-
-
-
-function kiroku_data_make() {
-  const today = new Date().toISOString().split("T")[0];
-
-  const eventText = document.getElementById("event").value;
-  const emotionText = selectedEmotions.join("、");
-  const novelText = document.getElementById("feelingText").value;
-  const bodyText = document.getElementById("bodyText").value;
-
-  // ★ ここで文章を作る（保存用）
-  const summaryText =
-    `日付：${today}\n` +
-    `出来事：${eventText}\n` +
-    `気持ち：${emotionText}\n` +
-    `小説風：${novelText}\n` +
-    `身体感覚：${bodyText}\n` +
-    `不快指数：${firstDiscomfort} → ${releaseValue}`;
-
-  return {
-    date: today,
-    firstDiscomfort: firstDiscomfort,
-    event: eventText,
-    emotion: emotionText,
-    novel: novelText,
-    body: bodyText,
-    endDiscomfort: releaseValue,
-    summary: summaryText   // ← ★ 文章をここに入れておく
-  };
-}
-
-
 
 //ボタン管理関数
 function btn_kanri(phase) {
