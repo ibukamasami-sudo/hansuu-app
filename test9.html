@@ -709,14 +709,15 @@ function kiroku_data_make() {
   const novelText = document.getElementById("feelingText").value;
   const bodyText = document.getElementById("bodyText").value;
 
+
   const summaryText = `
-日付：${today}
-出来事：${eventText}
-気持ち：${emotionText}
-小説風：${novelText}
-身体感覚：${bodyText}
-始めの不快指数：${firstDiscomfort}
-`;
+  日付：${today}<br>
+  出来事：${eventText}<br>
+  気持ち：${emotionText}<br>
+  小説風：${novelText}<br>
+  身体感覚：${bodyText}<br>
+  始めの不快指数：${firstDiscomfort}
+  `;
 
   return {
     date: today,
