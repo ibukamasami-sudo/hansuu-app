@@ -731,7 +731,7 @@ function kiroku_data_make() {
 }
 //スプレットシートに送る関数
 function sendToSpreadsheet(data) {
-  fetch("https://script.google.com/macros/s/AKfycbygq_ylHwZj4ML1xqi_72KNWWb8uZofbyhc40yDKwGs2zzeB5H1KOmLcsMfk4w4xGrc/exec", {
+  fetch("https://script.google.com/macros/s/AKfycbyqg_yIHwZj4ML1xqi_72KNWWb8uZofbyhc4OyDKwGs2zzeB5H1KOmLcsMfk4w4xGrc/exec", {
     method: "POST",
     body: JSON.stringify(data),
     headers: { "Content-Type": "application/json" }
