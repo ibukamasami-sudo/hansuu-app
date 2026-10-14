@@ -728,6 +728,7 @@ function makeSummaryHtml(data) {
 
 //スプレットシートに送る関数
 function sendToSpreadsheet(data) {
+
   fetch("https://script.google.com/macros/s/AKfycbzgSQ1FYb-qyKJFNXu72LLQNeZylXilba0YIT1HpzLEFKM5Xc4G-C2_L7wFbODqccvfgQ/exec", {
     method: "POST",
     body: JSON.stringify(data),
@@ -779,9 +780,7 @@ const content = document.getElementById("recordBox").querySelector(".record-cont
 
   // ★ 記録ボタンで送るために保存
   window.kiroku_json = data;
-  
-   // ★ 動作確認したいときだけ一時的に表示
-  alert(JSON.stringify(kiroku_json)); // ← 検証用。完成後は削除してOK
+
 }
 
 //最初に戻る
@@ -898,7 +897,9 @@ function goReframe() {
 }
 
 //記録ボタンを押した時の関数
-function kiroku_save() {
+function kiroku_save() {   
+  // ★ 動作確認したいときだけ一時的に表示
+  alert(JSON.stringify(kiroku_json)); // ← 検証用。完成後は削除してOK
   sendToSpreadsheet(kiroku_json); // ← スプレットシートに追加
 
   // 背景色を変える
