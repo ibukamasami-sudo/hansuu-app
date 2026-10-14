@@ -700,35 +700,32 @@ function releaseHeart(n) {
     }, 800);
   }
 }
-//入力データを作る
-function kiroku_data_make() {
+//記録、送信データを作る
+function makeRecordData() {
   const today = new Date().toISOString().split("T")[0];
-
-  const eventText = document.getElementById("event").value;
-  const emotionText = selectedEmotions.join("、");
-  const novelText = document.getElementById("feelingText").value;
-  const bodyText = document.getElementById("bodyText").value;
-
-
-  const summaryText = `
-  日付：${today}<br>
-  出来事：${eventText}<br>
-  気持ち：${emotionText}<br>
-  小説風：${novelText}<br>
-  身体感覚：${bodyText}<br>
-  始めの不快指数：${firstDiscomfort}
-  `;
 
   return {
     date: today,
-    firstDiscomfort: firstDiscomfort,
-    event: eventText,
-    emotion: emotionText,
-    novel: novelText,
-    body: bodyText,
-    summary: summaryText
+    event: document.getElementById("event").value,
+    emotion: selectedEmotions.join("、"),
+    novel: document.getElementById("feelingText").value,
+    body: document.getElementById("bodyText").value,
+    firstDiscomfort: firstDiscomfort
   };
 }
+//表示テキストを作る
+function makeSummaryHtml(data) {
+  return `
+    日付：${data.date}<br>
+    出来事：${data.event}<br>
+    気持ち：${data.emotion}<br>
+    小説風：${data.novel}<br>
+    身体感覚：${data.body}<br>
+    始めの不快指数：${data.firstDiscomfort}
+  `;
+}
+
+
 //スプレットシートに送る関数
 function sendToSpreadsheet(data) {
   fetch("https://script.google.com/macros/s/AKfycbyqg_yIHwZj4ML1xqi_72KNWWb8uZofbyhc4OyDKwGs2zzeB5H1KOmLcsMfk4w4xGrc/exec", {
@@ -753,18 +750,20 @@ function tebanasi_to_kiroku() {
     showGuide("カレンダーに記録したいなら、記録ボタンを押してください。", "kiroku.anounce.mp3");
   }, 3000);
 
-  // ★ 記録データを作る
-  const data = kiroku_data_make();
+const data = makeRecordData();
 
-  // ★ recordBox にまとめて書く（ここがシンプル化の核心）
+// ★ 表示用HTMLを作る
+const html = makeSummaryHtml(data);
+
+// ★ recordBox に表示する
 document.getElementById("recordBox").innerHTML = `
-    <h3>今日の記録</h3>
-    <div class="record-title">▼ 内容を開く</div>
-    <div class="record-content">${data.summary}</div>
-  `;
+  <h3>今日の記録</h3>
+  <div class="record-title">▼ 内容を開く</div>
+  <div class="record-content">${html}</div>
+`;
 
-  const title = document.getElementById("recordBox").querySelector(".record-title");
-  const content = document.getElementById("recordBox").querySelector(".record-content");
+const title = document.getElementById("recordBox").querySelector(".record-title");
+const content = document.getElementById("recordBox").querySelector(".record-content");
 
   title.addEventListener("click", () => {
   content.style.display = (content.style.display === "none") ? "block" : "none";
@@ -777,6 +776,9 @@ document.getElementById("recordBox").innerHTML = `
   btn_kanri("tebanasi_to_kiroku");
 
   document.getElementById("releaseSlider").style.display = "none";
+
+  // ★ 記録ボタンで送るために保存
+  window.kiroku_json = data;
 }
 
 //最初に戻る
@@ -894,21 +896,18 @@ function goReframe() {
 
 //記録ボタンを押した時の関数
 function kiroku_save() {
-  const kiroku_json = kiroku_data_make();// ← 記録データを作る
   sendToSpreadsheet(kiroku_json); // ← スプレットシートに追加
-
-  const my_hansuu_records = JSON.parse(localStorage.getItem("my_hansuu_records") || "[]");
-  my_hansuu_records.push(kiroku_json);
-  localStorage.setItem("my_hansuu_records", JSON.stringify(my_hansuu_records));
 
   // 背景色を変える
   document.getElementById("recordBox").classList.add("saved");
 
   // メッセージを表示
   showGuide("保存されました<br>カレンダーから確認できます。", "hozon_kanryou.mp3");
-  // 保存後の中身を表示
-  console.log(my_hansuu_records);
+
+  // 送ったデータを確認したいならこれ
+  console.log(kiroku_json);
 }
+
 
 //ボタン管理関数
 function btn_kanri(kansuumei) {
