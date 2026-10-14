@@ -728,7 +728,7 @@ function makeSummaryHtml(data) {
 
 //スプレットシートに送る関数
 function sendToSpreadsheet(data) {
-  fetch("https://script.google.com/macros/s/AKfycbwE6TZTZs_swYzbrfddk4aPHtndA_gtfSqOzryuigagKp_Pq6kPMqYY0UQPOjNeM6TR/exec", {
+  fetch("https://script.google.com/macros/s/AKfycbzHZeIopJ3PMJ_rH0DMVUkyZUpzOT14da1JzipupmePssVgPr9cGaJG-BKx_gmDK3w/exec", {
     method: "POST",
     body: JSON.stringify(data),
     headers: { "Content-Type": "application/json" }
