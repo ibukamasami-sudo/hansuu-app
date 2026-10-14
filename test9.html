@@ -779,6 +779,9 @@ const content = document.getElementById("recordBox").querySelector(".record-cont
 
   // ★ 記録ボタンで送るために保存
   window.kiroku_json = data;
+  
+   // ★ 動作確認したいときだけ一時的に表示
+  alert(JSON.stringify(kiroku_json)); // ← 検証用。完成後は削除してOK
 }
 
 //最初に戻る
