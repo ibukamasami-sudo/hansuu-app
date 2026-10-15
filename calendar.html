@@ -5,7 +5,7 @@
 <title>記録カレンダー</title>
 
 <style>
-  body {
+ body {
     font-family: "Yu Gothic", sans-serif;
     background: #f5f5f5;
     padding: 40px;
@@ -51,58 +51,122 @@
     color: #003366;
     font-weight: bold;
   }
+
+  .calendar-header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 10px;
+  gap: 10px;
+}
+
+#calendarTable {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: center;
+}
+
+#calendarTable th {
+  background: #f0f0f0;
+  padding: 6px;
+}
+
+.day {
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.day.zero {
+  background: #eee;
+  color: #999;
+}
+
+.day.has {
+  background: #cce5ff;
+  color: #003366;
+  font-weight: bold;
+}
 </style>
 
 </head>
 <body>
+<div class="calendar-header">
+  <button id="prevMonth">←</button>
+  <span id="monthLabel"></span>
+  <button id="nextMonth">→</button>
+</div>
 
-<h1>記録カレンダー</h1>
-
-<div id="calendar"></div>
+<table id="calendarTable">
+  <thead>
+    <tr>
+      <th>日</th><th>月</th><th>火</th><th>水</th><th>木</th><th>金</th><th>土</th>
+    </tr>
+  </thead>
+  <tbody id="calendarBody"></tbody>
+</table>
 
 <script>
-  const GAS_URL = "https://script.google.com/macros/s/AKfycbzoRZ3PKBByIf-LF8MWDmFDVbWt-G9cjEkH53vKixqwDyo_kpGzLo6ZmGU8GpkKMp0Kiw/exec";
+const GAS_URL = "https://script.google.com/macros/s/AKfycbzoRZ3PKBByIf-LF8MWDmFDVbWt-G9cjEkH53vKixqwDyo_kpGzLo6ZmGU8GpkKMp0Kiw/exec";
 
-  const today = new Date();
-  const year = today.getFullYear();
-  const month = today.getMonth(); // 0=1月
+let current = new Date();
+renderCalendar(current);
 
-  const firstDay = new Date(year, month, 1);
-  const lastDay = new Date(year, month + 1, 0);
-  const lastDate = lastDay.getDate();
+document.getElementById("prevMonth").addEventListener("click", () => {
+  current.setMonth(current.getMonth() - 1);
+  renderCalendar(current);
+});
 
-  // GASから日付ごとの記録数を取得
+document.getElementById("nextMonth").addEventListener("click", () => {
+  current.setMonth(current.getMonth() + 1);
+  renderCalendar(current);
+});
+
+function renderCalendar(date) {
+  const year = date.getFullYear();
+  const month = date.getMonth();
+  const firstDay = new Date(year, month, 1).getDay();
+  const lastDate = new Date(year, month + 1, 0).getDate();
+
+  document.getElementById("monthLabel").textContent = `${year}年${month + 1}月`;
+
   fetch(GAS_URL + "?mode=dailyRecordCount")
     .then(res => res.json())
     .then(data => {
-      const calendar = document.getElementById("calendar");
+      const body = document.getElementById("calendarBody");
+      body.innerHTML = "";
+      let row = document.createElement("tr");
+
+      // 空白セル
+      for (let i = 0; i < firstDay; i++) {
+        row.appendChild(document.createElement("td"));
+      }
 
       for (let d = 1; d <= lastDate; d++) {
         const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
         const count = data[dateStr] || 0;
 
-        const div = document.createElement("div");
-        div.classList.add("day");
+        const cell = document.createElement("td");
+        cell.classList.add("day");
+        cell.innerHTML = `<div>${d}</div><div style="font-size:12px;">${count}件</div>`;
 
-        if (count === 0) {
-          div.classList.add("zero");
-        } else {
-          div.classList.add("has");
-        }
+        if (count > 0) cell.classList.add("has");
+        else cell.classList.add("zero");
 
-        div.innerHTML = `
-          <div style="font-size:20px;">${d}</div>
-          <div style="font-size:14px; margin-top:6px;">${count}件</div>
-        `;
-
-        // daily.html に飛ぶ
-        div.addEventListener("click", () => {
+        cell.addEventListener("click", () => {
           window.location.href = `daily.html?date=${dateStr}`;
         });
 
-        calendar.appendChild(div);
+        row.appendChild(cell);
+
+        if ((firstDay + d) % 7 === 0 || d === lastDate) {
+          body.appendChild(row);
+          row = document.createElement("tr");
+        }
       }
     });
+}
 </script>
 
 </body>
