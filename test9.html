@@ -729,6 +729,8 @@ function makeSummaryHtml(data) {
 //スプレットシートに送る関数
 function sendToSpreadsheet(data) {
 
+  alert("送るJSON: " + JSON.stringify(data));  // ← ここで中身を確認
+
   fetch("https://script.google.com/macros/s/AKfycbzUe_3a3A1RtBM8LPWIRCd5F0F-JZvGgfHzmpqLjhiCcqQ3vdu3OKpADcrwhRj6UNAspQ/exec", {
     method: "POST",
     body: JSON.stringify(data),
@@ -742,6 +744,7 @@ function sendToSpreadsheet(data) {
     console.error("送信エラー:", error);
   });
 }
+
 
 //スライドバーを動かして手放した時
 function tebanasi_to_kiroku() {
@@ -899,7 +902,7 @@ function goReframe() {
 //記録ボタンを押した時の関数
 function kiroku_save() {   
   // ★ 動作確認したいときだけ一時的に表示
-  alert(JSON.stringify(kiroku_json)); // ← 検証用。完成後は削除してOK
+   // ← 検証用。完成後は削除してOK
   sendToSpreadsheet(kiroku_json); // ← スプレットシートに追加
 
   // 背景色を変える
