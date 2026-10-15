@@ -745,6 +745,32 @@ function sendToSpreadsheet(data) {
   });
 }
 
+function sendToSpreadsheet_02(data) {
+
+  const text =
+    data.date + "|" +
+    data.event + "|" +
+    data.emotion + "|" +
+    data.novel + "|" +
+    data.body + "|" +
+    data.firstDiscomfort;
+
+  alert("送るテキスト: " + text);
+
+  fetch("https://script.google.com/macros/s/AKfycbyV-Wx4dkJY45GbHwofsJfKAxpTbODtOhNEUcRAcUwiRCwbfbrBr8TMikkDEiZ8K_bGAQ/exec", {
+    method: "POST",
+    body: text
+  })
+  .then(response => response.text())
+  .then(result => {
+    console.log("結果:", result);
+  })
+  .catch(error => {
+    console.error("送信エラー:", error);
+  });
+}
+
+
 
 //スライドバーを動かして手放した時
 function tebanasi_to_kiroku() {
