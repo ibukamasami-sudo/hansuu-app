@@ -329,8 +329,6 @@ label, select, input {
     不快指数（0〜10）
     <input id="discomfort_input" type="number" min="0" max="10">
 
-    <button onclick="setDiscomfortStart()">不快指数：始め</button>
-    <button onclick="setDiscomfortEnd()">不快指数：終わり</button>
   </div>
 
 
@@ -424,6 +422,11 @@ label, select, input {
 </body>
 
 <script>
+//カレンダーボタンを押した時
+function toCalender() {
+  window.location.href = "calendar.html";
+}
+
 //非表示ボタンの初期設定（説明を止める以外非表示）
 document.addEventListener("DOMContentLoaded", () => {
   btn_kanri("initial");
