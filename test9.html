@@ -734,7 +734,7 @@ function sendToSpreadsheet(data) {
   fetch("https://script.google.com/macros/s/AKfycbwsxm8MBbLwJmRDl_AHulVu5VJ8UPRwg07XiElfKBfJ4kvuKdRzXVPO79FEMbS2S1AXow/exec", {
     method: "POST",
     body: JSON.stringify(data),
-    headers: { "Content-Type": "application/json" }
+    //headers: { "Content-Type": "application/json" }
   })
   .then(response => response.text())
   .then(result => {
@@ -757,7 +757,7 @@ function sendToSpreadsheet_02(data) {
 
   alert("送るテキスト: " + text);
 
-  fetch("https://script.google.com/macros/s/AKfycbyV-Wx4dkJY45GbHwofsJfKAxpTbODtOhNEUcRAcUwiRCwbfbrBr8TMikkDEiZ8K_bGAQ/exec", {
+  fetch("https://script.google.com/macros/s/AKfycby-vo0OPbSF1MJJCb6sMpU3fNPN4J3Bvayye61ArF2nSHxI2nFTkVOcvUvPwMvnv4uNRw/exec", {
     method: "POST",
     body: text
   })
@@ -929,8 +929,8 @@ function goReframe() {
 function kiroku_save() {   
   // ★ 動作確認したいときだけ一時的に表示
    // ← 検証用。完成後は削除してOK
-  sendToSpreadsheet_02(kiroku_json); // ← スプレットシートに追加
-
+  //sendToSpreadsheet_02(kiroku_json); // ← スプレットシートに追加
+  sendToSpreadsheet(kiroku_json); // ← スプレットシートに追加
   // 背景色を変える
   document.getElementById("recordBox").classList.add("saved");
 
