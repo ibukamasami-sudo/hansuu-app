@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>記録カレンダー</title>
+
+<style>
+  body {
+    font-family: "Yu Gothic", sans-serif;
+    background: #f5f5f5;
+    padding: 40px;
+  }
+
+  h1 {
+    text-align: center;
+    font-size: 28px;
+    margin-bottom: 30px;
+    color: #333;
+  }
+
+  #calendar {
+    width: 900px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 10px;
+  }
+
+  .day {
+    background: #fff;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    padding: 15px;
+    text-align: center;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.2s;
+  }
+
+  .day:hover {
+    background: #eef6ff;
+  }
+
+  .zero {
+    background: #eaeaea;
+    color: #777;
+  }
+
+  .has {
+    background: #cfe3ff;
+    color: #003366;
+    font-weight: bold;
+  }
+</style>
+
+</head>
+<body>
+
+<h1>記録カレンダー</h1>
+
+<div id="calendar"></div>
+
+<script>
+  const GAS_URL = "★ここにあなたのGASのURLを入れる★";
+
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = today.getMonth(); // 0=1月
+
+  const firstDay = new Date(year, month, 1);
+  const lastDay = new Date(year, month + 1, 0);
+  const lastDate = lastDay.getDate();
+
+  // GASから日付ごとの記録数を取得
+  fetch(GAS_URL + "?mode=dailyRecordCount")
+    .then(res => res.json())
+    .then(data => {
+      const calendar = document.getElementById("calendar");
+
+      for (let d = 1; d <= lastDate; d++) {
+        const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
+        const count = data[dateStr] || 0;
+
+        const div = document.createElement("div");
+        div.classList.add("day");
+
+        if (count === 0) {
+          div.classList.add("zero");
+        } else {
+          div.classList.add("has");
+        }
+
+        div.innerHTML = `
+          <div style="font-size:20px;">${d}</div>
+          <div style="font-size:14px; margin-top:6px;">${count}件</div>
+        `;
+
+        // daily.html に飛ぶ
+        div.addEventListener("click", () => {
+          window.location.href = `daily.html?date=${dateStr}`;
+        });
+
+        calendar.appendChild(div);
+      }
+    });
+</script>
+
+</body>
+</html>
