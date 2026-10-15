@@ -729,7 +729,7 @@ function makeSummaryHtml(data) {
 //スプレットシートに送る関数
 function sendToSpreadsheet(data) {
 
-  fetch("https://script.google.com/macros/s/AKfycbzgSQ1FYb-qyKJFNXu72LLQNeZylXilba0YIT1HpzLEFKM5Xc4G-C2_L7wFbODqccvfgQ/exec", {
+  fetch("https://script.google.com/macros/s/AKfycbzUe_3a3A1RtBM8LPWIRCd5F0F-JZvGgfHzmpqLjhiCcqQ3vdu3OKpADcrwhRj6UNAspQ/exec", {
     method: "POST",
     body: JSON.stringify(data),
     headers: { "Content-Type": "application/json" }
