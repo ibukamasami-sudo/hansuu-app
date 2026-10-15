@@ -731,7 +731,7 @@ function sendToSpreadsheet(data) {
 
   alert("送るJSON: " + JSON.stringify(data));  // ← ここで中身を確認
 
-  fetch("https://script.google.com/macros/s/AKfycbzUe_3a3A1RtBM8LPWIRCd5F0F-JZvGgfHzmpqLjhiCcqQ3vdu3OKpADcrwhRj6UNAspQ/exec", {
+  fetch("https://script.google.com/macros/s/AKfycbwsxm8MBbLwJmRDl_AHulVu5VJ8UPRwg07XiElfKBfJ4kvuKdRzXVPO79FEMbS2S1AXow/exec", {
     method: "POST",
     body: JSON.stringify(data),
     headers: { "Content-Type": "application/json" }
