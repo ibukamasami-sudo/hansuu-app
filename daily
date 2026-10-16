@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>その日の記録一覧</title>
+  <style>
+    body { font-family: sans-serif; padding: 20px; }
+    .item {
+      padding: 12px;
+      border-bottom: 1px solid #ddd;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+<h2 id="dateTitle"></h2>
+<div id="list"></div>
+
+<script>
+const GAS_URL = "あなたのGASのURL";
+
+function getParam(name) {
+  return new URLSearchParams(window.location.search).get(name);
+}
+
+const date = getParam("date");
+document.getElementById("dateTitle").textContent = date + " の記録";
+
+fetch(GAS_URL + "?mode=dailyList&date=" + date)
+  .then(res => res.json())
+  .then(list => {
+    const container = document.getElementById("list");
+
+    list.forEach((item, index) => {
+      const div = document.createElement("div");
+      div.className = "item";
+      div.textContent = item.title; // 20文字タイトル
+
+      div.onclick = () => {
+        // index を渡して個別記録へ
+        window.location.href = `record.html?date=${date}&index=${index}`;
+      };
+
+      container.appendChild(div);
+    });
+  });
+</script>
+
+</body>
+</html>
