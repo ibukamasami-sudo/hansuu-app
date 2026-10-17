@@ -734,7 +734,7 @@ function sendToSpreadsheet(data) {
 
   alert("送るJSON: " + JSON.stringify(data));  // ← ここで中身を確認
 
-  fetch("https://script.google.com/macros/s/AKfycbwtq-0I1SrFbWJQb1lh91W8wwRkstKjmrgekCmKcDFoTmTus5Z-fHEK51ichhgClcflcA/exec", {
+  fetch("https://script.google.com/macros/s/AKfycbyeIJKH5pkVkKBJ4kEwuGfpwMokjhdriZNwtX8kQT5Qyg8ozcRcxkcBd5fIs6J-oTvDsQ/exec", {
     method: "POST",
     body: JSON.stringify(data),
     //headers: { "Content-Type": "application/json" }
@@ -760,7 +760,7 @@ function sendToSpreadsheet_02(data) {
 
   alert("送るテキスト: " + text);
 
-  fetch("https://script.google.com/macros/s/AKfycbwtq-0I1SrFbWJQb1lh91W8wwRkstKjmrgekCmKcDFoTmTus5Z-fHEK51ichhgClcflcA/exec", {
+  fetch("https://script.google.com/macros/s/AKfycbyeIJKH5pkVkKBJ4kEwuGfpwMokjhdriZNwtX8kQT5Qyg8ozcRcxkcBd5fIs6J-oTvDsQ/exec", {
     method: "POST",
     body: text
   })
