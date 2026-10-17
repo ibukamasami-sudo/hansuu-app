@@ -3,6 +3,602 @@
 <head>
 <meta charset="UTF-8">
 <title>感情記録アプリ</title>
+<script src="config.js"></script>
+<script>
+//カレンダーボタンを押した時
+function toCalender() {
+  window.location.href = "calendar.html";
+}
+
+//非表示ボタンの初期設定（説明を止める以外非表示）
+document.addEventListener("DOMContentLoaded", () => {
+  btn_kanri("initial");
+});
+
+//説明とアナウンス
+function showGuide(text, mp3) {
+  const msg = document.getElementById("messageArea");
+
+  msg.innerHTML = text;
+  msg.classList.add("fade-in");
+
+  // ★ 新しい案内音声を鳴らす前に、必ず全部止める
+  stopAllSounds();
+
+  setTimeout(() => {
+    currentAudio = new Audio(mp3);   // ← ここが一番大事！
+    currentAudio.currentTime = 0;
+    currentAudio.play();
+  }, 500);
+}
+
+
+
+//声準備
+function loadVoices() {
+  voices = speechSynthesis.getVoices();
+  const select = document.getElementById("voiceSelect");
+  select.innerHTML = "";
+
+  let defaultIndex = 0;
+
+  voices.forEach((v, i) => {
+    const opt = document.createElement("option");
+    opt.value = i;
+    opt.textContent = v.name;
+    select.appendChild(opt);
+
+    if (v.lang.startsWith("ja") || v.name.includes("日本語")) {
+      defaultIndex = i;
+    }
+  });
+
+  select.value = defaultIndex;
+}
+
+loadVoices();                         // ← まず1回読み込む
+speechSynthesis.onvoiceschanged = loadVoices;   // ← 声が本当に来たらもう1回読み込む
+
+
+/*ボタンを変数に入れる*/
+//const readAllButton = document.getElementById("readAllButton");
+//const reframeBtn = document.getElementById("reframeBtn");
+//const nextBtn = document.getElementById("nextBtn");
+
+
+/*ハートの幕の上げ下げ*/
+function selectNum(n) {
+  const curtain = document.querySelector('.black-curtain');
+  curtain.style.height = (n * 10) + '%';
+}
+
+let firstDiscomfort = null;  // ★ 追加：最初の不快指数を保存する変数
+
+function selectNum(event, n) {
+  const curtain = document.querySelector('.black-curtain');
+  curtain.style.height = (n * 10) + '%';
+
+  document.querySelectorAll('.num-btn').forEach(btn => btn.classList.remove('active'));
+  event.target.classList.add('active');
+
+  document.getElementById("discomfort_input").value = n;
+
+    if (firstDiscomfort === null) {
+    firstDiscomfort = n;
+  }
+
+  // ★★★ ここから分岐を追加するだけ ★★★
+  if (hasPlayedGuide) {
+    // 二回目以降：不快指数の入力へ進む
+    showGuide(`不快指数は ${n}ですね。<br>出来るだけ少なくなるまで繰り返し聞いてください。`, "repeat3.mp3");
+
+    // ここでハートの下の入力ブロックを表示する
+    document.getElementById("heartInputBlock").classList.add("visible");
+
+  } else {
+    const guideText = `不快指数は ${n}ですね<br>次の質問に答えてください。`;
+
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+          // stepBlock を表示する
+        const step = document.getElementById("stepBlock");
+        step.style.display = "block";
+        step.classList.add("visible");
+
+        // ★ ここでボタンを出す（showGuide より後）
+        //readAllButton.classList.remove("no_show");
+        //readAllButton.classList.add("yes_show_inline");
+        btn_kanri("selectNum") 
+
+        // ガイドを再生する
+        showGuide(guideText, "henoj_2.mp3");
+
+      });
+    });
+  }
+}
+
+
+function setDiscomfortStart() {
+  const value = Number(document.getElementById("discomfort_input").value);
+  discomfortStart = value;
+
+  const msg = `不快指数は${value}ですね。<br>振り返りながら次の質問に答えてください。`;
+  const utter = new SpeechSynthesisUtterance(msg);
+  utter.rate = Number(document.getElementById("voice_speed").value);
+  utter.voice = voices[document.getElementById("voiceSelect").value];
+
+  speechSynthesis.cancel();
+  speechSynthesis.speak(utter);
+
+  utter.onend = () => {
+    document.getElementById("stepBlock").classList.add("visible");
+  };
+}
+
+/*気持ちのセレクト*/
+let selectedEmotions = [];
+
+function toggleEmotion(el) {
+  const emotion = el.textContent;
+  if (selectedEmotions.includes(emotion)) {
+    selectedEmotions = selectedEmotions.filter(e => e !== emotion);
+    el.classList.remove("selected");
+  } else {
+    selectedEmotions.push(emotion);
+    el.classList.add("selected");
+  }
+}
+
+function addEmotion() {
+  const add = document.getElementById("emotionAdd").value.trim();
+  if (add) {
+    const area = document.getElementById("emotionArea");
+    const span = document.createElement("span");
+    span.className = "emotion-btn";
+    span.textContent = add;
+    span.onclick = function() { toggleEmotion(span); };
+    area.appendChild(span);
+    document.getElementById("emotionAdd").value = "";
+  }
+}
+
+
+let hasPlayedGuide = false;  // ★ 一回目かどうか判定するフラグ
+//全部読み上げる
+function readAll() {
+  const event = document.getElementById("event").value;
+  const emotions = selectedEmotions.join("、");
+  const feeling = document.getElementById("feelingText").value;
+  const body = document.getElementById("bodyText").value;
+
+  const rate = Number(document.getElementById("voice_speed").value);
+  const voiceIndex = document.getElementById("voiceSelect").value;
+
+  const text =
+    `${event}といった出来事がきっかけで、${emotions}を感じていて、${feeling}という気持ちがあって、身体感覚は${body}」ですね。`;
+
+  const utter = new SpeechSynthesisUtterance(text);
+  utter.rate = rate;
+  utter.voice = voices[voiceIndex];
+
+  speechSynthesis.cancel();
+  speechSynthesis.speak(utter);
+
+  // ★★★ 読み上げが終わったら実行される処理 ★★★
+  utter.onend = function() {
+
+    if (!hasPlayedGuide) {
+      // 一回目だけ流す案内音声
+      btn_kanri("readAll") 
+      showGuide("繰り返し聞いてください", "ref_01.mp3");
+
+      // ★ ボタンの言葉を「もう一度」に変更
+      //const btn = document.getElementById("readAllButton");
+      //if (btn) btn.textContent = "もう一度";
+
+     // ★ 次へリフレボタン表示
+      //if (reframeBtn) reframeBtn.classList.add("yes_show_inline");
+      //if (nextBtn) nextBtn.classList.add("yes_show_inline");
+     
+         hasPlayedGuide = true;  // 次回からは別の案内へ
+
+    } else {
+      // 二回目以降の案内（音声はまだ作っていないとのことなのでメッセージだけ）
+      showGuide("必要に応じて内容を変えたり<br>不快指数の数値の変更をしてください。","repeat2.mp3");
+
+      // 音声を作ったらここに追加
+      // showGuide("もう一度聞きますか？", "repeat2.mp3");
+    }
+  };
+}
+// 次へボタン↓
+function tugihe() {
+  const slider = document.getElementById("releaseSlider");
+  const numbers = document.querySelector('.numbers');
+  const questions = document.querySelector('#stepBlock');
+  const heart = document.querySelector('.heart-wrapper');
+  const curtain = document.querySelector('.black-curtain'); // ★ 黒幕を取得
+
+  // 数字ボタン・質問欄・全体を読むを消す
+  if (numbers) numbers.style.display = "none";
+  if (questions) questions.style.display = "none";
+
+  btn_kanri("tugihe");
+
+  // ★ 最初の不快指数を反映（黒幕を元の高さに戻す）
+  if (firstDiscomfort !== null) {
+    curtain.style.height = (firstDiscomfort * 10) + '%';
+  }
+
+  // スライダーを表示
+  slider.style.display = "block";
+
+  // ハートの位置へスクロール
+  heart.scrollIntoView({ behavior: "smooth", block: "center" });
+
+  // ハートを少し拡大
+  heart.style.transition = "transform 0.3s ease";
+  heart.style.transform = "scale(1.1)";
+  setTimeout(() => {
+    heart.style.transform = "scale(1.0)";
+  }, 300);
+
+  // ★ アナウンス欄に「最初の不快指数は ○ です」
+  showGuide(`最初の不快指数は ${firstDiscomfort} です。<br>バーを動かしてハートをクリーンにしてください`, "repeat4.mp3");
+}
+
+
+/* 手放しステップ：納得ボタンを押したらスライダーを表示 */
+function releaseHeart(n) {
+  const curtain = document.querySelector('.black-curtain');
+  const heart = document.querySelector('.heart-mask');
+  const wrapper = document.querySelector('.heart-wrapper');
+  const body = document.body;
+
+  // 黒幕の高さを減らす
+  curtain.style.height = (n * 10) + '%';
+
+  // 0になったら release 状態へ切り替え
+  if (n == 0) {
+
+    // 黒幕をふわっと消す（transition は残してOK）
+    curtain.classList.remove("release");
+    curtain.classList.add("default");   // ★これが絶対に必要
+    curtain.style.height = "0%";
+
+    // ★★★ ここが重要：style をいじらず、クラスを切り替える ★★★
+    body.classList.remove("default-bg");
+    body.classList.add("release-bg");
+
+    wrapper.classList.remove("default");
+    wrapper.classList.add("release");
+
+    heart.classList.remove("default");
+    heart.classList.add("release");
+
+    curtain.classList.remove("default");
+    curtain.classList.add("release");
+
+    // 黒幕を完全に消す → 演出が終わったら tebanasi_to_kiroku を呼ぶ
+    setTimeout(() => {
+      tebanasi_to_kiroku();
+    }, 800);
+  }
+}
+//記録、送信データを作る
+function makeRecordData() {
+  const today = new Date().toISOString().split("T")[0];
+
+  return {
+    date: today,
+    event: document.getElementById("event").value,
+    emotion: selectedEmotions.join("、"),
+    novel: document.getElementById("feelingText").value,
+    body: document.getElementById("bodyText").value,
+    firstDiscomfort: firstDiscomfort
+  };
+}
+//表示テキストを作る
+function makeSummaryHtml(data) {
+  return `
+    日付：${data.date}<br>
+    出来事：${data.event}<br>
+    気持ち：${data.emotion}<br>
+    小説風：${data.novel}<br>
+    身体感覚：${data.body}<br>
+    始めの不快指数：${data.firstDiscomfort}
+  `;
+}
+
+
+//スプレットシートに送る関数
+function sendToSpreadsheet(data) {
+  data.type = "hansuu"; // ← ページごとに変える
+
+  alert("送るJSON: " + JSON.stringify(data));
+
+  fetch(GAS_URL, {
+    method: "POST",
+    body: JSON.stringify(data),
+  })
+  .then(response => response.text())
+  .then(result => {
+    console.log("スプレッドシートに保存されました:", result);
+  })
+  .catch(error => {
+    console.error("送信エラー:", error);
+  });
+}
+
+
+function sendToSpreadsheet_02(data) {
+
+  const text =
+    data.date + "|" +
+    data.event + "|" +
+    data.emotion + "|" +
+    data.novel + "|" +
+    data.body + "|" +
+    data.firstDiscomfort;
+
+  alert("送るテキスト: " + text);
+
+  fetch("https://script.google.com/macros/s/AKfycbyeIJKH5pkVkKBJ4kEwuGfpwMokjhdriZNwtX8kQT5Qyg8ozcRcxkcBd5fIs6J-oTvDsQ/exec", {
+    method: "POST",
+    body: text
+  })
+  .then(response => response.text())
+  .then(result => {
+    console.log("結果:", result);
+  })
+  .catch(error => {
+    console.error("送信エラー:", error);
+  });
+}
+
+
+
+//スライドバーを動かして手放した時
+function tebanasi_to_kiroku() {
+  showGuide("お疲れさまでした。下の内容を保存します。", "otukare_hozonsusumeru.mp3");
+
+const data = makeRecordData();
+
+// ★ 表示用HTMLを作る
+const html = makeSummaryHtml(data);
+
+// ★ recordBox に表示する
+document.getElementById("recordBox").innerHTML = `
+  <h3>今日の記録</h3>
+  <div class="record-title">▼ 内容を開く</div>
+  <div class="record-content">${html}</div>
+`;
+
+const title = document.getElementById("recordBox").querySelector(".record-title");
+const content = document.getElementById("recordBox").querySelector(".record-content");
+
+  title.addEventListener("click", () => {
+  content.style.display = (content.style.display === "none") ? "block" : "none";
+  });
+
+  // 表示切り替え
+  document.getElementById("recordBox").style.display = "block";
+  document.getElementById("stepBlock").style.display = "none";
+
+  btn_kanri("tebanasi_to_kiroku");
+
+  document.getElementById("releaseSlider").style.display = "none";
+
+  // ★ 記録ボタンで送るために保存
+  window.kiroku_json = data;
+
+}
+
+//最初に戻る
+function resetToStart() {
+
+  // 数字ボタンを再表示
+  const numbers = document.querySelector('.numbers');
+  if (numbers) numbers.style.display = "flex";
+
+  // ★ 数字ボタンの選択状態をリセット
+  document.querySelectorAll('.num-btn').forEach(btn => btn.classList.remove('active'));
+
+  // 質問欄を非表示
+  const questions = document.querySelector('#stepBlock');
+  if (questions) questions.style.display = "none";
+
+  // 全体読み上げボタンを初期状態に戻す
+  //const readAllBtn = document.getElementById("readAllButton");
+  //if (readAllBtn) readAllBtn.textContent = "全部読み上げる";
+
+  btn_kanri("resetToStart");
+
+  // ハートのスケールを戻す
+  const heartWrapper = document.querySelector('.heart-wrapper');
+  heartWrapper.style.transform = "scale(1.0)";
+
+  // 黒幕を初期状態に戻す
+  const curtain = document.querySelector('.black-curtain');
+  curtain.classList.remove("release");
+  curtain.classList.add("default");
+  curtain.style.height = "0%";
+
+  // 背景とハートのクラスを初期化
+  document.body.classList.remove("release-bg");
+  document.body.classList.add("default-bg");
+
+  heartWrapper.classList.remove("release");
+  heartWrapper.classList.add("default");
+
+  const heartMask = document.querySelector('.heart-mask');
+  heartMask.classList.remove("release");
+  heartMask.classList.add("default");
+
+  // 記録欄を非表示
+  const recordBox = document.getElementById("recordBox");
+  if (recordBox) recordBox.style.display = "none";
+
+  const resetBtn = document.getElementById("resetBtn");
+  if (resetBtn) resetBtn.classList.add("no_show");
+
+  // フラグを初期化
+  hasPlayedGuide = false;
+  firstDiscomfort = null;
+
+  // ガイド欄を初期化
+  showGuide("最初の状態に戻りました。数字を選んでください。", null);
+}
+
+/* スライダーと連動 */
+document.getElementById("releaseSlider").addEventListener("input", e => {
+  releaseHeart(e.target.value);
+});
+
+
+// ★ 説明を止める（音声停止）
+let currentAudio = null;  // ◆ MP3（案内音声・効果音）
+let bgmAudio = null;      // ◆ BGM（背景音）
+
+// 全ての音を止める
+function stopAllSounds() {
+  if (bgmAudio) {
+    bgmAudio.pause();
+    bgmAudio.currentTime = 0;
+  }
+
+  if (currentAudio) {
+    currentAudio.pause();
+    currentAudio.currentTime = 0;
+  }
+
+  speechSynthesis.cancel();
+}
+
+
+//リフレーミングの質問はここに付け足し
+const reframeList = [
+  {
+    text: "前の日、宝くじが100万円当たっていたとして？",
+    mp3: "rel_04.mp3"
+  },
+  {
+    text: "相手の余命があと一か月だったとして？",
+    mp3: "ref_02.mp3"
+  },
+  {
+    text: "明日からリフレッシュ休暇で一か月休めるとして？",
+    mp3: "ref_03.mp3"
+  }
+];
+
+//リフレーミング関数始まり
+function goReframe() {
+  const i = Math.floor(Math.random() * reframeList.length);
+  const q = reframeList[i]; // ← return しない
+
+  // リフレーミング質問＋音声を案内
+  showGuide(q.text, q.mp3);
+
+  // リフレーミング後の案内（不快指数の再入力）
+//  setTimeout(() => {
+ //   showGuide("もう一度、不快指数を入力してください", "henoj_3.mp3");
+//  }, 4000);
+
+}
+
+//記録ボタンを押した時の関数
+function kiroku_save() {   
+  // ★ 動作確認したいときだけ一時的に表示
+   // ← 検証用。完成後は削除してOK
+  //sendToSpreadsheet_02(kiroku_json); // ← スプレットシートに追加
+  sendToSpreadsheet(kiroku_json); // ← スプレットシートに追加
+  // 背景色を変える
+  document.getElementById("recordBox").classList.add("saved");
+
+  // メッセージを表示
+  showGuide("保存されました<br>カレンダーから確認できます。", "hozon_kanryou.mp3");
+
+  // 送ったデータを確認したいならこれ
+  console.log(kiroku_json);
+}
+
+
+//ボタン管理関数
+function btn_kanri(kansuumei) {
+
+  // まず全部消す（説明を止めるは常駐なので触らない）
+  hideAuto("readAllButton");
+  hideAuto("reframeBtn");
+  hideAuto("nextBtn");
+  hideAuto("resetBtn");
+  hideAuto("kiroku_Btn");
+
+  switch (kansuumei) {
+
+    // 初期画面：説明を止めるだけ
+    case "initial":
+      // 何も出さない（説明を止めるは常駐）
+      break;
+
+    // 数字を押した直後：全文を読み上げるだけ
+    case "selectNum":
+      const readBtn1 = document.getElementById("readAllButton");
+      readBtn1.textContent = "全文を読み上げる";
+      showAuto("readAllButton");
+      break;
+
+    // 読み上げ終了：もう一度・リフレ・次へ
+    case "readAll":
+      const readBtn2 = document.getElementById("readAllButton");
+      readBtn2.textContent = "もう一度";
+      showAuto("readAllButton");
+      showAuto("reframeBtn");
+      showAuto("nextBtn");
+      break;
+
+    // 次へを押した後：全部消える（説明を止めるだけ）
+    case "tugihe":
+      // 何も出さない
+      break;
+
+    // スライダーを動かした時：始めに戻る
+    case "tebanasi_to_kiroku":
+      showAuto("resetBtn");
+      showAuto("kiroku_Btn");
+      break;
+
+    // 始めに戻るを押した時：初期状態へ
+    case "resetToStart":
+      // 全部消す（説明を止めるだけ）
+      break;
+
+    // 記録ボタンを押した時：
+    case "kiroku_save":
+      // 全部消す（説明を止めるだけ）
+      break;  
+  }
+}
+
+
+function showAuto(id) {
+  const elem = document.getElementById(id);
+  if (!elem) return;
+
+　elem.classList.remove("no_show");
+  elem.classList.add("yes_show_inline");
+}
+  
+function hideAuto(id) {
+  const elem = document.getElementById(id);
+  if (!elem) return;
+
+  elem.classList.remove("yes_show_inline");
+  elem.classList.add("no_show");
+}
+
+</script>
 
 <style>
 body {
@@ -421,599 +1017,5 @@ label, select, input {
 </div><!-- container 終わり -->
 </body>
 
-<script>
-//カレンダーボタンを押した時
-function toCalender() {
-  window.location.href = "calendar.html";
-}
-
-//非表示ボタンの初期設定（説明を止める以外非表示）
-document.addEventListener("DOMContentLoaded", () => {
-  btn_kanri("initial");
-});
-
-//説明とアナウンス
-function showGuide(text, mp3) {
-  const msg = document.getElementById("messageArea");
-
-  msg.innerHTML = text;
-  msg.classList.add("fade-in");
-
-  // ★ 新しい案内音声を鳴らす前に、必ず全部止める
-  stopAllSounds();
-
-  setTimeout(() => {
-    currentAudio = new Audio(mp3);   // ← ここが一番大事！
-    currentAudio.currentTime = 0;
-    currentAudio.play();
-  }, 500);
-}
-
-
-
-//声準備
-function loadVoices() {
-  voices = speechSynthesis.getVoices();
-  const select = document.getElementById("voiceSelect");
-  select.innerHTML = "";
-
-  let defaultIndex = 0;
-
-  voices.forEach((v, i) => {
-    const opt = document.createElement("option");
-    opt.value = i;
-    opt.textContent = v.name;
-    select.appendChild(opt);
-
-    if (v.lang.startsWith("ja") || v.name.includes("日本語")) {
-      defaultIndex = i;
-    }
-  });
-
-  select.value = defaultIndex;
-}
-
-loadVoices();                         // ← まず1回読み込む
-speechSynthesis.onvoiceschanged = loadVoices;   // ← 声が本当に来たらもう1回読み込む
-
-
-/*ボタンを変数に入れる*/
-//const readAllButton = document.getElementById("readAllButton");
-//const reframeBtn = document.getElementById("reframeBtn");
-//const nextBtn = document.getElementById("nextBtn");
-
-
-/*ハートの幕の上げ下げ*/
-function selectNum(n) {
-  const curtain = document.querySelector('.black-curtain');
-  curtain.style.height = (n * 10) + '%';
-}
-
-let firstDiscomfort = null;  // ★ 追加：最初の不快指数を保存する変数
-
-function selectNum(event, n) {
-  const curtain = document.querySelector('.black-curtain');
-  curtain.style.height = (n * 10) + '%';
-
-  document.querySelectorAll('.num-btn').forEach(btn => btn.classList.remove('active'));
-  event.target.classList.add('active');
-
-  document.getElementById("discomfort_input").value = n;
-
-    if (firstDiscomfort === null) {
-    firstDiscomfort = n;
-  }
-
-  // ★★★ ここから分岐を追加するだけ ★★★
-  if (hasPlayedGuide) {
-    // 二回目以降：不快指数の入力へ進む
-    showGuide(`不快指数は ${n}ですね。<br>出来るだけ少なくなるまで繰り返し聞いてください。`, "repeat3.mp3");
-
-    // ここでハートの下の入力ブロックを表示する
-    document.getElementById("heartInputBlock").classList.add("visible");
-
-  } else {
-    const guideText = `不快指数は ${n}ですね<br>次の質問に答えてください。`;
-
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-          // stepBlock を表示する
-        const step = document.getElementById("stepBlock");
-        step.style.display = "block";
-        step.classList.add("visible");
-
-        // ★ ここでボタンを出す（showGuide より後）
-        //readAllButton.classList.remove("no_show");
-        //readAllButton.classList.add("yes_show_inline");
-        btn_kanri("selectNum") 
-
-        // ガイドを再生する
-        showGuide(guideText, "henoj_2.mp3");
-
-      });
-    });
-  }
-}
-
-
-function setDiscomfortStart() {
-  const value = Number(document.getElementById("discomfort_input").value);
-  discomfortStart = value;
-
-  const msg = `不快指数は${value}ですね。<br>振り返りながら次の質問に答えてください。`;
-  const utter = new SpeechSynthesisUtterance(msg);
-  utter.rate = Number(document.getElementById("voice_speed").value);
-  utter.voice = voices[document.getElementById("voiceSelect").value];
-
-  speechSynthesis.cancel();
-  speechSynthesis.speak(utter);
-
-  utter.onend = () => {
-    document.getElementById("stepBlock").classList.add("visible");
-  };
-}
-
-/*気持ちのセレクト*/
-let selectedEmotions = [];
-
-function toggleEmotion(el) {
-  const emotion = el.textContent;
-  if (selectedEmotions.includes(emotion)) {
-    selectedEmotions = selectedEmotions.filter(e => e !== emotion);
-    el.classList.remove("selected");
-  } else {
-    selectedEmotions.push(emotion);
-    el.classList.add("selected");
-  }
-}
-
-function addEmotion() {
-  const add = document.getElementById("emotionAdd").value.trim();
-  if (add) {
-    const area = document.getElementById("emotionArea");
-    const span = document.createElement("span");
-    span.className = "emotion-btn";
-    span.textContent = add;
-    span.onclick = function() { toggleEmotion(span); };
-    area.appendChild(span);
-    document.getElementById("emotionAdd").value = "";
-  }
-}
-
-
-let hasPlayedGuide = false;  // ★ 一回目かどうか判定するフラグ
-//全部読み上げる
-function readAll() {
-  const event = document.getElementById("event").value;
-  const emotions = selectedEmotions.join("、");
-  const feeling = document.getElementById("feelingText").value;
-  const body = document.getElementById("bodyText").value;
-
-  const rate = Number(document.getElementById("voice_speed").value);
-  const voiceIndex = document.getElementById("voiceSelect").value;
-
-  const text =
-    `${event}といった出来事がきっかけで、${emotions}を感じていて、${feeling}という気持ちがあって、身体感覚は${body}」ですね。`;
-
-  const utter = new SpeechSynthesisUtterance(text);
-  utter.rate = rate;
-  utter.voice = voices[voiceIndex];
-
-  speechSynthesis.cancel();
-  speechSynthesis.speak(utter);
-
-  // ★★★ 読み上げが終わったら実行される処理 ★★★
-  utter.onend = function() {
-
-    if (!hasPlayedGuide) {
-      // 一回目だけ流す案内音声
-      btn_kanri("readAll") 
-      showGuide("繰り返し聞いてください", "ref_01.mp3");
-
-      // ★ ボタンの言葉を「もう一度」に変更
-      //const btn = document.getElementById("readAllButton");
-      //if (btn) btn.textContent = "もう一度";
-
-     // ★ 次へリフレボタン表示
-      //if (reframeBtn) reframeBtn.classList.add("yes_show_inline");
-      //if (nextBtn) nextBtn.classList.add("yes_show_inline");
-     
-         hasPlayedGuide = true;  // 次回からは別の案内へ
-
-    } else {
-      // 二回目以降の案内（音声はまだ作っていないとのことなのでメッセージだけ）
-      showGuide("必要に応じて内容を変えたり<br>不快指数の数値の変更をしてください。","repeat2.mp3");
-
-      // 音声を作ったらここに追加
-      // showGuide("もう一度聞きますか？", "repeat2.mp3");
-    }
-  };
-}
-// 次へボタン↓
-function tugihe() {
-  const slider = document.getElementById("releaseSlider");
-  const numbers = document.querySelector('.numbers');
-  const questions = document.querySelector('#stepBlock');
-  const heart = document.querySelector('.heart-wrapper');
-  const curtain = document.querySelector('.black-curtain'); // ★ 黒幕を取得
-
-  // 数字ボタン・質問欄・全体を読むを消す
-  if (numbers) numbers.style.display = "none";
-  if (questions) questions.style.display = "none";
-
-  btn_kanri("tugihe");
-
-  // ★ 最初の不快指数を反映（黒幕を元の高さに戻す）
-  if (firstDiscomfort !== null) {
-    curtain.style.height = (firstDiscomfort * 10) + '%';
-  }
-
-  // スライダーを表示
-  slider.style.display = "block";
-
-  // ハートの位置へスクロール
-  heart.scrollIntoView({ behavior: "smooth", block: "center" });
-
-  // ハートを少し拡大
-  heart.style.transition = "transform 0.3s ease";
-  heart.style.transform = "scale(1.1)";
-  setTimeout(() => {
-    heart.style.transform = "scale(1.0)";
-  }, 300);
-
-  // ★ アナウンス欄に「最初の不快指数は ○ です」
-  showGuide(`最初の不快指数は ${firstDiscomfort} です。<br>バーを動かしてハートをクリーンにしてください`, "repeat4.mp3");
-}
-
-
-/* 手放しステップ：納得ボタンを押したらスライダーを表示 */
-function releaseHeart(n) {
-  const curtain = document.querySelector('.black-curtain');
-  const heart = document.querySelector('.heart-mask');
-  const wrapper = document.querySelector('.heart-wrapper');
-  const body = document.body;
-
-  // 黒幕の高さを減らす
-  curtain.style.height = (n * 10) + '%';
-
-  // 0になったら release 状態へ切り替え
-  if (n == 0) {
-
-    // 黒幕をふわっと消す（transition は残してOK）
-    curtain.classList.remove("release");
-    curtain.classList.add("default");   // ★これが絶対に必要
-    curtain.style.height = "0%";
-
-    // ★★★ ここが重要：style をいじらず、クラスを切り替える ★★★
-    body.classList.remove("default-bg");
-    body.classList.add("release-bg");
-
-    wrapper.classList.remove("default");
-    wrapper.classList.add("release");
-
-    heart.classList.remove("default");
-    heart.classList.add("release");
-
-    curtain.classList.remove("default");
-    curtain.classList.add("release");
-
-    // 黒幕を完全に消す → 演出が終わったら tebanasi_to_kiroku を呼ぶ
-    setTimeout(() => {
-      tebanasi_to_kiroku();
-    }, 800);
-  }
-}
-//記録、送信データを作る
-function makeRecordData() {
-  const today = new Date().toISOString().split("T")[0];
-
-  return {
-    date: today,
-    event: document.getElementById("event").value,
-    emotion: selectedEmotions.join("、"),
-    novel: document.getElementById("feelingText").value,
-    body: document.getElementById("bodyText").value,
-    firstDiscomfort: firstDiscomfort
-  };
-}
-//表示テキストを作る
-function makeSummaryHtml(data) {
-  return `
-    日付：${data.date}<br>
-    出来事：${data.event}<br>
-    気持ち：${data.emotion}<br>
-    小説風：${data.novel}<br>
-    身体感覚：${data.body}<br>
-    始めの不快指数：${data.firstDiscomfort}
-  `;
-}
-
-
-//スプレットシートに送る関数
-function sendToSpreadsheet(data) {
-
-  alert("送るJSON: " + JSON.stringify(data));  // ← ここで中身を確認
-
-  fetch("https://script.google.com/macros/s/AKfycbyeIJKH5pkVkKBJ4kEwuGfpwMokjhdriZNwtX8kQT5Qyg8ozcRcxkcBd5fIs6J-oTvDsQ/exec", {
-    method: "POST",
-    body: JSON.stringify(data),
-    //headers: { "Content-Type": "application/json" }
-  })
-  .then(response => response.text())
-  .then(result => {
-    console.log("スプレッドシートに保存されました:", result);
-  })
-  .catch(error => {
-    console.error("送信エラー:", error);
-  });
-}
-
-function sendToSpreadsheet_02(data) {
-
-  const text =
-    data.date + "|" +
-    data.event + "|" +
-    data.emotion + "|" +
-    data.novel + "|" +
-    data.body + "|" +
-    data.firstDiscomfort;
-
-  alert("送るテキスト: " + text);
-
-  fetch("https://script.google.com/macros/s/AKfycbyeIJKH5pkVkKBJ4kEwuGfpwMokjhdriZNwtX8kQT5Qyg8ozcRcxkcBd5fIs6J-oTvDsQ/exec", {
-    method: "POST",
-    body: text
-  })
-  .then(response => response.text())
-  .then(result => {
-    console.log("結果:", result);
-  })
-  .catch(error => {
-    console.error("送信エラー:", error);
-  });
-}
-
-
-
-//スライドバーを動かして手放した時
-function tebanasi_to_kiroku() {
-  showGuide("お疲れさまでした。下の内容を保存します。", "otukare_hozonsusumeru.mp3");
-
-const data = makeRecordData();
-
-// ★ 表示用HTMLを作る
-const html = makeSummaryHtml(data);
-
-// ★ recordBox に表示する
-document.getElementById("recordBox").innerHTML = `
-  <h3>今日の記録</h3>
-  <div class="record-title">▼ 内容を開く</div>
-  <div class="record-content">${html}</div>
-`;
-
-const title = document.getElementById("recordBox").querySelector(".record-title");
-const content = document.getElementById("recordBox").querySelector(".record-content");
-
-  title.addEventListener("click", () => {
-  content.style.display = (content.style.display === "none") ? "block" : "none";
-  });
-
-  // 表示切り替え
-  document.getElementById("recordBox").style.display = "block";
-  document.getElementById("stepBlock").style.display = "none";
-
-  btn_kanri("tebanasi_to_kiroku");
-
-  document.getElementById("releaseSlider").style.display = "none";
-
-  // ★ 記録ボタンで送るために保存
-  window.kiroku_json = data;
-
-}
-
-//最初に戻る
-function resetToStart() {
-
-  // 数字ボタンを再表示
-  const numbers = document.querySelector('.numbers');
-  if (numbers) numbers.style.display = "flex";
-
-  // ★ 数字ボタンの選択状態をリセット
-  document.querySelectorAll('.num-btn').forEach(btn => btn.classList.remove('active'));
-
-  // 質問欄を非表示
-  const questions = document.querySelector('#stepBlock');
-  if (questions) questions.style.display = "none";
-
-  // 全体読み上げボタンを初期状態に戻す
-  //const readAllBtn = document.getElementById("readAllButton");
-  //if (readAllBtn) readAllBtn.textContent = "全部読み上げる";
-
-  btn_kanri("resetToStart");
-
-  // ハートのスケールを戻す
-  const heartWrapper = document.querySelector('.heart-wrapper');
-  heartWrapper.style.transform = "scale(1.0)";
-
-  // 黒幕を初期状態に戻す
-  const curtain = document.querySelector('.black-curtain');
-  curtain.classList.remove("release");
-  curtain.classList.add("default");
-  curtain.style.height = "0%";
-
-  // 背景とハートのクラスを初期化
-  document.body.classList.remove("release-bg");
-  document.body.classList.add("default-bg");
-
-  heartWrapper.classList.remove("release");
-  heartWrapper.classList.add("default");
-
-  const heartMask = document.querySelector('.heart-mask');
-  heartMask.classList.remove("release");
-  heartMask.classList.add("default");
-
-  // 記録欄を非表示
-  const recordBox = document.getElementById("recordBox");
-  if (recordBox) recordBox.style.display = "none";
-
-  const resetBtn = document.getElementById("resetBtn");
-  if (resetBtn) resetBtn.classList.add("no_show");
-
-  // フラグを初期化
-  hasPlayedGuide = false;
-  firstDiscomfort = null;
-
-  // ガイド欄を初期化
-  showGuide("最初の状態に戻りました。数字を選んでください。", null);
-}
-
-/* スライダーと連動 */
-document.getElementById("releaseSlider").addEventListener("input", e => {
-  releaseHeart(e.target.value);
-});
-
-
-// ★ 説明を止める（音声停止）
-let currentAudio = null;  // ◆ MP3（案内音声・効果音）
-let bgmAudio = null;      // ◆ BGM（背景音）
-
-// 全ての音を止める
-function stopAllSounds() {
-  if (bgmAudio) {
-    bgmAudio.pause();
-    bgmAudio.currentTime = 0;
-  }
-
-  if (currentAudio) {
-    currentAudio.pause();
-    currentAudio.currentTime = 0;
-  }
-
-  speechSynthesis.cancel();
-}
-
-
-//リフレーミングの質問はここに付け足し
-const reframeList = [
-  {
-    text: "前の日、宝くじが100万円当たっていたとして？",
-    mp3: "rel_04.mp3"
-  },
-  {
-    text: "相手の余命があと一か月だったとして？",
-    mp3: "ref_02.mp3"
-  },
-  {
-    text: "明日からリフレッシュ休暇で一か月休めるとして？",
-    mp3: "ref_03.mp3"
-  }
-];
-
-//リフレーミング関数始まり
-function goReframe() {
-  const i = Math.floor(Math.random() * reframeList.length);
-  const q = reframeList[i]; // ← return しない
-
-  // リフレーミング質問＋音声を案内
-  showGuide(q.text, q.mp3);
-
-  // リフレーミング後の案内（不快指数の再入力）
-//  setTimeout(() => {
- //   showGuide("もう一度、不快指数を入力してください", "henoj_3.mp3");
-//  }, 4000);
-
-}
-
-//記録ボタンを押した時の関数
-function kiroku_save() {   
-  // ★ 動作確認したいときだけ一時的に表示
-   // ← 検証用。完成後は削除してOK
-  //sendToSpreadsheet_02(kiroku_json); // ← スプレットシートに追加
-  sendToSpreadsheet(kiroku_json); // ← スプレットシートに追加
-  // 背景色を変える
-  document.getElementById("recordBox").classList.add("saved");
-
-  // メッセージを表示
-  showGuide("保存されました<br>カレンダーから確認できます。", "hozon_kanryou.mp3");
-
-  // 送ったデータを確認したいならこれ
-  console.log(kiroku_json);
-}
-
-
-//ボタン管理関数
-function btn_kanri(kansuumei) {
-
-  // まず全部消す（説明を止めるは常駐なので触らない）
-  hideAuto("readAllButton");
-  hideAuto("reframeBtn");
-  hideAuto("nextBtn");
-  hideAuto("resetBtn");
-  hideAuto("kiroku_Btn");
-
-  switch (kansuumei) {
-
-    // 初期画面：説明を止めるだけ
-    case "initial":
-      // 何も出さない（説明を止めるは常駐）
-      break;
-
-    // 数字を押した直後：全文を読み上げるだけ
-    case "selectNum":
-      const readBtn1 = document.getElementById("readAllButton");
-      readBtn1.textContent = "全文を読み上げる";
-      showAuto("readAllButton");
-      break;
-
-    // 読み上げ終了：もう一度・リフレ・次へ
-    case "readAll":
-      const readBtn2 = document.getElementById("readAllButton");
-      readBtn2.textContent = "もう一度";
-      showAuto("readAllButton");
-      showAuto("reframeBtn");
-      showAuto("nextBtn");
-      break;
-
-    // 次へを押した後：全部消える（説明を止めるだけ）
-    case "tugihe":
-      // 何も出さない
-      break;
-
-    // スライダーを動かした時：始めに戻る
-    case "tebanasi_to_kiroku":
-      showAuto("resetBtn");
-      showAuto("kiroku_Btn");
-      break;
-
-    // 始めに戻るを押した時：初期状態へ
-    case "resetToStart":
-      // 全部消す（説明を止めるだけ）
-      break;
-
-    // 記録ボタンを押した時：
-    case "kiroku_save":
-      // 全部消す（説明を止めるだけ）
-      break;  
-  }
-}
-
-
-function showAuto(id) {
-  const elem = document.getElementById(id);
-  if (!elem) return;
-
-　elem.classList.remove("no_show");
-  elem.classList.add("yes_show_inline");
-}
-  
-function hideAuto(id) {
-  const elem = document.getElementById(id);
-  if (!elem) return;
-
-  elem.classList.remove("yes_show_inline");
-  elem.classList.add("no_show");
-}
-
-</script>
 
 </html>
