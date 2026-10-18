@@ -5,13 +5,18 @@
 <title>感情記録アプリ</title>
 
 <style>
+
+/* ============================
+   PC用レイアウト（先に書く）
+   ============================ */
+
 body {
   background: #aaa;
   color: #eee;
   font-family: sans-serif;
   display: flex;
-  flex-direction: column; /* ← 縦並びに変更 */
-  align-items: center;    /* ← 中央寄せ */
+  flex-direction: column;
+  align-items: center;
   padding-top: 40px;
 }
 
@@ -53,35 +58,20 @@ body {
 }
 
 body.default-bg { background: #aaa; }
-
 .heart-wrapper.default { background: #ec9292; }
-
 .heart-mask.default { filter: none; }
-
-.black-curtain.default {
-  opacity: 0.8;
-  display: block;
-  height: 0;   /* ← これが必要だった */  
-}
+.black-curtain.default { opacity: 0.8; display: block; height: 0; }
 
 body.release-bg { background: #ffffff; }
-
 .heart-wrapper.release { background: #fff27a; }
+.heart-mask.release { filter: brightness(300%) saturate(0%); }
+.black-curtain.release { opacity: 0; display: none; }
 
-.heart-mask.release {
-  filter: brightness(300%) saturate(0%);
-}
-
-.black-curtain.release {
-  opacity: 0;
-  display: none;
-}
-
-
+/* --- PCの数字ボタン（flex） --- */
 .numbers {
   display: flex;
   justify-content: center;
-  margin-top: 10px; /* ← ハートから少し離す */
+  margin-top: 10px;
 }
 
 .num-btn {
@@ -97,33 +87,23 @@ body.release-bg { background: #ffffff; }
   transition: all 0.2s ease;
 }
 
+.num-btn:hover { background-color: #ffe0e0; }
+.num-btn.active { background: #ff6b81; color: #fff; }
 
-/* マウスを乗せたとき */
-.num-btn:hover {
-  background-color: #ffe0e0;
-  /* transform を消す */
-  /* transform: scale(1.1); */
-}
-
-.num-btn.active {
-  background: #ff6b81;
-  color: #fff;
-}
-
-/* --- セクション共通 --- */
+/* --- セクション --- */
 .section {
   opacity: 0;
   transition: opacity 0.3s ease;
-}
-
-.section {
   display: none;
+  pointer-events: none;
+  width: 300px;
 }
 
 .section.visible {
   display: block;
+  opacity: 1;
+  pointer-events: auto;
 }
-
 
 .section textarea,
 .section input,
@@ -134,37 +114,9 @@ body.release-bg { background: #ffffff; }
   box-sizing: border-box;
 }
 
-button {
-  margin-top: 10px;
-  padding: 6px 10px;
-}
-.emotion-btn {
-  display: inline-block;
-  margin: 4px;
-  padding: 6px 12px;
-  border: 1px solid #666;
-  border-radius: 6px;
-  cursor: pointer;
-  background: #2b0149;
-}
- .selected { background: #333; color: rgb(176, 77, 77); }
-
-/* 出来事以下のブロック */
-.section {
-  opacity: 0;
-  transition: opacity 0.3s ease;
-  pointer-events: none;
-  width: 300px; /* ← 幅を固定して中央に */
-}
-
-.section.visible {
-  opacity: 1;
-  pointer-events: auto;
-}
-
 label, select, input {
-  display: block; /* ← 横並びを解除して縦並びに */
-  margin-bottom: 8px; /* ← 行間を少し空ける */
+  display: block;
+  margin-bottom: 8px;
 }
 
 .guide-text {
@@ -179,65 +131,36 @@ label, select, input {
   text-align: center;
   border-radius: 8px;
   box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-  opacity: 1; /* ← 最初から見える */
-  transition: opacity 0.8s ease;
-}
-.guide-text.fade-in {
-  opacity: 1;
-}
-.guide-text {
   opacity: 0;
   transition: opacity 0.8s ease;
 }
+
 .tts-setting {
   display: grid;
-  grid-template-columns: 120px 1fr; /* 左：ラベル / 右：入力 */
+  grid-template-columns: 120px 1fr;
   grid-row-gap: 8px;
   grid-column-gap: 10px;
   align-items: center;
 }
 
-/* ラベルは右寄せにするとテーブル感が出る */
-.tts-setting label {
-  text-align: right;
-}
+.tts-setting label { text-align: right; }
+.tts-setting select, .tts-setting input { width: 160px; }
 
-/* 入力欄は幅をそろえる */
-.tts-setting select,
-.tts-setting input {
-  width: 160px;
-}
 #releaseSlider {
-  display: none;        /* ← 中央寄せのために block に */
-  width: 80%;            /* ← 画面幅の8割。存在感アップ */
-  max-width: 400px;      /* ← 大きすぎ防止（好みで調整） */
-  margin: 20px auto;     /* ← 中央に配置＋上下余白 */
-  height: 40px;          /* ← 太めにしてインパクト */
-  accent-color: #ec9292; /* ← ハート色と統一 */
-}
-
-.heart-mask {
-  transition: filter 0.8s ease; /* ← これだけ追加すればOK */
-}
-/* ボタンの表示関連 */
-#actionBtnBox {
-  display: block; /* 親は常に表示 */
-}
-
-.no_show {
   display: none;
-  opacity: 0;
+  width: 80%;
+  max-width: 400px;
+  margin: 20px auto;
+  height: 40px;
+  accent-color: #ec9292;
 }
 
-.yes_show_inline {
-  display: inline-block;
-  opacity: 1;
-}
+.heart-mask { transition: filter 0.8s ease; }
 
-.yes_show_block {
-  display: block;
-  opacity: 1;
-}
+#actionBtnBox { display: block; }
+.no_show { display: none; opacity: 0; }
+.yes_show_inline { display: inline-block; opacity: 1; }
+.yes_show_block { display: block; opacity: 1; }
 
 .pink_btn {
   background-color: #ffd6d6;
@@ -250,14 +173,9 @@ label, select, input {
   transition: background 0.3s ease, opacity 0.8s ease;
 }
 
-.pink_btn:hover {
-  background-color: #ffbaba;
-}
-
+.pink_btn:hover { background-color: #ffbaba; }
 
 #recordBox {
-  display: none;                 /* 初期は非表示 */
-  border: 2px solid #f7d774;     /* 明るい黄色の枠 */
   display: none;
   border: 2px solid #f7d774;
   background-color: #fff9e6;
@@ -269,29 +187,32 @@ label, select, input {
   margin-top: 12px;
   width: 90%;
   box-sizing: border-box;
-
-  /* ↓ここを調整 */
-  word-break: break-all;     /* 長い単語や文を強制的に折り返す */
-  overflow-wrap: anywhere;   /* どこでも折り返し可能にする */
-  white-space: normal;       /* 改行を許可する */
+  word-break: break-all;
+  overflow-wrap: anywhere;
+  white-space: normal;
 }
 
 #recordBox.saved {
-  background-color: #a5bbf3; /* 優しいピンクなど */
+  background-color: #a5bbf3;
   transition: background-color 0.8s ease;
 }
 
+
 /* ============================
-   スマホ専用レイアウト（Chrome/iPhone対応）
+   スマホ専用レイアウト（最後に書く）
    ============================ */
 @media screen and (max-width: 600px) {
 
-  /* Safari/Chromeで高さが潰れないようにする */
   body {
     min-height: 100vh;
   }
 
-  /* ハートを画面上半分に広げる */
+  .container {
+    display: block;
+    width: 90%;
+    max-width: 420px;
+  }
+
   .heart-wrapper {
     width: 100%;
     height: 50vh;
@@ -307,23 +228,22 @@ label, select, input {
     height: auto;
   }
 
-  /* 数字ボタンを 1〜5 / 6〜10 の2段にする（Chrome/iPhone両対応） */
+  /* --- スマホの数字ボタン（grid） --- */
   .numbers {
-    display: grid !important;               /* ← flexを完全に上書き */
-    grid-template-columns: repeat(5, 1fr);  /* ← 横に5列 */
+    display: grid !important;
+    grid-template-columns: repeat(5, 1fr);
     gap: 6px;
     width: 90%;
     margin: 20px auto;
   }
 
   .numbers .num-btn {
-    display: block;                         /* ← Safari/Chromeで必須 */
+    display: block;
     width: 100%;
     height: 48px;
     font-size: 20px;
   }
 
-  /* セクション（出来事・感情など） */
   .section {
     width: 90%;
     max-width: 420px;
@@ -337,7 +257,6 @@ label, select, input {
     padding: 10px;
   }
 
-  /* ガイドテキスト */
   .guide-text {
     width: 90%;
     max-width: 420px;
@@ -345,14 +264,12 @@ label, select, input {
     padding: 12px 14px;
   }
 
-  /* 手放しスライダー */
   #releaseSlider {
     width: 90%;
     max-width: 420px;
     height: 40px;
   }
 
-  /* ボタン */
   .pink_btn {
     width: 90%;
     max-width: 420px;
@@ -360,7 +277,6 @@ label, select, input {
     font-size: 16px;
   }
 
-  /* 記録ボックス */
   #recordBox {
     width: 90%;
     max-width: 420px;
@@ -369,8 +285,8 @@ label, select, input {
   }
 }
 
-
 </style>
+
 </head>
 
 <body class="default-bg">
