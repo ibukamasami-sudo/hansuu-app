@@ -265,6 +265,16 @@ label, select, input {
   background-color: #ffbaba;
 }
 
+.emotion-btn {
+  display: inline-block;
+  padding: 10px 14px;
+  margin: 6px;
+  background: #f0f0f0;
+  border-radius: 10px;
+  font-size: 18px;
+  cursor: pointer;
+}
+
 
 #recordBox {
   display: none;                 /* 初期は非表示 */
@@ -331,37 +341,64 @@ label, select, input {
 }
 
   
-  /* --- スマホの数字ボタン（grid） --- */
-  .numbers {
-    display: grid !important;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 6px;
-    width: 90%;
-    margin: 20px auto;
-  }
+ /* --- スマホの数字ボタン（grid） --- */
+.numbers {
+  display: grid !important;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 6px;
+  width: 90%;
+  margin: 20px auto;
+}
 
-  .numbers .num-btn {
-    display: block;
-    width: 100%;
-    height: 48px;
-    font-size: 20px;
-  }
+.numbers .num-btn {
+  display: block;
+  width: 100%;
+}
 
-  .section {
+.num-btn {
+    height: 52px;
+    font-size: 22px;
+}
+.section {
     width: 90%;
     max-width: 420px;
     margin-top: 24px;
-  }
+}
   
-  .numbers.no_show {
+  
+.numbers.no_show {
     display: none !important;
-  }
+}
 
-  #releaseSlider {
+#releaseSlider {
   pointer-events: auto !important;
   z-index: 10;
-  }  
 }
+
+ 
+input[type="text"],
+  textarea {
+    width: 100%;
+    font-size: 18px;     /* ← 文字を少し大きく */
+    padding: 14px;       /* ← 内側の余白を増やす */
+    border-radius: 10px; /* ← 指で触れやすい丸み */
+}
+
+select {
+    width: 100%;
+    font-size: 18px;
+    padding: 12px;
+    height: 48px;        /* ← 明確に高さを確保 */
+    border-radius: 10px;
+  }
+
+.emotion-btn {
+    padding: 14px 18px;   /* ← タップ領域を広げる */
+    font-size: 20px;      /* ← 見やすくする */
+    border-radius: 12px;  /* ← スマホらしい丸み */
+  }   
+} /* スマホ終わりーーーーーーーーーーーーーーーーーーーーーーーーーーーー
+
 
 </style>
 
@@ -421,21 +458,22 @@ label, select, input {
     <section>
         <label>出来事を入力してください</label>
       <textarea id="event"></textarea>
-      <button onclick="readContent('event')">出来事を読み上げる</button>
+   <!--   <button onclick="readContent('event')">出来事を読み上げる</button>-->
     </section>
 
-    <p><strong>どんな気持ちだった？選んでみて。</strong></p>
-    <div id="emotionArea">
-      <span class="emotion-btn" onclick="toggleEmotion(this)">怒り</span>
-      <span class="emotion-btn" onclick="toggleEmotion(this)">不安</span>
-      <span class="emotion-btn" onclick="toggleEmotion(this)">悲しみ</span>
-      <span class="emotion-btn" onclick="toggleEmotion(this)">イライラ</span>
-      <span class="emotion-btn" onclick="toggleEmotion(this)">孤独</span>
-      <span class="emotion-btn" onclick="toggleEmotion(this)">罪悪感</span>
-    </div>
+<p><strong>どんな気持ちだった？選んでみて。</strong></p>
+<div id="emotionArea">
+  <span class="emotion-btn" onclick="toggleEmotion(this)">怒り</span>
+  <span class="emotion-btn" onclick="toggleEmotion(this)">不安</span>
+  <span class="emotion-btn" onclick="toggleEmotion(this)">悲しみ</span>
+  <span class="emotion-btn" onclick="toggleEmotion(this)">イライラ</span>
+  <span class="emotion-btn" onclick="toggleEmotion(this)">孤独</span>
+  <span class="emotion-btn" onclick="toggleEmotion(this)">罪悪感</span>
+</div>
 
-    <input type="text" id="emotionAdd" placeholder="感情を追加">
-    <button onclick="addEmotion()">追加</button>
+<input type="text" id="emotionAdd" placeholder="感情を追加">
+<button onclick="addEmotion()">追加</button>
+
 
     <hr>
 
