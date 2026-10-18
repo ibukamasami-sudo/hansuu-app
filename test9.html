@@ -290,15 +290,6 @@ label, select, input {
    スマホ専用レイアウト（最後に書く）
    ============================ */
 @media screen and (max-width: 600px) {
-  #releaseSlider {
-  pointer-events: auto !important;
-  z-index: 10;
-  }
-
-  .no_show {
-    display: none !important;
-  }
-
   body {
     min-height: 100vh;
   }
@@ -356,6 +347,15 @@ label, select, input {
     max-width: 420px;
     margin-top: 24px;
   }
+  
+  .numbers.no_show {
+    display: none !important;
+  }
+
+  #releaseSlider {
+  pointer-events: auto !important;
+  z-index: 10;
+  }  
 }
 
 </style>
@@ -553,10 +553,6 @@ loadVoices();                         // ← まず1回読み込む
 speechSynthesis.onvoiceschanged = loadVoices;   // ← 声が本当に来たらもう1回読み込む
 
 
-/*ボタンを変数に入れる*/
-//const readAllButton = document.getElementById("readAllButton");
-//const reframeBtn = document.getElementById("reframeBtn");
-//const nextBtn = document.getElementById("nextBtn");
 
 
 /*ハートの幕の上げ下げ*/
@@ -571,63 +567,47 @@ function selectNum(event, n) {
   const curtain = document.querySelector('.black-curtain');
   curtain.style.height = (n * 10) + '%';
 
+  // ボタンの選択状態
   document.querySelectorAll('.num-btn').forEach(btn => btn.classList.remove('active'));
   event.target.classList.add('active');
 
+  // hidden input に値を入れる
   document.getElementById("discomfort_input").value = n;
 
-    if (firstDiscomfort === null) {
+  // ★ 最初の不快指数を決める（初期画面に戻ったらまた null になる）
     firstDiscomfort = n;
-  }
 
-  // ★★★ ここから分岐を追加するだけ ★★★
+    // ★ スライダーの初期値もここで決める
+    const slider = document.getElementById("releaseSlider");
+    slider.value = firstDiscomfort;
+  
+
+  // ★★★ ここから分岐（質問フェーズ or 手放しフェーズ） ★★★
   if (hasPlayedGuide) {
     // 二回目以降：不快指数の入力へ進む
     showGuide(`不快指数は ${n}ですね。<br>出来るだけ少なくなるまで繰り返し聞いてください。`, "repeat3.mp3");
 
-    // ここでハートの下の入力ブロックを表示する
-    document.getElementById("heartInputBlock").classList.add("visible");
-
-  } else {
+   } else {
     const guideText = `不快指数は ${n}ですね<br>次の質問に答えてください。`;
 
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
-          // stepBlock を表示する
+
+        // stepBlock を表示
         const step = document.getElementById("stepBlock");
         step.style.display = "block";
         step.classList.add("visible");
 
-        // ★ ここでボタンを出す（showGuide より後）
-        //readAllButton.classList.remove("no_show");
-        //readAllButton.classList.add("yes_show_inline");
-        btn_kanri("selectNum") 
+        // ボタン管理
+        btn_kanri("selectNum");
 
-        // ガイドを再生する
+        // ガイド再生
         showGuide(guideText, "henoj_2.mp3");
-
       });
     });
   }
 }
 
-
-function setDiscomfortStart() {
-  const value = Number(document.getElementById("discomfort_input").value);
-  discomfortStart = value;
-
-  const msg = `不快指数は${value}ですね。<br>振り返りながら次の質問に答えてください。`;
-  const utter = new SpeechSynthesisUtterance(msg);
-  utter.rate = Number(document.getElementById("voice_speed").value);
-  utter.voice = voices[document.getElementById("voiceSelect").value];
-
-  speechSynthesis.cancel();
-  speechSynthesis.speak(utter);
-
-  utter.onend = () => {
-    document.getElementById("stepBlock").classList.add("visible");
-  };
-}
 
 /*気持ちのセレクト*/
 let selectedEmotions = [];
@@ -714,7 +694,7 @@ function tugihe() {
   const curtain = document.querySelector('.black-curtain'); // ★ 黒幕を取得
 
   // 数字ボタン・質問欄・全体を読むを消す
-  if (numbers) numbers.style.display = "none";
+  //if (numbers) numbers.style.display = "none";
   if (numbers) numbers.classList.add("no_show");
   if (questions) questions.style.display = "none";
 
