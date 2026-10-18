@@ -113,8 +113,9 @@ h1 {
   <tbody id="calendarBody"></tbody>
 </table>
 
+<script src="config.js"></script>
 <script>
-const GAS_URL = "https://script.google.com/macros/s/AKfycbyeIJKH5pkVkKBJ4kEwuGfpwMokjhdriZNwtX8kQT5Qyg8ozcRcxkcBd5fIs6J-oTvDsQ/exec";
+//const GAS_URL = "https://script.google.com/macros/s/AKfycbyeIJKH5pkVkKBJ4kEwuGfpwMokjhdriZNwtX8kQT5Qyg8ozcRcxkcBd5fIs6J-oTvDsQ/exec";
 
 let current = new Date();
 renderCalendar(current);
@@ -160,9 +161,9 @@ function renderCalendar(date) {
         // クラス付け
         if (count > 0) {
           cell.classList.add("has");
-          // ★ここを修正：0件以外だけクリック可能
+          
           cell.addEventListener("click", () => {
-            window.location.href = `daily.html?date=${dateStr}`;
+            window.location.href = `daily.html?date=${dateStr}`;//ここでdailyに日付を送る
           });
           cell.style.cursor = "pointer"; // 視覚的にクリックできると分かる
         } else {

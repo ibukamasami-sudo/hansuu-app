@@ -4,45 +4,91 @@
   <meta charset="UTF-8">
   <title>その日の記録一覧</title>
   <style>
-    body { font-family: sans-serif; padding: 20px; }
-    .item {
-      padding: 12px;
-      border-bottom: 1px solid #ddd;
-      cursor: pointer;
-    }
+body {
+  font-family: sans-serif;
+  padding: 20px;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* 日付タイトル（h1） */
+h1#dateTitle {
+  font-size: 24px;
+  margin-bottom: 20px;
+  border-bottom: 2px solid #ddd;
+  padding-bottom: 8px;
+}
+
+/* セクションタイトル（h2） */
+h2 {
+  font-size: 20px;
+  margin-top: 24px;
+  margin-bottom: 10px;
+  color: #444;
+}
+
+/* リストの1件（item） */
+.item {
+  padding: 12px;
+  margin: 6px 0;
+  background: #f7f7f7;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+/* 押した時の軽い反応 */
+.item:hover {
+  background: #ececec;
+}
   </style>
 </head>
 <body>
 
-<h2 id="dateTitle"></h2>
-<div id="list"></div>
+<h1 id="dateTitle"></h1>
+<h2>反芻</h2>
+<div id="hansuuList"></div>
 
+<!--
+<h2>読書</h2>
+<div id="bookList"></div>
+
+<h2>良かったこと</h2>
+<div id="goodList"></div>
+-->
+
+<script src="config.js"></script>
 <script>
-const GAS_URL = "https://script.google.com/macros/s/AKfycbyeIJKH5pkVkKBJ4kEwuGfpwMokjhdriZNwtX8kQT5Qyg8ozcRcxkcBd5fIs6J-oTvDsQ/exec";
+//const GAS_URL = "https://script.google.com/macros/s/AKfycbyeIJKH5pkVkKBJ4kEwuGfpwMokjhdriZNwtX8kQT5Qyg8ozcRcxkcBd5fIs6J-oTvDsQ/exec";
 
 function getParam(name) {
   return new URLSearchParams(window.location.search).get(name);
 }
 
-const date = getParam("date");
-document.getElementById("dateTitle").textContent = date + " の記録";
+const date = getParam("date");//日付が取り出される　2026-10-18など
 
-fetch(GAS_URL + "?mode=dailyList&date=" + date)
+fetch(GAS_URL + "?mode=dailyList&date=" + date)//config.jsからURLを持ってくる
   .then(res => res.json())
   .then(list => {
-    const container = document.getElementById("list");
+
+    const hansuuBox = document.getElementById("hansuuList");
+    //const bookBox = document.getElementById("bookList");
+    //const goodBox = document.getElementById("goodList");
 
     list.forEach((item, index) => {
       const div = document.createElement("div");
       div.className = "item";
-      div.textContent = item.title; // 20文字タイトル
+      div.textContent = item.title;
 
+      // record.html に date と index を送る
       div.onclick = () => {
-        // index を渡して個別記録へ
         window.location.href = `record.html?date=${date}&index=${index}`;
       };
 
-      container.appendChild(div);
+      // 分類して追加
+      if (item.type === "hansuu") hansuuBox.appendChild(div);
+      //if (item.type === "book") bookBox.appendChild(div);
+      //if (item.type === "good") goodBox.appendChild(div);
     });
   });
 </script>
