@@ -878,7 +878,7 @@ function resetToStart() {
   // 数字ボタンを再表示
   const numbers = document.querySelector('.numbers');
   numbers.classList.remove("no_show");
-  numbers.classList.add("yes_show_block");
+  //numbers.classList.add("yes_show_block");
   
 
   // 数字ボタンの選択状態をリセット
@@ -914,6 +914,11 @@ function resetToStart() {
   // 記録欄を非表示
   const recordBox = document.getElementById("recordBox");
   if (recordBox) recordBox.style.display = "none";
+
+// stepBlock 内の入力欄をすべてリセット
+  document.querySelectorAll('#stepBlock input, #stepBlock textarea, #stepBlock select').forEach(elem => {
+  elem.value = "";
+});
 
 
   // フラグを初期化
