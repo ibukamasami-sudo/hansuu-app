@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>記録詳細</title>
+
+  <style>
+    body {
+      margin: 0;
+      padding: 16px;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #f5f5f7;
+      color: #333;
+    }
+
+    .container {
+      max-width: 640px;
+      margin: 0 auto;
+      background: #ffffff;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+    }
+
+    h1 {
+      font-size: 20px;
+      margin: 0 0 16px;
+      line-height: 1.4;
+    }
+
+    .meta {
+      font-size: 12px;
+      color: #777;
+      margin-bottom: 12px;
+    }
+
+    .block-title {
+      font-size: 13px;
+      font-weight: 600;
+      margin-top: 12px;
+      margin-bottom: 4px;
+      color: #555;
+    }
+
+    .block-body {
+      font-size: 14px;
+      line-height: 1.6;
+      background: #fafafa;
+      border-radius: 8px;
+      padding: 8px 10px;
+      white-space: pre-wrap;
+    }
+
+    .type-tag {
+      display: inline-block;
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: #e5f0ff;
+      color: #2456a6;
+      margin-left: 8px;
+    }
+
+    .back-link {
+      display: inline-block;
+      margin-top: 16px;
+      font-size: 13px;
+      color: #2456a6;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+  <!-- ★★★ ここが重要：JS が書き込む受け皿 ★★★ -->
+  <div class="container">
+    <h1 id="title"></h1>
+    <div id="detail"></div>
+  </div>
+<script src="config.js"></script>
+<script>
+const params = new URLSearchParams(location.search); // URLの?以降を読むための道具
+const date = params.get("date");                     // daily.html から送られてきた日付
+const index = params.get("index");                   // daily.html で押された何番目の記録か
+
+
+// GAS_URL は config.js から読み込まれている
+fetch(GAS_URL + "?mode=dailyList&date=" + date)        // ← その日の一覧をGASから取得
+  .then(res => res.json())                             // ← JSONとして受け取る
+  .then(list => {
+    const item = list[index];                          // ← index番目の記録（詳細の元データ）
+
+    document.getElementById("title").textContent = item.title;  // ← タイトルを画面に表示
+
+    const raw = item.raw;                              // ← GASが返した行データ全部（配列）
+    let html = "";                                     // ← 詳細表示用のHTMLを入れる箱
+
+    // 反芻の詳細表示
+    if (item.type === "hansuu") {
+      html += `<p>出来事：${raw[1]}</p>`;             // ← event（B列）
+      html += `<p>感情：${raw[2]}</p>`;               // ← emotion（C列）
+      html += `<p>新しい視点：${raw[3]}</p>`;         // ← novel（D列）
+      html += `<p>体の反応：${raw[4]}</p>`;           // ← body（E列）
+      html += `<p>最初の違和感：${raw[5]}</p>`;       // ← firstDiscomfort（F列）
+    }
+
+    // 読書の詳細表示
+    if (item.type === "book") {
+      html += `<p>本のタイトル：${raw[1]}</p>`;       // ← title（B列）
+      html += `<p>著者：${raw[2]}</p>`;               // ← author（C列）
+      html += `<p>感想：${raw[3]}</p>`;               // ← impression（D列）
+      html += `<p>評価：${raw[4]}</p>`;               // ← rating（E列）
+    }
+
+    // 良かったことの詳細表示
+    if (item.type === "good") {
+      html += `<p>良かったこと：${raw[1]}</p>`;       // ← event（B列）
+      html += `<p>理由：${raw[2]}</p>`;               // ← reason（C列）
+      html += `<p>感情：${raw[3]}</p>`;               // ← emotion（D列）
+    }
+
+    document.getElementById("detail").innerHTML = html; // ← 組み立てたHTMLを画面に流し込む
+  });
+
+</script>
+</body>
+</html>
