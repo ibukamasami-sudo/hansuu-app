@@ -282,14 +282,19 @@ label, select, input {
 }
 
 /* ============================
-   スマホ専用レイアウト
+   スマホ専用レイアウト（iPhone対応）
    ============================ */
 @media screen and (max-width: 600px) {
 
-  /* 画面上半分にハートを広げる */
+  /* Safariで高さが潰れないようにする */
+  body {
+    min-height: 100vh;
+  }
+
+  /* ハートを画面上半分に広げる */
   .heart-wrapper {
     width: 100%;
-    height: 50vh;              /* ← 画面の半分の高さ */
+    height: 50vh;
     max-width: 420px;
     margin: 0 auto;
     display: flex;
@@ -298,23 +303,24 @@ label, select, input {
   }
 
   .heart-mask {
-    width: 80%;                /* ← ハートを大きく見せる */
+    width: 80%;
     height: auto;
   }
 
-  /* 数字ボタンを 1〜5 / 6〜10 の2段にする */
+  /* 数字ボタンを 1〜5 / 6〜10 の2段にする（Safari対策込み） */
   .numbers {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr); /* ← 横に5個並べる */
+    display: grid !important;               /* ← flexを完全に上書き */
+    grid-template-columns: repeat(5, 1fr);  /* ← 横に5列 */
     gap: 6px;
     width: 90%;
-    max-width: 420px;
     margin: 20px auto;
+    min-height: 10px;                       /* ← Safariがグリッドを認識する */
   }
 
-  .num-btn {
+  .numbers .num-btn {
+    display: block;                         /* ← Safariで必須 */
     width: 100%;
-    height: 48px;              /* ← 押しやすい高さ */
+    height: 48px;
     font-size: 20px;
   }
 
@@ -363,6 +369,7 @@ label, select, input {
     padding: 12px;
   }
 }
+
 
 </style>
 </head>
