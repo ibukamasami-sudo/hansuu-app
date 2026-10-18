@@ -883,6 +883,9 @@ function resetToStart() {
 
   // 数字ボタンの選択状態をリセット
   document.querySelectorAll('.num-btn').forEach(btn => btn.classList.remove('active'));
+  // 感情ボタンの選択状態をリセット
+  document.querySelectorAll('.emotion-btn').forEach(btn => btn.classList.remove('active'));
+
 
   // 質問欄を非表示
   const stepBlock = document.getElementById("stepBlock");
