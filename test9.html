@@ -871,22 +871,24 @@ const content = document.getElementById("recordBox").querySelector(".record-cont
 
 //最初に戻る
 function resetToStart() {
+  // スライダー非表示
+  const slider = document.getElementById("releaseSlider");
+  if (slider) slider.style.display = "none";
 
   // 数字ボタンを再表示
   const numbers = document.querySelector('.numbers');
-  if (numbers) numbers.style.display = "flex";
+  numbers.classList.remove("no_show");
+  numbers.classList.add("yes_show_block");
+  
 
-  // ★ 数字ボタンの選択状態をリセット
+  // 数字ボタンの選択状態をリセット
   document.querySelectorAll('.num-btn').forEach(btn => btn.classList.remove('active'));
 
   // 質問欄を非表示
-  const questions = document.querySelector('#stepBlock');
-  if (questions) questions.style.display = "none";
+  const stepBlock = document.getElementById("stepBlock");
+  if (stepBlock) stepBlock.style.display = "none";
 
-  // 全体読み上げボタンを初期状態に戻す
-  //const readAllBtn = document.getElementById("readAllButton");
-  //if (readAllBtn) readAllBtn.textContent = "全部読み上げる";
-
+  // 固定ボタン類を初期化（必要なものは再表示）
   btn_kanri("resetToStart");
 
   // ハートのスケールを戻す
@@ -902,7 +904,6 @@ function resetToStart() {
   // 背景とハートのクラスを初期化
   document.body.classList.remove("release-bg");
   document.body.classList.add("default-bg");
-
   heartWrapper.classList.remove("release");
   heartWrapper.classList.add("default");
 
@@ -914,8 +915,6 @@ function resetToStart() {
   const recordBox = document.getElementById("recordBox");
   if (recordBox) recordBox.style.display = "none";
 
-  const resetBtn = document.getElementById("resetBtn");
-  if (resetBtn) resetBtn.classList.add("no_show");
 
   // フラグを初期化
   hasPlayedGuide = false;
@@ -925,7 +924,7 @@ function resetToStart() {
   showGuide("最初の状態に戻りました。数字を選んでください。", null);
 }
 
-/* スライダーと連動 */
+/* スライダーと連動してハートの色が変わる*/
 document.getElementById("releaseSlider").addEventListener("input", e => {
   releaseHeart(e.target.value);
 });
