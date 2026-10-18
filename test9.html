@@ -891,7 +891,8 @@ function resetToStart() {
   document.querySelectorAll('.emotion-btn').forEach(btn => btn.classList.remove('selected'));
   // 追加された感情ボタンを削除
   document.querySelectorAll('.emotion-btn.added').forEach(btn => btn.remove());
-
+  // ★ 感情の配列もリセット
+  selectedEmotions = [];
 
 
   // 質問欄を非表示
