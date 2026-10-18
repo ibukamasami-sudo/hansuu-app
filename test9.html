@@ -290,10 +290,24 @@ label, select, input {
    スマホ専用レイアウト（最後に書く）
    ============================ */
 @media screen and (max-width: 600px) {
-
   body {
     min-height: 100vh;
   }
+
+  .section.visible {
+    pointer-events: auto !important;
+  }
+
+  .no_show {
+    display: none !important;
+  }
+
+  #releaseSlider {
+    position: relative;
+    z-index: 10;
+  }
+
+
 
   /* ★ 最重要：スマホでもクリックを有効化する */
   .section.visible {
