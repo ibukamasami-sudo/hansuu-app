@@ -282,11 +282,11 @@ label, select, input {
 }
 
 /* ============================
-   スマホ専用レイアウト（iPhone対応）
+   スマホ専用レイアウト（Chrome/iPhone対応）
    ============================ */
 @media screen and (max-width: 600px) {
 
-  /* Safariで高さが潰れないようにする */
+  /* Safari/Chromeで高さが潰れないようにする */
   body {
     min-height: 100vh;
   }
@@ -307,18 +307,17 @@ label, select, input {
     height: auto;
   }
 
-  /* 数字ボタンを 1〜5 / 6〜10 の2段にする（Safari対策込み） */
+  /* 数字ボタンを 1〜5 / 6〜10 の2段にする（Chrome/iPhone両対応） */
   .numbers {
     display: grid !important;               /* ← flexを完全に上書き */
     grid-template-columns: repeat(5, 1fr);  /* ← 横に5列 */
     gap: 6px;
     width: 90%;
     margin: 20px auto;
-    min-height: 10px;                       /* ← Safariがグリッドを認識する */
   }
 
   .numbers .num-btn {
-    display: block;                         /* ← Safariで必須 */
+    display: block;                         /* ← Safari/Chromeで必須 */
     width: 100%;
     height: 48px;
     font-size: 20px;
