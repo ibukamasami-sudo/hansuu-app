@@ -369,9 +369,9 @@ label, select, input {
 input[type="text"],
   textarea {
     width: 100%;
-    font-size: 18px;     /* ← 文字を少し大きく */
-    padding: 14px;       /* ← 内側の余白を増やす */
-    border-radius: 10px; /* ← 指で触れやすい丸み */
+    font-size: 22px;     /* ← ここを大きくする */
+    padding: 16px;       /* ← 少しだけ余白も増やすと美しい */
+    border-radius: 12px; /* ← スマホらしい柔らかさ */
 }
 
 select {
@@ -386,7 +386,20 @@ select {
     padding: 14px 18px;   /* ← タップ領域を広げる */
     font-size: 20px;      /* ← 見やすくする */
     border-radius: 12px;  /* ← スマホらしい丸み */
-  }   
+  }
+/* ★ 入力中だけ大きくする（スマホ専用） */
+input[type="text"],
+textarea {
+  font-size: 22px;
+  padding: 16px;
+}
+input[type="text"]:focus,
+textarea:focus {
+  font-size: 26px;
+  padding: 18px;
+}
+  
+  
 } /* スマホ終わりーーーーーーーーーーーーーーーーーーーーーーーーーーーー*/
 
 
