@@ -16,8 +16,8 @@ body {
   color: #eee;
   font-family: sans-serif;
   display: flex;
-  flex-direction: column;
-  align-items: center;
+  flex-direction: column; /* ← 縦並びに変更 */
+  align-items: center;    /* ← 中央寄せ */
   padding-top: 40px;
 }
 
@@ -59,20 +59,35 @@ body {
 }
 
 body.default-bg { background: #aaa; }
+
 .heart-wrapper.default { background: #ec9292; }
+
 .heart-mask.default { filter: none; }
-.black-curtain.default { opacity: 0.8; display: block; height: 0; }
+
+.black-curtain.default {
+  opacity: 0.8;
+  display: block;
+  height: 0;   /* ← これが必要だった */  
+}
 
 body.release-bg { background: #ffffff; }
-.heart-wrapper.release { background: #fff27a; }
-.heart-mask.release { filter: brightness(300%) saturate(0%); }
-.black-curtain.release { opacity: 0; display: none; }
 
-/* --- PCの数字ボタン（flex） --- */
+.heart-wrapper.release { background: #fff27a; }
+
+.heart-mask.release {
+  filter: brightness(300%) saturate(0%);
+}
+
+.black-curtain.release {
+  opacity: 0;
+  display: none;
+}
+
+
 .numbers {
   display: flex;
   justify-content: center;
-  margin-top: 10px;
+  margin-top: 10px; /* ← ハートから少し離す */
 }
 
 .num-btn {
@@ -88,23 +103,33 @@ body.release-bg { background: #ffffff; }
   transition: all 0.2s ease;
 }
 
-.num-btn:hover { background-color: #ffe0e0; }
-.num-btn.active { background: #ff6b81; color: #fff; }
 
-/* --- セクション --- */
+/* マウスを乗せたとき */
+.num-btn:hover {
+  background-color: #ffe0e0;
+  /* transform を消す */
+  /* transform: scale(1.1); */
+}
+
+.num-btn.active {
+  background: #ff6b81;
+  color: #fff;
+}
+
+/* --- セクション共通 --- */
 .section {
   opacity: 0;
   transition: opacity 0.3s ease;
+}
+
+.section {
   display: none;
-  pointer-events: none;
-  width: 300px;
 }
 
 .section.visible {
   display: block;
-  opacity: 1;
-  pointer-events: auto;
 }
+
 
 .section textarea,
 .section input,
@@ -115,9 +140,37 @@ body.release-bg { background: #ffffff; }
   box-sizing: border-box;
 }
 
+button {
+  margin-top: 10px;
+  padding: 6px 10px;
+}
+.emotion-btn {
+  display: inline-block;
+  margin: 4px;
+  padding: 6px 12px;
+  border: 1px solid #666;
+  border-radius: 6px;
+  cursor: pointer;
+  background: #2b0149;
+}
+ .selected { background: #333; color: rgb(176, 77, 77); }
+
+/* 出来事以下のブロック */
+.section {
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+  width: 300px; /* ← 幅を固定して中央に */
+}
+
+.section.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
 label, select, input {
-  display: block;
-  margin-bottom: 8px;
+  display: block; /* ← 横並びを解除して縦並びに */
+  margin-bottom: 8px; /* ← 行間を少し空ける */
 }
 
 .guide-text {
@@ -132,36 +185,65 @@ label, select, input {
   text-align: center;
   border-radius: 8px;
   box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  opacity: 1; /* ← 最初から見える */
+  transition: opacity 0.8s ease;
+}
+.guide-text.fade-in {
+  opacity: 1;
+}
+.guide-text {
   opacity: 0;
   transition: opacity 0.8s ease;
 }
-
 .tts-setting {
   display: grid;
-  grid-template-columns: 120px 1fr;
+  grid-template-columns: 120px 1fr; /* 左：ラベル / 右：入力 */
   grid-row-gap: 8px;
   grid-column-gap: 10px;
   align-items: center;
 }
 
-.tts-setting label { text-align: right; }
-.tts-setting select, .tts-setting input { width: 160px; }
-
-#releaseSlider {
-  display: none;
-  width: 80%;
-  max-width: 400px;
-  margin: 20px auto;
-  height: 40px;
-  accent-color: #ec9292;
+/* ラベルは右寄せにするとテーブル感が出る */
+.tts-setting label {
+  text-align: right;
 }
 
-.heart-mask { transition: filter 0.8s ease; }
+/* 入力欄は幅をそろえる */
+.tts-setting select,
+.tts-setting input {
+  width: 160px;
+}
+#releaseSlider {
+  display: none;        /* ← 中央寄せのために block に */
+  width: 80%;            /* ← 画面幅の8割。存在感アップ */
+  max-width: 400px;      /* ← 大きすぎ防止（好みで調整） */
+  margin: 20px auto;     /* ← 中央に配置＋上下余白 */
+  height: 40px;          /* ← 太めにしてインパクト */
+  accent-color: #ec9292; /* ← ハート色と統一 */
+}
 
-#actionBtnBox { display: block; }
-.no_show { display: none; opacity: 0; }
-.yes_show_inline { display: inline-block; opacity: 1; }
-.yes_show_block { display: block; opacity: 1; }
+.heart-mask {
+  transition: filter 0.8s ease; /* ← これだけ追加すればOK */
+}
+/* ボタンの表示関連 */
+#actionBtnBox {
+  display: block; /* 親は常に表示 */
+}
+
+.no_show {
+  display: none;
+  opacity: 0;
+}
+
+.yes_show_inline {
+  display: inline-block;
+  opacity: 1;
+}
+
+.yes_show_block {
+  display: block;
+  opacity: 1;
+}
 
 .pink_btn {
   background-color: #ffd6d6;
@@ -174,9 +256,14 @@ label, select, input {
   transition: background 0.3s ease, opacity 0.8s ease;
 }
 
-.pink_btn:hover { background-color: #ffbaba; }
+.pink_btn:hover {
+  background-color: #ffbaba;
+}
+
 
 #recordBox {
+  display: none;                 /* 初期は非表示 */
+  border: 2px solid #f7d774;     /* 明るい黄色の枠 */
   display: none;
   border: 2px solid #f7d774;
   background-color: #fff9e6;
@@ -188,17 +275,17 @@ label, select, input {
   margin-top: 12px;
   width: 90%;
   box-sizing: border-box;
-  word-break: break-all;
-  overflow-wrap: anywhere;
-  white-space: normal;
+
+  /* ↓ここを調整 */
+  word-break: break-all;     /* 長い単語や文を強制的に折り返す */
+  overflow-wrap: anywhere;   /* どこでも折り返し可能にする */
+  white-space: normal;       /* 改行を許可する */
 }
 
 #recordBox.saved {
-  background-color: #a5bbf3;
+  background-color: #a5bbf3; /* 優しいピンクなど */
   transition: background-color 0.8s ease;
 }
-
-
 /* ============================
    スマホ専用レイアウト（最後に書く）
    ============================ */
@@ -208,19 +295,24 @@ label, select, input {
     min-height: 100vh;
   }
 
+  /* ★ 最重要：スマホでもクリックを有効化する */
+  .section.visible {
+    pointer-events: auto !important;
+  }
+
   .container {
     display: block;
     width: 90%;
     max-width: 420px;
   }
 
-
+  /* ★ 黒幕の枠が上がらないように高さを固定 */
   .heart-wrapper {
     width: 100%;
     max-width: 300px;
-    height: 300px;        /* ← ここが最重要！ */
+    height: 300px;
     margin: 0 auto;
-    overflow: hidden;     /* ← 四角い枠を見せない */
+    overflow: hidden;
   }
 
   .heart-mask {
@@ -249,41 +341,9 @@ label, select, input {
     max-width: 420px;
     margin-top: 24px;
   }
-
-  .section textarea,
-  .section input,
-  .section select {
-    font-size: 16px;
-    padding: 10px;
-  }
-
-  .guide-text {
-    width: 90%;
-    max-width: 420px;
-    font-size: 16px;
-    padding: 12px 14px;
-  }
-
-  #releaseSlider {
-    width: 90%;
-    max-width: 420px;
-    height: 40px;
-  }
-
-  .pink_btn {
-    width: 90%;
-    max-width: 420px;
-    padding: 12px;
-    font-size: 16px;
-  }
-
-  #recordBox {
-    width: 90%;
-    max-width: 420px;
-    font-size: 14px;
-    padding: 12px;
-  }
 }
+
+
 
 </style>
 
