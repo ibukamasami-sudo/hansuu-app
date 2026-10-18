@@ -153,6 +153,11 @@ button {
   cursor: pointer;
   background: #2b0149;
 }
+.emotion-btn.selected {
+  background-color: #333;
+  color: #fff;
+}
+
  .selected { background: #333; color: rgb(176, 77, 77); }
 
 /* 出来事以下のブロック */
@@ -628,14 +633,13 @@ function addEmotion() {
   if (add) {
     const area = document.getElementById("emotionArea");
     const span = document.createElement("span");
-    span.className = "emotion-btn";
+    span.className = "emotion-btn added"; // ← 追加された印
     span.textContent = add;
     span.onclick = function() { toggleEmotion(span); };
     area.appendChild(span);
     document.getElementById("emotionAdd").value = "";
   }
 }
-
 
 let hasPlayedGuide = false;  // ★ 一回目かどうか判定するフラグ
 //全部読み上げる
@@ -884,7 +888,10 @@ function resetToStart() {
   // 数字ボタンの選択状態をリセット
   document.querySelectorAll('.num-btn').forEach(btn => btn.classList.remove('active'));
   // 感情ボタンの選択状態をリセット
-  document.querySelectorAll('.emotion-btn').forEach(btn => btn.classList.remove('active'));
+  document.querySelectorAll('.emotion-btn').forEach(btn => btn.classList.remove('selected'));
+  // 追加された感情ボタンを削除
+  document.querySelectorAll('.emotion-btn.added').forEach(btn => btn.remove());
+
 
 
   // 質問欄を非表示
