@@ -291,6 +291,7 @@ label, select, input {
   background-color: #a5bbf3; /* 優しいピンクなど */
   transition: background-color 0.8s ease;
 }
+
 /* ============================
    スマホ専用レイアウト（最後に書く）
    ============================ */
@@ -354,8 +355,7 @@ label, select, input {
     max-width: 420px;
     margin-top: 24px;
 }
-  
-  
+ 
 .numbers.no_show {
     display: none !important;
 }
@@ -365,7 +365,6 @@ label, select, input {
   z-index: 10;
 }
 
- 
 input[type="text"],
   textarea {
     width: 100%;
@@ -398,6 +397,56 @@ textarea:focus {
   font-size: 26px;
   padding: 18px;
 }
+
+  /* ★ pink_btn をスマホで大きくする */
+  .pink_btn {
+    padding: 14px 20px;
+    font-size: 18px;
+    border-radius: 10px;
+    width: 100%;           /* ← スマホは横幅いっぱいが押しやすい */
+    box-sizing: border-box;
+    margin-bottom: 12px;   /* ← ボタン同士の余白 */
+  }
+
+  /* ★ actionBtnBox のボタン間隔を広げる */
+  #actionBtnBox button {
+    margin-bottom: 14px;
+  }
+
+  /* ★ fixedBtnBox のボタンを縦並びで統一 */
+  #fixedBtnBox {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;             /* ← ボタン同士の間隔が自然に */
+    margin-top: 20px;
+  }
+
+  /* ★ 説明を止める・カレンダーの横並びをスマホでは縦に */
+  #readStopBtn,
+  #toCalender_Btn {
+    display: block;
+    width: 100%;
+  }
+
+  /* ★ tts-setting（声・読み上げ速度）もスマホ向けに整える */
+  .tts-setting {
+    margin-top: 16px;
+    font-size: 16px;
+  }
+
+  .tts-setting label {
+    display: block;
+    margin-bottom: 6px;
+  }
+
+  .tts-setting select,
+  .tts-setting input {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    margin-bottom: 12px;
+    box-sizing: border-box;
+  }
   
   
 } /* スマホ終わりーーーーーーーーーーーーーーーーーーーーーーーーーーーー*/
