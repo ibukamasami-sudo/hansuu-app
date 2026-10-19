@@ -1,0 +1,357 @@
+/* ============================
+   PC用レイアウト（共通）
+   ============================ */
+
+body {
+  background: #aaa;
+  color: #eee;
+  font-family: sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 40px;
+}
+
+body.default-bg { background: #aaa; }
+body.release-bg { background: #ffffff; }
+
+.container {
+  width: 300px;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+/* --- ハート部分（反芻用） --- */
+.heart-wrapper {
+  position: relative;
+  width: 300px;
+  height: 300px;
+  background: #ec9292;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.heart-wrapper.default { background: #ec9292; }
+.heart-wrapper.release { background: #fff27a; }
+
+.heart-mask {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  z-index: 2;
+  transition: filter 0.8s ease;
+}
+
+.heart-mask.default { filter: none; }
+.heart-mask.release { filter: brightness(300%) saturate(0%); }
+
+/* 黒幕（反芻専用） */
+.black-curtain {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 0;
+  background: black;
+  opacity: 0.8;
+  z-index: 1;
+  transition: height 0.3s ease;
+}
+
+.black-curtain.default {
+  opacity: 0.8;
+  display: block;
+  height: 0;
+}
+
+.black-curtain.release {
+  opacity: 0;
+  display: none;
+}
+
+/* --- 数字ボタン --- */
+.numbers {
+  display: flex;
+  justify-content: center;
+  margin-top: 10px;
+}
+
+.num-btn {
+  width: 40px;
+  height: 40px;
+  margin: 4px;
+  border: none;
+  border-radius: 8px;
+  background-color: #f5f5f5;
+  color: #333;
+  font-size: 20px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.num-btn:hover {
+  background-color: #ffe0e0;
+}
+
+.num-btn.active {
+  background: #ff6b81;
+  color: #fff;
+}
+
+/* --- セクション共通 --- */
+.section {
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  display: none;
+  pointer-events: none;
+  width: 300px;
+}
+
+.section.visible {
+  display: block;
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.section textarea,
+.section input,
+.section select {
+  width: 100%;
+  padding: 6px;
+  margin-top: 6px;
+  box-sizing: border-box;
+}
+
+/* --- 感情ボタン --- */
+.emotion-btn {
+  display: inline-block;
+  margin: 4px;
+  padding: 6px 12px;
+  border: 1px solid #666;
+  border-radius: 6px;
+  cursor: pointer;
+  background: #2b0149;
+}
+
+.emotion-btn.selected {
+  background-color: #333;
+  color: #fff;
+}
+
+/* --- ガイドテキスト --- */
+.guide-text {
+  display: block;
+  width: 90%;
+  margin: 20px auto;
+  padding: 12px 16px;
+  background-color: #f8dada;
+  color: #333;
+  font-size: 18px;
+  font-weight: 600;
+  text-align: center;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  opacity: 0;
+  transition: opacity 0.8s ease;
+}
+
+.guide-text.fade-in {
+  opacity: 1;
+}
+
+/* --- 読み上げ設定 --- */
+.tts-setting {
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  grid-row-gap: 8px;
+  grid-column-gap: 10px;
+  align-items: center;
+}
+
+.tts-setting label {
+  text-align: right;
+}
+
+.tts-setting select,
+.tts-setting input {
+  width: 160px;
+}
+
+/* --- スライダー（反芻専用） --- */
+#releaseSlider {
+  display: none;
+  width: 80%;
+  max-width: 400px;
+  margin: 20px auto;
+  height: 40px;
+  accent-color: #ec9292;
+}
+
+/* --- ボタン共通 --- */
+.pink_btn {
+  background-color: #ffd6d6;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 20px;
+  margin: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background 0.3s ease, opacity 0.8s ease;
+}
+
+.pink_btn:hover {
+  background-color: #ffbaba;
+}
+
+.no_show { display: none; opacity: 0; }
+.yes_show_inline { display: inline-block; opacity: 1; }
+.yes_show_block { display: block; opacity: 1; }
+
+/* --- 記録ボックス --- */
+#recordBox {
+  display: none;
+  border: 2px solid #f7d774;
+  background-color: #fff9e6;
+  color: #c8a84b;
+  padding: 14px;
+  font-size: 14px;
+  line-height: 1.5;
+  border-radius: 8px;
+  margin-top: 12px;
+  width: 90%;
+  box-sizing: border-box;
+  word-break: break-all;
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
+
+#recordBox.saved {
+  background-color: #a5bbf3;
+  transition: background-color 0.8s ease;
+}
+
+/* ============================
+   スマホ専用レイアウト
+   ============================ */
+@media screen and (max-width: 600px) {
+
+  body { min-height: 100vh; }
+
+  .section.visible { pointer-events: auto !important; }
+
+  .container {
+    display: block;
+    width: 90%;
+    max-width: 420px;
+  }
+
+  .heart-wrapper {
+    width: 100%;
+    max-width: 300px;
+    height: 300px;
+    margin: 0 auto;
+    overflow: hidden;
+  }
+
+  .heart-mask {
+    width: 100%;
+    height: auto;
+  }
+
+  .black-curtain {
+    width: 90%;
+    left: 5%;
+  }
+
+  /* 数字ボタンをグリッドに */
+  .numbers {
+    display: grid !important;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 6px;
+    width: 90%;
+    margin: 20px auto;
+  }
+
+  .num-btn {
+    width: 100%;
+    height: 52px;
+    font-size: 22px;
+  }
+
+  .section {
+    width: 90%;
+    max-width: 420px;
+    margin-top: 24px;
+  }
+
+  input[type="text"],
+  textarea {
+    width: 100%;
+    font-size: 22px;
+    padding: 16px;
+    border-radius: 12px;
+  }
+
+  input[type="text"]:focus,
+  textarea:focus {
+    font-size: 26px;
+    padding: 18px;
+  }
+
+  select {
+    width: 100%;
+    font-size: 18px;
+    padding: 12px;
+    height: 48px;
+    border-radius: 10px;
+  }
+
+  .emotion-btn {
+    padding: 14px 18px;
+    font-size: 20px;
+    border-radius: 12px;
+  }
+
+  .pink_btn {
+    padding: 14px 20px;
+    font-size: 18px;
+    border-radius: 10px;
+    width: 100%;
+    box-sizing: border-box;
+    margin-bottom: 12px;
+  }
+
+  #fixedBtnBox {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 20px;
+  }
+
+  #readStopBtn,
+  #toCalender_Btn {
+    display: block;
+    width: 100%;
+  }
+
+  .tts-setting {
+    margin-top: 16px;
+    font-size: 16px;
+  }
+
+  .tts-setting label {
+    display: block;
+    margin-bottom: 6px;
+  }
+
+  .tts-setting select,
+  .tts-setting input {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    margin-bottom: 12px;
+    box-sizing: border-box;
+  }
+}
