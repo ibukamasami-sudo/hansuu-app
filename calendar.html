@@ -93,7 +93,7 @@ h1 {
   outline: 3px solid #ffcc00;
   background: #fff8d1;
 }
-
+/* ここからスマホ ーーーーーーーーーーーーーーーーーーーーーーーーーーー*/
 @media screen and (max-width: 600px) {
 
   body {
@@ -118,35 +118,36 @@ h1 {
   }
 
   /* カレンダー本体をスマホ幅に合わせる */
+   /* カレンダー全体を縦長に */
   #calendarTable {
     width: 100%;
-    border-spacing: 6px;
+    border-spacing: 8px;
   }
 
-  #calendarTable th {
-    padding: 6px;
-    font-size: 14px;
-  }
-
+  /* 日付セルのサイズを広げる */
   #calendarTable td {
-    padding: 10px;
-    font-size: 14px;
+    padding: 18px;          /* ← 指で押しやすい余白 */
+    font-size: 18px;        /* ← 全体の文字を少し大きく */
   }
 
-  /* 日付数字と件数の見やすさ調整 */
+  /* 日付数字を強調 */
   #calendarTable td div:first-child {
-    font-size: 16px;
-    margin-bottom: 4px;
+    font-size: 22px;        /* ← 日付をしっかり見せる */
+    font-weight: bold;
+    margin-bottom: 6px;
   }
 
+  /* 件数も見やすく */
   #calendarTable td div:last-child {
-    font-size: 12px;
+    font-size: 16px;        /* ← 件数を読みやすく */
+    color: #003366;
   }
 
-  /* 今日のハイライトを少し控えめに */
+  /* 今日の枠線を少し太く */
   .today {
-    outline: 2px solid #ffcc00;
+    outline: 3px solid #ffcc00;
   }
+
 }
 
 
