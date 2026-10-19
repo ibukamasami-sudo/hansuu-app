@@ -130,7 +130,23 @@
 <!-- ★ JavaScript（感謝ノート専用） -->
 <script src="config.js"></script>
 <script>
+/* ============================
+   ⑥ ページ読み込み時に音声一覧を準備
+   ============================ */
 
+window.onload = function() {
+  loadVoices();
+
+  // 音声一覧が読み込まれたあとに初期値を設定
+  speechSynthesis.onvoiceschanged = () => {
+    const voices = speechSynthesis.getVoices();
+    const voiceSelect = document.getElementById("voiceSelect");
+    const defaultVoice = voices.find(v => v.name === "Google 日本語" && v.lang === "ja-JP");
+    if (defaultVoice) {
+      voiceSelect.value = voices.indexOf(defaultVoice);
+    }
+  };
+};
 /* ============================
    ① 読み上げに必要な音声一覧の読み込み
    ============================ */
@@ -151,8 +167,18 @@ function loadVoices() {
   });
 }
 
-// Chrome対策
-speechSynthesis.onvoiceschanged = loadVoices;
+/* ★ Chrome対策：音声一覧が読み込まれたら初期値を設定する */
+speechSynthesis.onvoiceschanged = () => {
+  loadVoices();  // option を生成する
+
+  const voices = speechSynthesis.getVoices();
+  const voiceSelect = document.getElementById("voiceSelect");
+
+  const defaultVoice = voices.find(v => v.name === "Google 日本語" && v.lang === "ja-JP");
+  if (defaultVoice) {
+    voiceSelect.value = voices.indexOf(defaultVoice);  // 初期値セット
+  }
+};
 
 function makeThanksRecordData() {
   const today = new Date().toISOString().split("T")[0];
@@ -314,7 +340,7 @@ window.onload = function() {
   };
 };
 
- // 音声を止める関数
+ // 音声
 
 function stopAllSounds() {
   speechSynthesis.cancel();
