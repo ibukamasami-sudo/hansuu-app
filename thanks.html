@@ -24,6 +24,11 @@
 
 <div class="container">
 
+<div id="messageArea" class="guide-text fade-in">
+ 嬉しかったこと、感謝出来たことを教えて？
+</div>
+<audio id="announceAudio"></audio>  
+
   <!-- ハート（白→黄色に変化） -->
 <div id="heart-wrapper" class="heart-wrapper" style="display:none;">
   <img src="heart-mask.png" id="thanksHeart" class="heart-mask thanks">
@@ -210,13 +215,27 @@ function readAllThanks() {
   speechSynthesis.cancel();
   speechSynthesis.speak(utter);
 
+  // ★★★ 読み上げが終わったら実行される処理 ★★★
   utter.onend = function() {
-
 
     // ハート画面を表示
     document.getElementById("heart-wrapper").style.display = "block";
+
+    // 満足度入力ブロックを表示
+    document.getElementById("thanksHeartBlock").style.display = "block";
+
+    // 記録ボタンを表示
+    const btn = document.getElementById("thanksRecordBtn");
+    if (btn) btn.style.display = "block";
+
+    // 説明欄に案内を出す（mp3なし → テキスト読み上げ）
+    showGuide(
+      "ハートの数値で満足度を入力してください<br>その後、記録することもできます",
+      null
+    );
   };
 }
+
 /*気持ちのセレクト*/
 let selectedEmotions = [];
 
@@ -306,26 +325,8 @@ function toCalender() {
   window.location.href = "calendar.html";
 }
 
-/* ============================
-   ⑥ ページ読み込み時に音声一覧を準備
-   ============================ */
 
-window.onload = function() {
-  loadVoices();
-
-  // 音声一覧が読み込まれたあとに初期値を設定
-  speechSynthesis.onvoiceschanged = () => {
-    const voices = speechSynthesis.getVoices();
-    const voiceSelect = document.getElementById("voiceSelect");
-    const defaultVoice = voices.find(v => v.name === "Google 日本語" && v.lang === "ja-JP");
-    if (defaultVoice) {
-      voiceSelect.value = voices.indexOf(defaultVoice);
-    }
-  };
-};
-
- // 音声
-
+ // 音声を止める関数
 function stopAllSounds() {
   speechSynthesis.cancel();
 
@@ -341,6 +342,30 @@ function stopAllSounds() {
     audio2.currentTime = 0;
   }
 }
+
+//説明とアナウンス
+function showGuide(text, mp3) {
+  const msg = document.getElementById("messageArea");
+
+  msg.innerHTML = text;
+  msg.classList.add("fade-in");
+
+  stopAllSounds();
+
+  // ★ mp3 がない場合はテキスト読み上げに切り替える
+  if (!mp3) {
+    speakText(text);   // ← あなたの読み上げ関数
+    return;
+  }
+
+  // ★ mp3 がある場合は mp3 を再生
+  setTimeout(() => {
+    currentAudio = new Audio(mp3);
+    currentAudio.currentTime = 0;
+    currentAudio.play();
+  }, 500);
+}
+
 
 </script>
 
