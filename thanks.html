@@ -201,14 +201,38 @@ function readAllThanks() {
   speechSynthesis.speak(utter);
 
   utter.onend = function() {
-    // 入力欄を消す
-    //document.getElementById("thanksContent").style.display = "none";
+
 
     // ハート画面を表示
     document.getElementById("heart-wrapper").style.display = "block";
   };
 }
+/*気持ちのセレクト*/
+let selectedEmotions = [];
 
+function toggleEmotion(el) {
+  const emotion = el.textContent;
+  if (selectedEmotions.includes(emotion)) {
+    selectedEmotions = selectedEmotions.filter(e => e !== emotion);
+    el.classList.remove("selected");
+  } else {
+    selectedEmotions.push(emotion);
+    el.classList.add("selected");
+  }
+}
+
+function addEmotion() {
+  const add = document.getElementById("emotionAdd").value.trim();
+  if (add) {
+    const area = document.getElementById("emotionArea");
+    const span = document.createElement("span");
+    span.className = "emotion-btn added"; // ← 追加された印
+    span.textContent = add;
+    span.onclick = function() { toggleEmotion(span); };
+    area.appendChild(span);
+    document.getElementById("emotionAdd").value = "";
+  }
+}
 
 /* ============================
    ③ 満足指数のハート色変更
@@ -254,6 +278,9 @@ function saveThanks() {
   });
   showThanksRecord();
   alert("記録しました");
+
+    // 入力欄を消す
+  document.getElementById("thanksContent").style.display = "none";  
 }
 
 
