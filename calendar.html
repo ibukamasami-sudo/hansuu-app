@@ -119,33 +119,6 @@ h1 {
     font-size: 18px;
   }
 
-   /* カレンダー全体をスマホ幅にフィット */
-  #calendarTable {
-    width: 100%;
-    border-spacing: 8px;
-    table-layout: fixed; /* ← 各セルの幅を均等に */
-  }
-
-  /* 日付セルを縦長にして余裕を持たせる */
-  #calendarTable td {
-    padding: 24px 10px;  /* ← 上下に余白を広げる */
-    font-size: 18px;
-    border-radius: 10px;
-  }
-
-  /* 日付数字（控えめ） */
-  #calendarTable td div:first-child {
-    font-size: 22px;
-    font-weight: 600;
-    margin-bottom: 6px;
-  }
-
-  /* 件数（主役として大きく） */
-  #calendarTable td div:last-child {
-    font-size: 24px;      /* ← 件数をしっかり目立たせる */
-    font-weight: bold;
-    color: #003366;
-  }
 
   /* 曜日ヘッダーも少し広げる */
   #calendarTable th {
@@ -157,6 +130,41 @@ h1 {
   .today {
     outline: 3px solid #ffcc00;
   } 
+
+  /* テーブル全体の左右余白を狭く */
+  #calendarTable {
+    width: 96%;              /* ← 画面端まで近づける */
+    margin: 0 auto;
+    border-spacing: 4px;     /* ← セル間の隙間を狭く */
+    table-layout: fixed;     /* ← 均等幅で整える */
+  }
+
+  /* 各セルの内側余白（padding）を減らす */
+  #calendarTable td {
+    padding: 12px 0;         /* ← 上下も少し詰める */
+    font-size: 16px;         /* ← 数字を少し小さく */
+    border-radius: 4px;
+  }
+
+  /* 日付数字（控えめに） */
+  #calendarTable td div:first-child {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 3px;
+  }
+
+  /* 件数（やや小さめに） */
+  #calendarTable td div:last-child {
+    font-size: 16px;
+    color: #003366;
+  }
+
+  /* 曜日ヘッダーも詰める */
+  #calendarTable th {
+    padding: 6px;
+    font-size: 14px;
+  }
+
 }
 
 </style>
