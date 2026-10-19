@@ -131,55 +131,39 @@
 <script src="config.js"></script>
 <script>
 /* ============================
-   ⑥ ページ読み込み時に音声一覧を準備
-   ============================ */
-
-window.onload = function() {
-  loadVoices();
-
-  // 音声一覧が読み込まれたあとに初期値を設定
-  speechSynthesis.onvoiceschanged = () => {
-    const voices = speechSynthesis.getVoices();
-    const voiceSelect = document.getElementById("voiceSelect");
-    const defaultVoice = voices.find(v => v.name === "Google 日本語" && v.lang === "ja-JP");
-    if (defaultVoice) {
-      voiceSelect.value = voices.indexOf(defaultVoice);
-    }
-  };
-};
-/* ============================
-   ① 読み上げに必要な音声一覧の読み込み
+   音声一覧の読み込み（感情ページと同じ構造）
    ============================ */
 
 let voices = [];
 
 function loadVoices() {
   voices = speechSynthesis.getVoices();
+  const select = document.getElementById("voiceSelect");
+  select.innerHTML = "";
 
-  const voiceSelect = document.getElementById("voiceSelect");
-  voiceSelect.innerHTML = "";
+  let defaultIndex = 0;
 
   voices.forEach((v, i) => {
-    const op = document.createElement("option");
-    op.value = i;
-    op.textContent = `${v.name} (${v.lang})`;
-    voiceSelect.appendChild(op);
+    const opt = document.createElement("option");
+    opt.value = i;
+    opt.textContent = v.name;
+    select.appendChild(opt);
+
+    if (v.lang.startsWith("ja") || v.name.includes("日本語")) {
+      defaultIndex = i;
+    }
   });
+
+  select.value = defaultIndex;
 }
 
-/* ★ Chrome対策：音声一覧が読み込まれたら初期値を設定する */
-speechSynthesis.onvoiceschanged = () => {
-  loadVoices();  // option を生成する
+// まず1回読み込む
+loadVoices();
 
-  const voices = speechSynthesis.getVoices();
-  const voiceSelect = document.getElementById("voiceSelect");
+// Chromeが本当に声を読み込んだらもう1回読み込む
+speechSynthesis.onvoiceschanged = loadVoices;
 
-  const defaultVoice = voices.find(v => v.name === "Google 日本語" && v.lang === "ja-JP");
-  if (defaultVoice) {
-    voiceSelect.value = voices.indexOf(defaultVoice);  // 初期値セット
-  }
-};
-
+//送るJsonを作る関数
 function makeThanksRecordData() {
   const today = new Date().toISOString().split("T")[0];
 
@@ -192,7 +176,7 @@ function makeThanksRecordData() {
     level: thanksLevel   // 満足指数
   };
 }
-
+//recordBoxに表示するHTMLを作る関数
 function makeThanksSummaryHtml(data) {
   return `
     日付：${data.date}<br>
