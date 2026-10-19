@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="style.css">
+<title>感謝ノート</title>
+
+<!-- ★ あなたの既存CSSを読み込む（ここはそのまま） -->
+<link rel="stylesheet" href="style.css">
+
+<style>
+/* ★ 感謝ノート専用：ハートを白→黄色に変えるための追加CSS */
+.heart-mask.thanks {
+  filter: brightness(120%) saturate(150%);
+}
+</style>
+
+</head>
+<body class="default-bg">
+
+<div class="container">
+
+  <!-- ハート（白→黄色に変化） -->
+  <div class="heart-wrapper">
+    <img src="heart-mask.png" id="thanksHeart" class="heart-mask thanks">
+  </div>
+
+  <!-- 満足指数の数字ボタン（読み上げ後に表示） -->
+  <div id="thanksHeartBlock" class="section" style="display:none;">
+    <p class="guide-text">人生の満足指数を入力してください</p>
+
+    <div class="numbers">
+      <button class="num-btn" onclick="setLevel(0)">0</button>
+      <button class="num-btn" onclick="setLevel(1)">1</button>
+      <button class="num-btn" onclick="setLevel(2)">2</button>
+      <button class="num-btn" onclick="setLevel(3)">3</button>
+      <button class="num-btn" onclick="setLevel(4)">4</button>
+      <button class="num-btn" onclick="setLevel(5)">5</button>
+      <button class="num-btn" onclick="setLevel(6)">6</button>
+      <button class="num-btn" onclick="setLevel(7)">7</button>
+      <button class="num-btn" onclick="setLevel(8)">8</button>
+      <button class="num-btn" onclick="setLevel(9)">9</button>
+      <button class="num-btn" onclick="setLevel(10)">10</button>
+    </div>
+
+    <button class="pink_btn" onclick="saveThanks()">記録する</button>
+  </div>
+
+
+  <!-- 記録ボックス（読み上げ後に表示） -->
+  <div id="recordBox" class="record-box" style="display:none;"></div>
+
+
+  <!-- 内容入力ブロック -->
+  <div id="thanksContent" class="section visible">
+
+    <p><strong>出来事を入力してください</strong></p>
+    <textarea id="thanksEvent"></textarea>
+
+    <p><strong>どんな気持ちだった？選んでみて。</strong></p>
+    <div id="emotionArea">
+      <span class="emotion-btn" onclick="toggleEmotion(this)">感謝</span>
+      <span class="emotion-btn" onclick="toggleEmotion(this)">前向き</span>
+      <span class="emotion-btn" onclick="toggleEmotion(this)">喜び</span>
+      <span class="emotion-btn" onclick="toggleEmotion(this)">充実感</span>
+      <span class="emotion-btn" onclick="toggleEmotion(this)">万能感</span>
+      <span class="emotion-btn" onclick="toggleEmotion(this)">達成感</span>
+    </div>
+
+    <input type="text" id="emotionAdd" placeholder="感情を追加">
+    <button onclick="addEmotion()">追加</button>
+
+    <hr>
+
+    <p><strong>その時の気持ちを、小説みたいに表現してみて？</strong></p>
+    <textarea id="thanksStory" rows="3"></textarea>
+
+    <hr>
+
+    <p><strong>体にはどんな変化があった？</strong></p>
+    <textarea id="thanksBody" rows="3"></textarea>
+
+    <hr>
+
+    <label>BGM：</label>
+    <select id="bgmSelect">
+      <option value="">なし</option>
+      <option value="calm.mp3">落ち着く音</option>
+      <option value="soft.mp3">やわらかい音</option>
+    </select>
+
+    <hr>
+
+    <button id="readAllButton" class="pink_btn" onclick="readAllThanks()">
+      全文を読み上げる
+    </button>
+
+  </div><!-- thanksContent 終わり -->
+
+
+  <!-- 固定ボタン -->
+  <div id="fixedBtnBox">
+    <button id="resetBtn" class="pink_btn" onclick="resetThanks()">
+      最初に戻る
+    </button>
+
+    <button id="readStopBtn" class="pink_btn" onclick="stopAllSounds()">
+      説明を止める
+    </button>
+
+    <button id="toCalender_Btn" class="pink_btn" onclick="toCalender()">
+      カレンダー
+    </button>
+
+    <div class="tts-setting">
+      <label>声：</label>
+      <select id="voiceSelect"></select>
+
+      <label>読み上げスピード</label>
+      <input id="voice_speed" type="number" min="0.5" max="2" step="0.1" value="1">
+    </div>
+  </div>
+
+</div><!-- container 終わり -->
+
+
+<!-- ★ JavaScript（感謝ノート専用） -->
+<script>
+
+let thanksLevel = 0;
+let selectedEmotions = [];
+
+// 感情選択
+function toggleEmotion(el) {
+  el.classList.toggle("selected");
+  const text = el.textContent;
+
+  if (selectedEmotions.includes(text)) {
+    selectedEmotions = selectedEmotions.filter(e => e !== text);
+  } else {
+    selectedEmotions.push(text);
+  }
+}
+
+// 感情追加
+function addEmotion() {
+  const val = document.getElementById("emotionAdd").value.trim();
+  if (!val) return;
+
+  const span = document.createElement("span");
+  span.className = "emotion-btn";
+  span.textContent = val;
+  span.onclick = () => toggleEmotion(span);
+
+  document.getElementById("emotionArea").appendChild(span);
+  document.getElementById("emotionAdd").value = "";
+}
+
+// 読み上げ → ハート画面へ
+function readAllThanks() {
+  readAll(); // ★反芻の読み上げ関数をそのまま使う
+
+  document.getElementById("thanksContent").style.display = "none";
+  document.getElementById("thanksHeartBlock").style.display = "block";
+}
+
+// 満足指数をセットしてハートの色を変える
+function setLevel(level) {
+  thanksLevel = level;
+  const heart = document.getElementById("thanksHeart");
+  heart.style.filter = `hue-rotate(${level * 4}deg) brightness(${100 + level * 5}%) saturate(150%)`;
+}
+
+// 記録保存
+function saveThanks() {
+  const data = {
+    type: "thanks",
+    level: thanksLevel,
+    event: document.getElementById("thanksEvent").value,
+    story: document.getElementById("thanksStory").value,
+    body: document.getElementById("thanksBody").value,
+    emotions: selectedEmotions,
+    date: todayString()
+  };
+
+  fetch(GAS_URL, {
+    method: "POST",
+    body: JSON.stringify(data)
+  });
+
+  alert("記録しました");
+}
+
+// 最初に戻る
+function resetThanks() {
+  location.reload();
+}
+
+</script>
+
+</body>
+</html>
