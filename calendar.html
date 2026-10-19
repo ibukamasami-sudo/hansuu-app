@@ -2,6 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>記録カレンダー</title>
 
 <style>
@@ -96,60 +97,65 @@ h1 {
 /* ここからスマホ ーーーーーーーーーーーーーーーーーーーーーーーーーーー*/
 @media screen and (max-width: 600px) {
 
+  /* 画面全体の余白 */
   body {
     padding: 20px;
   }
 
-  /* タイトルを少し小さく */
+  /* タイトル */
   h1 {
     font-size: 22px;
     margin-bottom: 20px;
   }
 
-  /* 月移動ヘッダーをスマホ向けに */
+  /* 月移動ヘッダー */
   .calendar-header {
     gap: 10px;
     margin-bottom: 16px;
   }
 
   .calendar-header button {
-    padding: 8px 14px;
-    font-size: 16px;
+    padding: 10px 16px;
+    font-size: 18px;
   }
 
   /* カレンダー本体をスマホ幅に合わせる */
-   /* カレンダー全体を縦長に */
   #calendarTable {
     width: 100%;
-    border-spacing: 8px;
+    border-spacing: 10px;
   }
 
-  /* 日付セルのサイズを広げる */
+  /* 曜日ヘッダー */
+  #calendarTable th {
+    padding: 10px;
+    font-size: 16px;
+  }
+
+  /* 日付セル（スマホで大きく） */
   #calendarTable td {
-    padding: 18px;          /* ← 指で押しやすい余白 */
-    font-size: 18px;        /* ← 全体の文字を少し大きく */
+    padding: 22px;
+    font-size: 18px;
+    border-radius: 10px;
   }
 
-  /* 日付数字を強調 */
+  /* 日付数字（大きく強調） */
   #calendarTable td div:first-child {
-    font-size: 22px;        /* ← 日付をしっかり見せる */
+    font-size: 28px;
     font-weight: bold;
-    margin-bottom: 6px;
+    margin-bottom: 8px;
   }
 
-  /* 件数も見やすく */
+  /* 件数（見やすく） */
   #calendarTable td div:last-child {
-    font-size: 16px;        /* ← 件数を読みやすく */
+    font-size: 18px;
     color: #003366;
   }
 
-  /* 今日の枠線を少し太く */
+  /* 今日のハイライト */
   .today {
     outline: 3px solid #ffcc00;
   }
-
 }
-
 
 </style>
 
