@@ -302,7 +302,19 @@ function toCalender() {
 
 window.onload = function() {
   loadVoices();
+
+  // 音声一覧が読み込まれたあとに初期値を設定
+  speechSynthesis.onvoiceschanged = () => {
+    const voices = speechSynthesis.getVoices();
+    const voiceSelect = document.getElementById("voiceSelect");
+    const defaultVoice = voices.find(v => v.name === "Google 日本語" && v.lang === "ja-JP");
+    if (defaultVoice) {
+      voiceSelect.value = voices.indexOf(defaultVoice);
+    }
+  };
 };
+
+ // 音声を止める関数
 
 function stopAllSounds() {
   speechSynthesis.cancel();
