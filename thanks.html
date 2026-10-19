@@ -13,6 +13,10 @@
 .heart-mask.thanks {
   filter: brightness(120%) saturate(150%);
 }
+
+#thanksHeartBlock {
+  display: none;
+}
 </style>
 
 </head>
@@ -127,51 +131,81 @@
 <!-- ★ JavaScript（感謝ノート専用） -->
 <script>
 
-let thanksLevel = 0;
-let selectedEmotions = [];
+/* ============================
+   ① 読み上げに必要な音声一覧の読み込み
+   ============================ */
 
-// 感情選択
-function toggleEmotion(el) {
-  el.classList.toggle("selected");
-  const text = el.textContent;
+let voices = [];
 
-  if (selectedEmotions.includes(text)) {
-    selectedEmotions = selectedEmotions.filter(e => e !== text);
-  } else {
-    selectedEmotions.push(text);
-  }
+function loadVoices() {
+  voices = speechSynthesis.getVoices();
+
+  const voiceSelect = document.getElementById("voiceSelect");
+  voiceSelect.innerHTML = "";
+
+  voices.forEach((v, i) => {
+    const op = document.createElement("option");
+    op.value = i;
+    op.textContent = `${v.name} (${v.lang})`;
+    voiceSelect.appendChild(op);
+  });
 }
 
-// 感情追加
-function addEmotion() {
-  const val = document.getElementById("emotionAdd").value.trim();
-  if (!val) return;
+// Chrome対策
+speechSynthesis.onvoiceschanged = loadVoices;
 
-  const span = document.createElement("span");
-  span.className = "emotion-btn";
-  span.textContent = val;
-  span.onclick = () => toggleEmotion(span);
 
-  document.getElementById("emotionArea").appendChild(span);
-  document.getElementById("emotionAdd").value = "";
-}
+/* ============================
+   ② 全文読み上げ → ハート画面へ
+   ============================ */
 
-// 読み上げ → ハート画面へ
 function readAllThanks() {
-  readAll(); // ★反芻の読み上げ関数をそのまま使う
+  const event = document.getElementById("thanksEvent").value;
+  const emotions = selectedEmotions.join("、");
+  const story = document.getElementById("thanksStory").value;
+  const body = document.getElementById("thanksBody").value;
 
-  document.getElementById("thanksContent").style.display = "none";
-  document.getElementById("thanksHeartBlock").style.display = "block";
+  const rate = Number(document.getElementById("voice_speed").value);
+  const voiceIndex = document.getElementById("voiceSelect").value;
+
+  const text =
+    `${event}という出来事があって、${emotions}を感じて、${story}という気持ちがあって、身体感覚は${body}でした。`;
+
+  const utter = new SpeechSynthesisUtterance(text);
+  utter.rate = rate;
+  utter.voice = voices[voiceIndex];
+
+  speechSynthesis.cancel();
+  speechSynthesis.speak(utter);
+
+  utter.onend = function() {
+    // 入力欄を消す
+    document.getElementById("thanksContent").style.display = "none";
+
+    // ハート画面を表示
+    document.getElementById("thanksHeartBlock").style.display = "block";
+  };
 }
 
-// 満足指数をセットしてハートの色を変える
+
+/* ============================
+   ③ 満足指数のハート色変更
+   ============================ */
+
+let thanksLevel = 0;
+
 function setLevel(level) {
   thanksLevel = level;
   const heart = document.getElementById("thanksHeart");
-  heart.style.filter = `hue-rotate(${level * 4}deg) brightness(${100 + level * 5}%) saturate(150%)`;
+  heart.style.filter =
+    `hue-rotate(${level * 4}deg) brightness(${100 + level * 5}%) saturate(150%)`;
 }
 
-// 記録保存
+
+/* ============================
+   ④ 記録処理（GASへ送信）
+   ============================ */
+
 function saveThanks() {
   const data = {
     type: "thanks",
@@ -191,10 +225,26 @@ function saveThanks() {
   alert("記録しました");
 }
 
-// 最初に戻る
+
+/* ============================
+   ⑤ 最初に戻る
+   ============================ */
+
 function resetThanks() {
   location.reload();
 }
+
+function toCalender() {
+  window.location.href = "calendar.html";
+}
+
+/* ============================
+   ⑥ ページ読み込み時に音声一覧を準備
+   ============================ */
+
+window.onload = function() {
+  loadVoices();
+};
 
 </script>
 
