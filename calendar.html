@@ -94,6 +94,62 @@ h1 {
   background: #fff8d1;
 }
 
+@media screen and (max-width: 600px) {
+
+  body {
+    padding: 20px;
+  }
+
+  /* タイトルを少し小さく */
+  h1 {
+    font-size: 22px;
+    margin-bottom: 20px;
+  }
+
+  /* 月移動ヘッダーをスマホ向けに */
+  .calendar-header {
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+
+  .calendar-header button {
+    padding: 8px 14px;
+    font-size: 16px;
+  }
+
+  /* カレンダー本体をスマホ幅に合わせる */
+  #calendarTable {
+    width: 100%;
+    border-spacing: 6px;
+  }
+
+  #calendarTable th {
+    padding: 6px;
+    font-size: 14px;
+  }
+
+  #calendarTable td {
+    padding: 10px;
+    font-size: 14px;
+  }
+
+  /* 日付数字と件数の見やすさ調整 */
+  #calendarTable td div:first-child {
+    font-size: 16px;
+    margin-bottom: 4px;
+  }
+
+  #calendarTable td div:last-child {
+    font-size: 12px;
+  }
+
+  /* 今日のハイライトを少し控えめに */
+  .today {
+    outline: 2px solid #ffcc00;
+  }
+}
+
+
 </style>
 
 </head>
