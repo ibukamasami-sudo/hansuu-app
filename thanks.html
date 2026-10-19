@@ -14,7 +14,7 @@
   filter: brightness(120%) saturate(150%);
 }
 
-#thanksHeartBlock {
+#heart-wrapper {
   display: none;
 }
 </style>
@@ -25,9 +25,9 @@
 <div class="container">
 
   <!-- ハート（白→黄色に変化） -->
-  <div class="heart-wrapper">
-    <img src="heart-mask.png" id="thanksHeart" class="heart-mask thanks">
-  </div>
+<div id="heart-wrapper" class="heart-wrapper">
+  <img src="heart-mask.png" id="thanksHeart" class="heart-mask thanks">
+</div>
 
   <!-- 満足指数の数字ボタン（読み上げ後に表示） -->
   <div id="thanksHeartBlock" class="section" style="display:none;">
@@ -49,7 +49,6 @@
 
     <button class="pink_btn" onclick="saveThanks()">記録する</button>
   </div>
-
 
   <!-- 記録ボックス（読み上げ後に表示） -->
   <div id="recordBox" class="record-box" style="display:none;"></div>
@@ -129,6 +128,7 @@
 
 
 <!-- ★ JavaScript（感謝ノート専用） -->
+<script src="config.js"></script>
 <script>
 
 /* ============================
@@ -154,7 +154,29 @@ function loadVoices() {
 // Chrome対策
 speechSynthesis.onvoiceschanged = loadVoices;
 
+function makeThanksRecordData() {
+  const today = new Date().toISOString().split("T")[0];
 
+  return {
+    date: today,
+    event: document.getElementById("thanksEvent").value,
+    emotion: selectedEmotions.join("、"),
+    story: document.getElementById("thanksStory").value,
+    body: document.getElementById("thanksBody").value,
+    level: thanksLevel   // 満足指数
+  };
+}
+
+function makeThanksSummaryHtml(data) {
+  return `
+    日付：${data.date}<br>
+    出来事：${data.event}<br>
+    感情：${data.emotion}<br>
+    気持ち：${data.story}<br>
+    身体感覚：${data.body}<br>
+    満足指数：${data.level}
+  `;
+}
 /* ============================
    ② 全文読み上げ → ハート画面へ
    ============================ */
@@ -180,10 +202,10 @@ function readAllThanks() {
 
   utter.onend = function() {
     // 入力欄を消す
-    document.getElementById("thanksContent").style.display = "none";
+    //document.getElementById("thanksContent").style.display = "none";
 
     // ハート画面を表示
-    document.getElementById("thanksHeartBlock").style.display = "block";
+    document.getElementById("heart-wrapper").style.display = "block";
   };
 }
 
@@ -199,6 +221,15 @@ function setLevel(level) {
   const heart = document.getElementById("thanksHeart");
   heart.style.filter =
     `hue-rotate(${level * 4}deg) brightness(${100 + level * 5}%) saturate(150%)`;
+}
+
+function showThanksRecord() {
+  const data = makeThanksRecordData();
+  const html = makeThanksSummaryHtml(data);
+
+  const box = document.getElementById("recordBox");
+  box.innerHTML = html;
+  box.style.display = "block";
 }
 
 
@@ -221,7 +252,7 @@ function saveThanks() {
     method: "POST",
     body: JSON.stringify(data)
   });
-
+  showThanksRecord();
   alert("記録しました");
 }
 
@@ -245,6 +276,22 @@ function toCalender() {
 window.onload = function() {
   loadVoices();
 };
+
+function stopAllSounds() {
+  speechSynthesis.cancel();
+
+  const audio1 = document.getElementById("announceAudio");
+  if (audio1) {
+    audio1.pause();
+    audio1.currentTime = 0;
+  }
+
+  const audio2 = document.getElementById("bgmAudio");
+  if (audio2) {
+    audio2.pause();
+    audio2.currentTime = 0;
+  }
+}
 
 </script>
 
