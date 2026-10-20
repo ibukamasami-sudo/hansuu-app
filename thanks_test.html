@@ -179,7 +179,7 @@ speechSynthesis.onvoiceschanged = loadVoices;
 //送るJsonを作る関数
 function makeThanksRecordData() {
   const today = new Date().toISOString().split("T")[0];
-
+ 
   const data = {
     type: "thanks",
     date: todayString(),
@@ -321,8 +321,23 @@ function showThanksRecord() {
 function saveThanks() {
 
   // ★ 統合されたデータを使う
-  const data = makeThanksRecordData();
-alert(JSON.stringify(data, null, 2));
+  //const data = makeThanksRecordData();
+
+  const today = new Date().toISOString().split("T")[0];
+
+  const data = {
+    type: "thanks",
+    date: today,   // ← todayString()ではなくtoday
+    event: document.getElementById("thanksEvent").value,
+    emotions: selectedEmotions,
+    emotionText: selectedEmotions.join("、"),
+    story: document.getElementById("thanksStory").value,
+    body: document.getElementById("thanksBody").value,
+    level: thanksLevel
+  };
+
+  alert(JSON.stringify(data, null, 2));  
+
   // ★ GASへ送信
   fetch(GAS_URL, {
     method: "POST",
