@@ -53,7 +53,7 @@ body {
 </div>
   <!-- 満足指数の数字ボタン（読み上げ後に表示） -->
   <div id="thanksHeartBlock" class="no_show">
-  <div id="number" sclass="numbers no_show">
+  <div id="numbers" class="numbers no_show">
   <button class="num-btn" onclick="setLevel(event, 0)">0</button>
   <button class="num-btn" onclick="setLevel(event, 1)">1</button>
   <button class="num-btn" onclick="setLevel(event, 2)">2</button>
@@ -233,11 +233,12 @@ function readAllThanks() {
  utter.onend = function() {
 
     // ハート画面を表示
+        // ハート画面を表示
     document.getElementById("heart-wrapper").style.display = "block";
 
     // ★ thanksHeartBlock を確実に表示（2段階解除）
     document.getElementById("thanksHeartBlock").classList.remove("no_show");
-    document.querySelector("numbers").classList.remove("no_show");
+    document.querySelector(".numbers").classList.remove("no_show"); // ← ここ！
 
     // 記録ボタンを表示
     const btn = document.getElementById("kiroku_Btn");
