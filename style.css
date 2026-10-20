@@ -73,7 +73,9 @@ body.release-bg { background: #ffffff; }
 .numbers {
   display: flex;
   justify-content: center;
+  gap: 8px;
   margin-top: 10px;
+  min-height: 40px;
 }
 
 .num-btn {
