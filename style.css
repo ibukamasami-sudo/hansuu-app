@@ -3,8 +3,6 @@
    ============================ */
 
 body {
-  background: #aaa;
-  color: #eee;
   font-family: sans-serif;
   display: flex;
   flex-direction: column;
