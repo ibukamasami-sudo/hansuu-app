@@ -32,6 +32,11 @@ body {
   background: #fff27a;
   transition: height 0.3s ease;
 }
+
+.no_show {
+  display: none !important;
+}
+
 </style>
 
 </head>
@@ -51,25 +56,22 @@ body {
 </div>
 
   <!-- 満足指数の数字ボタン（読み上げ後に表示） -->
-  <div id="thanksHeartBlock" style="display:none;">
+
     <p class="guide-text">人生の満足指数を入力してください</p>
 
-  <div class="numbers">
-<button class="num-btn" onclick="selectNum(event, 0)">0</button>
-<button class="num-btn" onclick="selectNum(event, 1)">1</button>
-<button class="num-btn" onclick="selectNum(event, 2)">2</button>
-<button class="num-btn" onclick="selectNum(event, 3)">3</button>
-<button class="num-btn" onclick="selectNum(event, 4)">4</button>
-<button class="num-btn" onclick="selectNum(event, 5)">5</button>
-<button class="num-btn" onclick="selectNum(event, 6)">6</button>
-<button class="num-btn" onclick="selectNum(event, 7)">7</button>
-<button class="num-btn" onclick="selectNum(event, 8)">8</button>
-<button class="num-btn" onclick="selectNum(event, 9)">9</button>
-<button class="num-btn" onclick="selectNum(event, 10)">10</button>
-  </div>
-
-    
-  </div>
+  <div class="numbers no_show">
+  <button class="num-btn" onclick="selectNum(event, 0)">0</button>
+  <button class="num-btn" onclick="selectNum(event, 1)">1</button>
+  <button class="num-btn" onclick="selectNum(event, 2)">2</button>
+  <button class="num-btn" onclick="selectNum(event, 3)">3</button>
+  <button class="num-btn" onclick="selectNum(event, 4)">4</button>
+  <button class="num-btn" onclick="selectNum(event, 5)">5</button>
+  <button class="num-btn" onclick="selectNum(event, 6)">6</button>
+  <button class="num-btn" onclick="selectNum(event, 7)">7</button>
+  <button class="num-btn" onclick="selectNum(event, 8)">8</button>
+  <button class="num-btn" onclick="selectNum(event, 9)">9</button>
+  <button class="num-btn" onclick="selectNum(event, 10)">10</button>
+</div>
 
   <!-- 記録ボックス（読み上げ後に表示） -->
   <button id="kiroku_Btn" class="pink_btn" onclick="saveThanks()" style="display:none;">記録する</button>
@@ -242,9 +244,8 @@ function readAllThanks() {
     document.getElementById("heart-wrapper").style.display = "block";
 
     // ★ thanksHeartBlock を確実に表示（2段階解除）
-    const block = document.getElementById("thanksHeartBlock");
-    block.style.display = "block";        // ← インライン display:none を解除
-    block.classList.add("visible");       // ← CSS の .section.visible を適用
+    const numbers = document.querySelector('.numbers');
+    numbers.classList.remove('no_show');    // ← CSS の .section.visible を適用
 
     // 記録ボタンを表示
     const btn = document.getElementById("kiroku_Btn");
