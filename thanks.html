@@ -10,10 +10,16 @@
 
 <style>
 /* ★ 感謝ノート専用：ハートを白→黄色に変えるための追加CSS */
-body 
-{ background: white; }
+body {
+  background: white !important;
+  color: #666;   /* ← これで文字が見える */
+}
 
-#heart-wrapper {
+.heart-wrapper {
+  display: none;
+}
+
+.numbers {
   display: none;
 }
 
@@ -26,7 +32,6 @@ body
   background: #fff27a;
   transition: height 0.3s ease;
 }
-
 </style>
 
 </head>
