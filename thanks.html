@@ -68,7 +68,7 @@ body {
 </div>
 </div>
   <!-- 記録ボックス（読み上げ後に表示） -->
-  <button id="kiroku_btn" class="pink_btn" onclick="saveThanks()" style="display:none;">記録する</button>
+  <button id="kiroku_btn" class="pink_btn no_show" onclick="saveThanks()" style="display:none;">記録する</button>
    <!-- 記録送信後に表示 --> 
   <div id="recordBox" class="record-box" style="display:none;"></div>
   <!-- 内容入力ブロック -->
@@ -230,26 +230,27 @@ function readAllThanks() {
   speechSynthesis.speak(utter);
 
   // ★★★ 読み上げが終わったら実行される処理 ★★★
- utter.onend = function() {
+utter.onend = function() {
 
     // ハート画面を表示
-        // ハート画面を表示
     document.getElementById("heart-wrapper").style.display = "block";
 
-    // ★ thanksHeartBlock を確実に表示（2段階解除）
+    // thanksHeartBlock を表示
     document.getElementById("thanksHeartBlock").classList.remove("no_show");
-    document.querySelector(".numbers").classList.remove("no_show"); // ← ここ！
 
-    // 記録ボタンを表示
-    const btn = document.getElementById("kiroku_btn");
-    if (btn) btn.style.display = "block";
+    // 数字を表示
+    document.querySelector(".numbers").classList.remove("no_show");
 
-    // 説明欄に案内を出す
+    // 記録ボタンも class で表示
+    document.getElementById("kiroku_btn").classList.remove("no_show");
+
+    // 説明文
     showGuide(
       "ハートの数値で満足度を入力してください<br>その後、記録することもできます",
       null
     );
-  };
+};
+
 }
 
 /*気持ちのセレクト*/
