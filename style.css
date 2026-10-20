@@ -76,6 +76,8 @@ body.release-bg { background: #ffffff; }
   gap: 8px;
   margin-top: 10px;
   min-height: 40px;
+  width: 100%;        /* ← これが必要 */
+  position: relative; /* ← これで高さ計算が安定する */
 }
 
 .num-btn {
@@ -353,5 +355,14 @@ body.release-bg { background: #ffffff; }
     font-size: 16px;
     margin-bottom: 12px;
     box-sizing: border-box;
+  }
+}
+
+@media screen and (min-width: 601px) {
+  .numbers {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 4px; /* ← 間隔はここで調整 */
   }
 }

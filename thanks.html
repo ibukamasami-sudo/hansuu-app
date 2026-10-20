@@ -53,8 +53,6 @@ body {
 </div>
   <!-- 満足指数の数字ボタン（読み上げ後に表示） -->
   <div id="thanksHeartBlock" class="no_show">
-   
-  <p class="guide-text">人生の満足指数を入力してください</p>
   <div id="number" sclass="numbers no_show">
   <button class="num-btn" onclick="selectNum(event, 0)">0</button>
   <button class="num-btn" onclick="selectNum(event, 1)">1</button>
@@ -239,7 +237,7 @@ function readAllThanks() {
 
     // ★ thanksHeartBlock を確実に表示（2段階解除）
     document.getElementById("thanksHeartBlock").classList.remove("no_show");
-    document.querySelector(".numbers").classList.remove("no_show");
+    document.querySelector("numbers").classList.remove("no_show");
 
     // 記録ボタンを表示
     const btn = document.getElementById("kiroku_Btn");
