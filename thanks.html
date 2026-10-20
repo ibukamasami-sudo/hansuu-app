@@ -52,10 +52,12 @@
       <button class="num-btn" onclick="setLevel(10)">10</button>
     </div>
 
-    <button id="kiroku_Btn" class="pink_btn" onclick="saveThanks()">記録する</button>
+    
   </div>
 
   <!-- 記録ボックス（読み上げ後に表示） -->
+  <button id="kiroku_Btn" class="pink_btn" onclick="saveThanks()">記録する</button>
+   <!-- 記録送信後に表示 --> 
   <div id="recordBox" class="record-box" style="display:none;"></div>
 
 
@@ -173,9 +175,11 @@ function makeThanksRecordData() {
   const today = new Date().toISOString().split("T")[0];
 
   return {
-    date: today,
+    type: "thanks",
+    date: todayString(),
     event: document.getElementById("thanksEvent").value,
-    emotion: selectedEmotions.join("、"),
+    emotions: selectedEmotions,               // ← 配列のまま保持
+    emotionText: selectedEmotions.join("、"), // ← 表示用
     story: document.getElementById("thanksStory").value,
     body: document.getElementById("thanksBody").value,
     level: thanksLevel   // 満足指数
@@ -222,7 +226,7 @@ function readAllThanks() {
     document.getElementById("heart-wrapper").style.display = "block";
 
     // 満足度入力ブロックを表示
-    document.getElementById("thanksHeartBlock").style.display = "block";
+    document.getElementById("thanksHeartBlock").classList.add("visible");
 
     // 記録ボタンを表示
     const btn = document.getElementById("kiroku_Btn");
@@ -276,6 +280,9 @@ function setLevel(level) {
     `hue-rotate(${level * 4}deg) brightness(${100 + level * 5}%) saturate(150%)`;
 }
 
+/* ============================
+   ③ 記録を表示する関数
+   ============================ */
 function showThanksRecord() {
   const data = makeThanksRecordData();
   const html = makeThanksSummaryHtml(data);
@@ -291,25 +298,27 @@ function showThanksRecord() {
    ============================ */
 
 function saveThanks() {
-  const data = {
-    type: "thanks",
-    level: thanksLevel,
-    event: document.getElementById("thanksEvent").value,
-    story: document.getElementById("thanksStory").value,
-    body: document.getElementById("thanksBody").value,
-    emotions: selectedEmotions,
-    date: todayString()
-  };
 
+  // ★ 統合されたデータを使う
+  const data = makeThanksRecordData();
+
+  // ★ GASへ送信
   fetch(GAS_URL, {
     method: "POST",
     body: JSON.stringify(data)
   });
-  showThanksRecord();
-  alert("記録しました");
 
-    // 入力欄を消す
-  document.getElementById("thanksContent").style.display = "none";  
+  // ★ 記録欄に表示
+  const html = makeThanksSummaryHtml(data);
+  const box = document.getElementById("recordBox");
+  box.innerHTML = html;
+  box.style.display = "block";
+
+  // ★ 説明欄に案内（後で MP3 を追加できる）
+  showGuide("記録しました。<br>今日の感謝を大切にしてくださいね。", null);
+
+  // ★ 入力欄を消す
+  document.getElementById("thanksContent").style.display = "none";
 }
 
 
