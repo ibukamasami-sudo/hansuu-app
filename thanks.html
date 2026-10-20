@@ -316,10 +316,10 @@ function showThanksRecord() {
    ============================ */
 
 function saveThanks() {
-alert("tesuto");
+
   // ★ 統合されたデータを使う
   const data = makeThanksRecordData();
-//alert(JSON.stringify(data, null, 2));
+alert(JSON.stringify(data, null, 2));
   // ★ GASへ送信
   fetch(GAS_URL, {
     method: "POST",
