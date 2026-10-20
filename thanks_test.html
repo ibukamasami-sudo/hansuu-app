@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>感謝ノート</title>
+
+<!-- ★ あなたの既存CSSを読み込む（ここはそのまま） -->
+<link rel="stylesheet" href="style.css">
+
+<style>
+/* ★ 感謝ノート専用：ハートを白→黄色に変えるための追加CSS */
+body {
+  background: white !important;
+  color: #666;   /* ← これで文字が見える */
+}
+
+.heart-wrapper {
+  display: none;
+}
+
+.yellow-curtain {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 0;
+  background: #fff27a;
+  transition: height 0.3s ease;
+}
+
+.no_show {
+  display: none;
+}
+
+</style>
+
+</head>
+<body class="default-bg">
+<div class="container">
+<div id="messageArea" class="guide-text fade-in">
+ 嬉しかったこと、感謝出来たことを教えて？
+</div>
+<audio id="announceAudio"></audio>  
+  <!-- ハート（白→黄色に変化） -->
+<div id="heart-wrapper" class="heart-wrapper default">
+  <img src="heart-mask.png" class="heart-mask release">
+  <div class="yellow-curtain default"></div>
+</div>
+  <!-- 満足指数の数字ボタン（読み上げ後に表示） -->
+  <div id="thanksHeartBlock" class="no_show">
+  <div id="numbers" class="numbers no_show">
+  <button class="num-btn" onclick="setLevel(event, 0)">0</button>
+  <button class="num-btn" onclick="setLevel(event, 1)">1</button>
+  <button class="num-btn" onclick="setLevel(event, 2)">2</button>
+  <button class="num-btn" onclick="setLevel(event, 3)">3</button>
+  <button class="num-btn" onclick="setLevel(event, 4)">4</button>
+  <button class="num-btn" onclick="setLevel(event, 5)">5</button>
+  <button class="num-btn" onclick="setLevel(event, 6)">6</button>
+  <button class="num-btn" onclick="setLevel(event, 7)">7</button>
+  <button class="num-btn" onclick="setLevel(event, 8)">8</button>
+  <button class="num-btn" onclick="setLevel(event, 9)">9</button>
+  <button class="num-btn" onclick="setLevel(event, 10)">10</button>
+</div>
+</div>
+  <!-- 記録ボックス（読み上げ後に表示） -->
+  <button id="kiroku_btn" class="pink_btn no_show" onclick="saveThanks()">記録する</button>
+   <!-- 記録送信後に表示 --> 
+  <div id="recordBox" class="record-box" style="display:none;"></div>
+  <!-- 内容入力ブロック -->
+  <div id="thanksContent" class="section visible">
+
+    <p><strong>出来事を入力してください</strong></p>
+    <textarea id="thanksEvent"></textarea>
+
+    <p><strong>どんな気持ちだった？選んでみて。</strong></p>
+    <div id="emotionArea">
+      <span class="emotion-btn" onclick="toggleEmotion(this)">感謝</span>
+      <span class="emotion-btn" onclick="toggleEmotion(this)">前向き</span>
+      <span class="emotion-btn" onclick="toggleEmotion(this)">喜び</span>
+      <span class="emotion-btn" onclick="toggleEmotion(this)">充実感</span>
+      <span class="emotion-btn" onclick="toggleEmotion(this)">万能感</span>
+      <span class="emotion-btn" onclick="toggleEmotion(this)">達成感</span>
+    </div>
+
+    <input type="text" id="emotionAdd" placeholder="感情を追加">
+    <button onclick="addEmotion()">追加</button>
+
+    <hr>
+
+    <p><strong>その時の気持ちを、小説みたいに表現してみて？</strong></p>
+    <textarea id="thanksStory" rows="3"></textarea>
+
+    <hr>
+
+    <p><strong>体にはどんな変化があった？</strong></p>
+    <textarea id="thanksBody" rows="3"></textarea>
+
+    <hr>
+
+    <label>BGM：</label>
+    <select id="bgmSelect">
+      <option value="">なし</option>
+      <option value="calm.mp3">落ち着く音</option>
+      <option value="soft.mp3">やわらかい音</option>
+    </select>
+
+    <hr>
+
+    <button id="readAllButton" class="pink_btn" onclick="readAllThanks()">
+      全文を読み上げる
+    </button>
+
+  </div><!-- thanksContent 終わり -->
+
+
+  <!-- 固定ボタン -->
+  <div id="fixedBtnBox">
+    <button id="resetBtn" class="pink_btn" onclick="resetThanks()">
+      最初に戻る
+    </button>
+
+    <button id="readStopBtn" class="pink_btn" onclick="stopAllSounds()">
+      説明を止める
+    </button>
+
+    <button id="toCalender_Btn" class="pink_btn" onclick="toCalender()">
+      カレンダー
+    </button>
+
+    <div class="tts-setting">
+      <label>声：</label>
+      <select id="voiceSelect"></select>
+
+      <label>読み上げスピード</label>
+      <input id="voice_speed" type="number" min="0.5" max="2" step="0.1" value="1">
+    </div>
+  </div>
+
+</div><!-- container 終わり -->
+
+
+<!-- ★ JavaScript（感謝ノート専用） -->
+<script src="config.js"></script>
+<script>
+/* ============================
+   音声一覧の読み込み（感情ページと同じ構造）
+   ============================ */
+
+let voices = [];
+
+function loadVoices() {
+  voices = speechSynthesis.getVoices();
+  const select = document.getElementById("voiceSelect");
+  select.innerHTML = "";
+
+  let defaultIndex = 0;
+
+  voices.forEach((v, i) => {
+    const opt = document.createElement("option");
+    opt.value = i;
+    opt.textContent = v.name;
+    select.appendChild(opt);
+
+    if (v.lang.startsWith("ja") || v.name.includes("日本語")) {
+      defaultIndex = i;
+    }
+  });
+
+  select.value = defaultIndex;
+}
+
+// まず1回読み込む
+loadVoices();
+
+// Chromeが本当に声を読み込んだらもう1回読み込む
+speechSynthesis.onvoiceschanged = loadVoices;
+
+//送るJsonを作る関数
+function makeThanksRecordData() {
+  const today = new Date().toISOString().split("T")[0];
+
+  return {
+    type: "thanks",
+    date: todayString(),
+    event: document.getElementById("thanksEvent").value,
+    emotions: selectedEmotions,               // ← 配列のまま保持
+    emotionText: selectedEmotions.join("、"), // ← 表示用
+    story: document.getElementById("thanksStory").value,
+    body: document.getElementById("thanksBody").value,
+    level: thanksLevel   // 満足指数
+  };
+alert(JSON.stringify(data, null, 2));  
+}
+//recordBoxに表示するHTMLを作る関数
+function makeThanksSummaryHtml(data) {
+  return `
+    日付：${data.date}<br>
+    出来事：${data.event}<br>
+    感情：${data.emotion}<br>
+    気持ち：${data.story}<br>
+    身体感覚：${data.body}<br>
+    満足指数：${data.level}
+  `;
+}
+/* ============================
+   ② 全文読み上げ → ハート画面へ
+   ============================ */
+
+function readAllThanks() {
+  const event = document.getElementById("thanksEvent").value;
+  const emotions = selectedEmotions.join("、");
+  const story = document.getElementById("thanksStory").value;
+  const body = document.getElementById("thanksBody").value;
+
+  const rate = Number(document.getElementById("voice_speed").value);
+  const voiceIndex = document.getElementById("voiceSelect").value;
+
+  const text =
+    `${event}という出来事があって、${emotions}を感じて、${story}という気持ちがあって、身体感覚は${body}でした。`;
+
+  const utter = new SpeechSynthesisUtterance(text);
+  utter.rate = rate;
+  utter.voice = voices[voiceIndex];
+
+  speechSynthesis.cancel();
+  speechSynthesis.speak(utter);
+
+  // ★★★ 読み上げが終わったら実行される処理 ★★★
+utter.onend = function() {
+
+    // ハート画面を表示
+    document.getElementById("heart-wrapper").style.display = "block";
+
+    // thanksHeartBlock を表示
+    document.getElementById("thanksHeartBlock").classList.remove("no_show");
+
+    // 数字を表示
+    document.querySelector(".numbers").classList.remove("no_show");
+
+    // 記録ボタンを表示（最重要）
+    document.getElementById("kiroku_btn").classList.remove("no_show");
+
+    // 説明文
+    showGuide(
+      "ハートの数値で満足度を入力してください<br>その後、記録することもできます",
+      null
+    );
+};
+
+}
+
+/*気持ちのセレクト*/
+let selectedEmotions = [];
+
+function toggleEmotion(el) {
+  const emotion = el.textContent;
+  if (selectedEmotions.includes(emotion)) {
+    selectedEmotions = selectedEmotions.filter(e => e !== emotion);
+    el.classList.remove("selected");
+  } else {
+    selectedEmotions.push(emotion);
+    el.classList.add("selected");
+  }
+}
+
+function addEmotion() {
+  const add = document.getElementById("emotionAdd").value.trim();
+  if (add) {
+    const area = document.getElementById("emotionArea");
+    const span = document.createElement("span");
+    span.className = "emotion-btn added"; // ← 追加された印
+    span.textContent = add;
+    span.onclick = function() { toggleEmotion(span); };
+    area.appendChild(span);
+    document.getElementById("emotionAdd").value = "";
+  }
+}
+
+/* ============================
+   ③ 満足指数のハート幕上げ
+   ============================ */
+
+let thanksLevel = 0;
+
+function setLevel(event, n) {
+  // レベルを保存
+  thanksLevel = n;
+
+  // 黄色い幕を上げる
+  const curtain = document.querySelector('.yellow-curtain');
+  curtain.style.height = (n * 10) + '%';
+
+  // ボタンの選択状態
+  document.querySelectorAll('.num-btn').forEach(btn => btn.classList.remove('active'));
+  event.target.classList.add('active');
+
+  // 説明欄に表示＋読み上げ
+  showGuide(`レベルは ${n} ですね。記録可能になりました。`, null);
+}
+
+/* ============================
+   ③ 記録を表示する関数
+   ============================ */
+function showThanksRecord() {
+  const data = makeThanksRecordData();
+  const html = makeThanksSummaryHtml(data);
+
+  const box = document.getElementById("recordBox");
+  box.innerHTML = html;
+  box.style.display = "block";
+}
+
+
+/* ============================
+   ④ 記録処理（GASへ送信）
+   ============================ */
+
+function saveThanks() {
+
+  // ★ 統合されたデータを使う
+  const data = makeThanksRecordData();
+alert(JSON.stringify(data, null, 2));
+  // ★ GASへ送信
+  fetch(GAS_URL, {
+    method: "POST",
+    body: JSON.stringify(data)
+  });
+
+  // ★ 記録欄に表示
+  const html = makeThanksSummaryHtml(data);
+  const box = document.getElementById("recordBox");
+  box.innerHTML = html;
+  box.style.display = "block";
+
+  // ★ 説明欄に案内（後で MP3 を追加できる）
+  showGuide("記録しました。<br>今日の感謝を大切にしてくださいね。", null);
+
+  // ★ 入力欄を消す
+  document.getElementById("thanksContent").style.display = "none";
+}
+
+
+/* ============================
+   ⑤ 最初に戻る
+   ============================ */
+
+function resetThanks() {
+  location.reload();
+}
+
+function toCalender() {
+  window.location.href = "calendar.html";
+}
+
+
+ // 音声を止める関数
+function stopAllSounds() {
+  speechSynthesis.cancel();
+
+  const audio1 = document.getElementById("announceAudio");
+  if (audio1) {
+    audio1.pause();
+    audio1.currentTime = 0;
+  }
+
+  const audio2 = document.getElementById("bgmAudio");
+  if (audio2) {
+    audio2.pause();
+    audio2.currentTime = 0;
+  }
+}
+
+//説明とアナウンス
+function showGuide(text, mp3) {
+  const msg = document.getElementById("messageArea");
+
+  msg.innerHTML = text;
+  msg.classList.add("fade-in");
+
+  stopAllSounds();
+
+  // ★ mp3 がない場合はテキスト読み上げに切り替える
+  if (!mp3) {
+    speakText(text);   // ← あなたの読み上げ関数
+    return;
+  }
+
+  // ★ mp3 がある場合は mp3 を再生
+  setTimeout(() => {
+    currentAudio = new Audio(mp3);
+    currentAudio.currentTime = 0;
+    currentAudio.play();
+  }, 500);
+}
+
+
+</script>
+
+</body>
+</html>
