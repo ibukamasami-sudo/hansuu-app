@@ -180,7 +180,7 @@ speechSynthesis.onvoiceschanged = loadVoices;
 function makeThanksRecordData() {
   const today = new Date().toISOString().split("T")[0];
 
-  return {
+  const data = {
     type: "thanks",
     date: todayString(),
     event: document.getElementById("thanksEvent").value,
@@ -190,7 +190,9 @@ function makeThanksRecordData() {
     body: document.getElementById("thanksBody").value,
     level: thanksLevel   // 満足指数
   };
-alert(JSON.stringify(data, null, 2));  
+  alert(JSON.stringify(data, null, 2));
+
+  return data; 
 }
 //recordBoxに表示するHTMLを作る関数
 function makeThanksSummaryHtml(data) {
