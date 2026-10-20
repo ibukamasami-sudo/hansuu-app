@@ -52,7 +52,7 @@
       <button class="num-btn" onclick="setLevel(10)">10</button>
     </div>
 
-    <button class="pink_btn" onclick="saveThanks()">記録する</button>
+    <button id="kiroku_Btn" class="pink_btn" onclick="saveThanks()">記録する</button>
   </div>
 
   <!-- 記録ボックス（読み上げ後に表示） -->
@@ -225,7 +225,7 @@ function readAllThanks() {
     document.getElementById("thanksHeartBlock").style.display = "block";
 
     // 記録ボタンを表示
-    const btn = document.getElementById("thanksRecordBtn");
+    const btn = document.getElementById("kiroku_Btn");
     if (btn) btn.style.display = "block";
 
     // 説明欄に案内を出す（mp3なし → テキスト読み上げ）
