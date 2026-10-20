@@ -220,19 +220,21 @@ function readAllThanks() {
   speechSynthesis.speak(utter);
 
   // ★★★ 読み上げが終わったら実行される処理 ★★★
-  utter.onend = function() {
+ utter.onend = function() {
 
     // ハート画面を表示
     document.getElementById("heart-wrapper").style.display = "block";
 
-    // 満足度入力ブロックを表示
-    document.getElementById("thanksHeartBlock").classList.add("visible");
+    // ★ thanksHeartBlock を確実に表示（2段階解除）
+    const block = document.getElementById("thanksHeartBlock");
+    block.style.display = "block";        // ← インライン display:none を解除
+    block.classList.add("visible");       // ← CSS の .section.visible を適用
 
     // 記録ボタンを表示
     const btn = document.getElementById("kiroku_Btn");
     if (btn) btn.style.display = "block";
 
-    // 説明欄に案内を出す（mp3なし → テキスト読み上げ）
+    // 説明欄に案内を出す
     showGuide(
       "ハートの数値で満足度を入力してください<br>その後、記録することもできます",
       null
