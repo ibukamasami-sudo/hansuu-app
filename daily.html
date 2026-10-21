@@ -62,12 +62,14 @@ h2 {
 <h2>反芻</h2>
 <div id="hansuuList"></div>
 
+<h2>感謝</h2>
+<div id="thanksList"></div>
+
 <!--
 <h2>読書</h2>
 <div id="bookList"></div>
 
-<h2>良かったこと</h2>
-<div id="goodList"></div>
+
 -->
 
 <script src="config.js"></script>
@@ -86,7 +88,7 @@ fetch(GAS_URL + "?mode=dailyList&date=" + date)//config.jsからURLを持って�
 
     const hansuuBox = document.getElementById("hansuuList");
     //const bookBox = document.getElementById("bookList");
-    //const goodBox = document.getElementById("goodList");
+    const thanksBox = document.getElementById("thanksList");
 
     list.forEach((item, index) => {
       const div = document.createElement("div");
@@ -101,7 +103,7 @@ fetch(GAS_URL + "?mode=dailyList&date=" + date)//config.jsからURLを持って�
       // 分類して追加
       if (item.type === "hansuu") hansuuBox.appendChild(div);
       //if (item.type === "book") bookBox.appendChild(div);
-      //if (item.type === "good") goodBox.appendChild(div);
+      if (item.type === "thanks") goodBox.appendChild(div);
     });
   });
 </script>
