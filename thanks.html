@@ -179,8 +179,8 @@ speechSynthesis.onvoiceschanged = loadVoices;
 //送るJsonを作る関数
 function makeThanksRecordData() {
   const today = new Date().toISOString().split("T")[0];
-
-  return {
+ 
+  const data = {
     type: "thanks",
     date: todayString(),
     event: document.getElementById("thanksEvent").value,
@@ -190,13 +190,16 @@ function makeThanksRecordData() {
     body: document.getElementById("thanksBody").value,
     level: thanksLevel   // 満足指数
   };
+  alert(JSON.stringify(data, null, 2));
+
+  return data; 
 }
 //recordBoxに表示するHTMLを作る関数
 function makeThanksSummaryHtml(data) {
   return `
     日付：${data.date}<br>
     出来事：${data.event}<br>
-    感情：${data.emotion}<br>
+    感情：${data.emotionText}<br>
     気持ち：${data.story}<br>
     身体感覚：${data.body}<br>
     満足指数：${data.level}
@@ -318,8 +321,23 @@ function showThanksRecord() {
 function saveThanks() {
 
   // ★ 統合されたデータを使う
-  const data = makeThanksRecordData();
-alert(JSON.stringify(data, null, 2));
+ const data = makeThanksRecordData();
+/*
+  const today = new Date().toISOString().split("T")[0];
+
+  const data = {
+    type: "thanks",
+    date: today,   // ← todayString()ではなくtoday
+    event: document.getElementById("thanksEvent").value,
+    emotions: selectedEmotions,
+    emotionText: selectedEmotions.join("、"),
+    story: document.getElementById("thanksStory").value,
+    body: document.getElementById("thanksBody").value,
+    level: thanksLevel
+  };
+
+  alert(JSON.stringify(data, null, 2));  
+*/
   // ★ GASへ送信
   fetch(GAS_URL, {
     method: "POST",
