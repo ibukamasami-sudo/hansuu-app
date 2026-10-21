@@ -65,12 +65,10 @@ h2 {
 <h2>感謝</h2>
 <div id="thanksList"></div>
 
-<!--
+
 <h2>読書</h2>
 <div id="bookList"></div>
 
-
--->
 
 <script src="config.js"></script>
 <script>
@@ -87,7 +85,7 @@ fetch(GAS_URL + "?mode=dailyList&date=" + date)//config.jsからURLを持って�
   .then(list => {
 
     const hansuuBox = document.getElementById("hansuuList");
-    //const bookBox = document.getElementById("bookList");
+    const bookBox = document.getElementById("bookList");
     const thanksBox = document.getElementById("thanksList");
 
     list.forEach((item, index) => {
@@ -102,7 +100,7 @@ fetch(GAS_URL + "?mode=dailyList&date=" + date)//config.jsからURLを持って�
 
       // 分類して追加
       if (item.type === "hansuu") hansuuBox.appendChild(div);
-      //if (item.type === "book") bookBox.appendChild(div);
+      if (item.type === "book") bookBox.appendChild(div);
       if (item.type === "thanks") thanksBox.appendChild(div);
     });
   });

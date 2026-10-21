@@ -98,24 +98,31 @@ fetch(GAS_URL + "?mode=dailyList&date=" + date)        // ← その日の一覧
     if (item.type === "hansuu") {
       html += `<p>出来事：${raw[1]}</p>`;             // ← event（B列）
       html += `<p>感情：${raw[2]}</p>`;               // ← emotion（C列）
-      html += `<p>新しい視点：${raw[3]}</p>`;         // ← novel（D列）
+      html += `<p>小説風に表現：${raw[3]}</p>`;         // ← novel（D列）
       html += `<p>体の反応：${raw[4]}</p>`;           // ← body（E列）
       html += `<p>最初の違和感：${raw[5]}</p>`;       // ← firstDiscomfort（F列）
     }
 
     // 読書の詳細表示
-    if (item.type === "book") {
-      html += `<p>本のタイトル：${raw[1]}</p>`;       // ← title（B列）
-      html += `<p>著者：${raw[2]}</p>`;               // ← author（C列）
-      html += `<p>感想：${raw[3]}</p>`;               // ← impression（D列）
-      html += `<p>評価：${raw[4]}</p>`;               // ← rating（E列）
-    }
+  if (item.type === "book") {
+    html += `<p>本の名前：${raw[1]}</p>`;       // B列
+    html += `<p>著者名：${raw[2]}</p>`;       // C列
+    html += `<p>内容：${raw[3]}</p>`;         // D列
+    html += `<p>評価：${raw[4]}</p>`;         // E列
+    html += `<p>感想：${raw[5]}</p>`;         // F列
+    html += `<p>印象に残った言葉：${raw[6]}</p>`; // G列
+    html += `<p>登場人物：${raw[7]}</p>`;     // H列
+    html += `<p>朗読の声：${raw[8]}</p>`;     // I列
+    html += `<p>総合評価：${raw[9]}</p>`;     // J列
+  }
 
-    // 良かったことの詳細表示
-    if (item.type === "good") {
-      html += `<p>良かったこと：${raw[1]}</p>`;       // ← event（B列）
-      html += `<p>理由：${raw[2]}</p>`;               // ← reason（C列）
-      html += `<p>感情：${raw[3]}</p>`;               // ← emotion（D列）
+    // 感謝の詳細表示
+    if (item.type === "thanks") {
+      html += `<p>出来事：${raw[1]}</p>`;             // ← event（B列）
+      html += `<p>感情：${raw[2]}</p>`;               // ← emotion（C列）
+      html += `<p>小説風に表現：${raw[3]}</p>`;         // ← novel（D列）
+      html += `<p>体の反応：${raw[4]}</p>`;           // ← body（E列）
+      html += `<p>最初の違和感：${raw[5]}</p>`;       // ← firstDiscomfort（F列）
     }
 
     document.getElementById("detail").innerHTML = html; // ← 組み立てたHTMLを画面に流し込む

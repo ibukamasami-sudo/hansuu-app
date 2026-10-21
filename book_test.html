@@ -39,8 +39,7 @@ body {
 <body class="default-bg">
 <div class="container">
 <div id="messageArea" class="guide-text fade-in">
- 読んだ本を記録してください
-</div>
+ 読んだ本について質問に答えてください
 <audio id="announceAudio"></audio>  
   <!-- ハート（白→緑に変化） -->
 <div id="heart-wrapper" class="heart-wrapper default">
@@ -70,7 +69,13 @@ body {
   <!-- 内容入力ブロック -->
   <div id="thanksContent" class="section visible">
 
-    <p><strong>内容を簡単に教えて</strong></p>
+    <p><strong>本の名前</strong></p>
+    <textarea id="book_name"></textarea>
+
+    <p><strong>著者名</strong></p>
+    <textarea id="cyosya_name"></textarea>
+
+    <p><strong>著者名</strong></p>
     <textarea id="naiyou"></textarea>
 
     <p><strong>この本を読んでどのように感じましたか</strong></p>
@@ -183,27 +188,34 @@ speechSynthesis.onvoiceschanged = loadVoices;
 //送るJsonを作る関数
 function makeThanksRecordData() {
   const today = new Date().toISOString().split("T")[0];
- 
+
   const data = {
     type: "book",
     date: today,
+
+    book_name: document.getElementById("book_name").value,
+    cyosya_name: document.getElementById("cyosya_name").value,
+
     naiyou: document.getElementById("naiyou").value,
-    emotions: selectedEmotions,               // ← 配列のまま保持
-    emotionText: selectedEmotions.join("、"), // ← 表示用
+    emotions: selectedEmotions,
+    emotionText: selectedEmotions.join("、"),
     kansou: document.getElementById("kansou").value,
     kotoba: document.getElementById("kotoba").value,
     hito: document.getElementById("hito").value,
     koe: document.getElementById("koe").value,
-    level: thanksLevel   // 満足指数
+    level: thanksLevel
   };
+
   alert(JSON.stringify(data, null, 2));
 
-  return data; 
+  return data;
 }
 //recordBoxに表示するHTMLを作る関数
 function makeThanksSummaryHtml(data) {
   return `
     日付：${data.date}<br>
+    本の名前：${data.book_name}<br>
+    著者名：${data.cyosya_name}<br>
     要約：${data.naiyou}<br>
     評価：${data.emotionText}<br>
     感想：${data.kansou}<br>
@@ -219,11 +231,14 @@ function makeThanksSummaryHtml(data) {
 
 function readAllThanks() {
 
-  const naiyou = document.getElementById("naiyou").value;
-  const kansou = document.getElementById("kansou").value;
-  const kotoba = document.getElementById("kotoba").value;
-  const hito = document.getElementById("hito").value;
-  const koe = document.getElementById("koe").value;
+const bookName = document.getElementById("book_name").value;
+const cyosyaName = document.getElementById("cyosya_name").value;
+
+const naiyou = document.getElementById("naiyou").value;
+const kansou = document.getElementById("kansou").value;
+const kotoba = document.getElementById("kotoba").value;
+const hito = document.getElementById("hito").value;
+const koe = document.getElementById("koe").value;
 
   const emotions = Array.from(
     document.querySelectorAll(".emotion-btn.selected")
@@ -234,8 +249,10 @@ function readAllThanks() {
       ? emotions.join("、")
       : "未選択";
 
-  const text =
-`内容は、${naiyou}。
+const text =
+`本の名前は、${bookName}。
+著者名は、${cyosyaName}。
+内容は、${naiyou}。
 評価は、${emotionText}。
 感想は、${kansou}。
 印象に残った言葉は、${kotoba}。
