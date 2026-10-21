@@ -1,111 +1,257 @@
 <!DOCTYPE html>
-<html>
+<html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <title>その日の記録一覧</title>
-  <style>
-body {
-  font-family: sans-serif;
-  padding: 20px;
-  max-width: 600px;
-  margin: 0 auto;
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>記録カレンダー</title>
+
+<style>
+ body {
+  font-family: "Yu Gothic", sans-serif;
+  background: #f5f5f5;
+  padding: 40px;
 }
 
-/* 日付タイトル（h1） */
-h1#dateTitle {
-  font-size: 24px;
+h1 {
+  text-align: center;
+  font-size: 28px;
+  margin-bottom: 30px;
+  color: #333;
+}
+
+/* 月移動ヘッダー */
+.calendar-header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
   margin-bottom: 20px;
-  border-bottom: 2px solid #ddd;
-  padding-bottom: 8px;
+  gap: 20px;
 }
 
-/* セクションタイトル（h2） */
-h2 {
-  font-size: 20px;
-  margin-top: 24px;
-  margin-bottom: 10px;
-  color: #444;
-}
-
-/* リストの1件（item） */
-.item {
-  padding: 12px;
-  margin: 6px 0;
-  background: #f7f7f7;
+.calendar-header button {
+  background: #fff;
+  border: 1px solid #ccc;
+  padding: 6px 12px;
   border-radius: 6px;
   cursor: pointer;
-  transition: background 0.2s;
+  font-size: 16px;
+  transition: 0.2s;
 }
 
-.nav-btn {
-  display: inline-block;
-  padding: 10px 14px;
-  margin-bottom: 12px;
-  background: #e5f0ff;
-  color: #2456a6;
-  text-decoration: none;
+.calendar-header button:hover {
+  background: #eef6ff;
+}
+
+/* カレンダー本体 */
+#calendarTable {
+  width: 900px;
+  margin: 0 auto;
+  border-collapse: separate;
+  border-spacing: 10px;
+  text-align: center;
+}
+
+/* 曜日ヘッダー */
+#calendarTable th {
+  background: #f0f0f0;
+  padding: 10px;
+  font-size: 16px;
+  border-radius: 6px;
+}
+
+/* 日付セル（ボタン風） */
+#calendarTable td {
+  background: #fff;
+  border: 1px solid #ccc;
   border-radius: 8px;
-  font-size: 14px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  padding: 15px;
+  cursor: pointer;
+  transition: 0.2s;
 }
 
-/* 押した時の軽い反応 */
-.item:hover {
-  background: #ececec;
+#calendarTable td:hover {
+  background: #eef6ff;
+  transform: translateY(-2px);
 }
-  </style>
+
+/* 記録なし */
+.zero {
+  background: #eaeaea;
+  color: #777;
+  box-shadow: none;
+}
+
+/* 記録あり */
+.has {
+  background: #cfe3ff;
+  color: #003366;
+  font-weight: bold;
+}
+
+/* 今日をハイライト */
+.today {
+  outline: 3px solid #ffcc00;
+  background: #fff8d1;
+}
+/* ここからスマホ ーーーーーーーーーーーーーーーーーーーーーーーーーーー*/
+@media screen and (max-width: 600px) {
+
+  /* 画面全体の余白 */
+  body {
+    padding: 20px;
+  }
+
+  /* タイトル */
+  h1 {
+    font-size: 22px;
+    margin-bottom: 20px;
+  }
+
+  /* 月移動ヘッダー */
+  .calendar-header {
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+
+  .calendar-header button {
+    padding: 10px 16px;
+    font-size: 18px;
+  }
+
+
+  /* 曜日ヘッダーも少し広げる */
+  #calendarTable th {
+    font-size: 15px;
+    padding: 8px;
+  }
+
+  /* 今日のハイライト */
+  .today {
+    outline: 3px solid #ffcc00;
+  } 
+
+  /* テーブル全体の左右余白を狭く */
+  #calendarTable {
+    width: 96%;              /* ← 画面端まで近づける */
+    margin: 0 auto;
+    border-spacing: 4px;     /* ← セル間の隙間を狭く */
+    table-layout: fixed;     /* ← 均等幅で整える */
+  }
+
+  /* 各セルの内側余白（padding）を減らす */
+  #calendarTable td {
+    padding: 12px 0;         /* ← 上下も少し詰める */
+    font-size: 16px;         /* ← 数字を少し小さく */
+    border-radius: 4px;
+  }
+
+  /* 日付数字（控えめに） */
+  #calendarTable td div:first-child {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 3px;
+  }
+
+  /* 件数（やや小さめに） */
+  #calendarTable td div:last-child {
+    font-size: 16px;
+    color: #003366;
+  }
+
+  /* 曜日ヘッダーも詰める */
+  #calendarTable th {
+    padding: 6px;
+    font-size: 14px;
+  }
+
+}
+
+</style>
+
 </head>
 <body>
-<a href="calendar.html" class="nav-btn">📅 カレンダーへ</a>
-<a href="index.html" class="nav-btn">🏠 最初に戻る</a>
+<div class="calendar-header">
+  <button id="prevMonth">←</button>
+  <span id="monthLabel"></span>
+  <button id="nextMonth">→</button>
+</div>
 
-<h1 id="dateTitle"></h1>
-<h2>反芻</h2>
-<div id="hansuuList"></div>
-
-<h2>感謝</h2>
-<div id="thanksList"></div>
-
-<!--
-<h2>読書</h2>
-<div id="bookList"></div>
-
-
--->
+<table id="calendarTable">
+  <thead>
+    <tr>
+      <th>日</th><th>月</th><th>火</th><th>水</th><th>木</th><th>金</th><th>土</th>
+    </tr>
+  </thead>
+  <tbody id="calendarBody"></tbody>
+</table>
 
 <script src="config.js"></script>
 <script>
 //const GAS_URL = "https://script.google.com/macros/s/AKfycbyeIJKH5pkVkKBJ4kEwuGfpwMokjhdriZNwtX8kQT5Qyg8ozcRcxkcBd5fIs6J-oTvDsQ/exec";
 
-function getParam(name) {
-  return new URLSearchParams(window.location.search).get(name);
-}
+let current = new Date();
+renderCalendar(current);
 
-const date = getParam("date");//日付が取り出される　2026-10-18など
+document.getElementById("prevMonth").addEventListener("click", () => {
+  current.setMonth(current.getMonth() - 1);
+  renderCalendar(current);
+});
 
-fetch(GAS_URL + "?mode=dailyList&date=" + date)//config.jsからURLを持ってくる
-  .then(res => res.json())
-  .then(list => {
+document.getElementById("nextMonth").addEventListener("click", () => {
+  current.setMonth(current.getMonth() + 1);
+  renderCalendar(current);
+});
 
-    const hansuuBox = document.getElementById("hansuuList");
-    //const bookBox = document.getElementById("bookList");
-    const thanksBox = document.getElementById("thanksList");
+function renderCalendar(date) {
+  const year = date.getFullYear();
+  const month = date.getMonth();
+  const firstDay = new Date(year, month, 1).getDay();
+  const lastDate = new Date(year, month + 1, 0).getDate();
 
-    list.forEach((item, index) => {
-      const div = document.createElement("div");
-      div.className = "item";
-      div.textContent = item.title;
+  document.getElementById("monthLabel").textContent = `${year}年${month + 1}月`;
 
-      // record.html に date と index を送る
-      div.onclick = () => {
-        window.location.href = `record.html?date=${date}&index=${index}`;
-      };
+  fetch(GAS_URL + "?mode=dailyRecordCount")
+    .then(res => res.json())
+    .then(data => {
+      const body = document.getElementById("calendarBody");
+      body.innerHTML = "";
+      let row = document.createElement("tr");
 
-      // 分類して追加
-      if (item.type === "hansuu") hansuuBox.appendChild(div);
-      //if (item.type === "book") bookBox.appendChild(div);
-      if (item.type === "thanks") goodBox.appendChild(div);
+      // 空白セル
+      for (let i = 0; i < firstDay; i++) {
+        row.appendChild(document.createElement("td"));
+      }
+
+      for (let d = 1; d <= lastDate; d++) {
+        const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
+        const count = data[dateStr] || 0;
+
+        const cell = document.createElement("td");
+        cell.classList.add("day");
+        cell.innerHTML = `<div>${d}</div><div style="font-size:12px;">${count}件</div>`;
+
+        // クラス付け
+        if (count > 0) {
+          cell.classList.add("has");
+          
+          cell.addEventListener("click", () => {
+            window.location.href = `daily.html?date=${dateStr}`;//ここでdailyに日付を送る
+          });
+          cell.style.cursor = "pointer"; // 視覚的にクリックできると分かる
+        } else {
+          cell.classList.add("zero");
+        }
+
+        row.appendChild(cell);
+
+        if ((firstDay + d) % 7 === 0 || d === lastDate) {
+          body.appendChild(row);
+          row = document.createElement("tr");
+        }
+      }
     });
-  });
+}
 </script>
 
 </body>
