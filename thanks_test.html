@@ -182,7 +182,7 @@ function makeThanksRecordData() {
  
   const data = {
     type: "thanks",
-    date: todayString(),
+    date: today,
     event: document.getElementById("thanksEvent").value,
     emotions: selectedEmotions,               // ← 配列のまま保持
     emotionText: selectedEmotions.join("、"), // ← 表示用
@@ -321,9 +321,9 @@ function showThanksRecord() {
 function saveThanks() {
 
   // ★ 統合されたデータを使う
-// const data = makeThanksRecordData();
+  const data = makeThanksRecordData();
 
-
+/*
   const today = new Date().toISOString().split("T")[0];
 
   const data = {
@@ -338,7 +338,7 @@ function saveThanks() {
   };
 
   alert(JSON.stringify(data, null, 2));  
-
+*/
   
   // ★ GASへ送信
   fetch(GAS_URL, {
