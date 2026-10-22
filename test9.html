@@ -650,16 +650,20 @@ speechSynthesis.onvoiceschanged = loadVoices;   // ← 声が本当に来たら�
 
 
 
-
-/*ハートの幕の上げ下げ*/
+/*ハートの幕の上げ下げ
 function selectNum(n) {
   const curtain = document.querySelector('.black-curtain');
   curtain.style.height = (n * 10) + '%';
-}
+}*/
 
 let firstDiscomfort = null;  // ★ 追加：最初の不快指数を保存する変数
 
 function selectNum(event, n) {
+
+  if (firstDiscomfort === null) {
+    firstDiscomfort = n;
+  }
+
   const curtain = document.querySelector('.black-curtain');
   curtain.style.height = (n * 10) + '%';
 
@@ -670,12 +674,10 @@ function selectNum(event, n) {
   // hidden input に値を入れる
   document.getElementById("discomfort_input").value = n;
 
-  // ★ 最初の不快指数を決める（初期画面に戻ったらまた null になる）
-    firstDiscomfort = n;
 
     // ★ スライダーの初期値もここで決める
-    const slider = document.getElementById("releaseSlider");
-    slider.value = firstDiscomfort;
+  const slider = document.getElementById("releaseSlider");
+  slider.value = firstDiscomfort;
   
 
   // ★★★ ここから分岐（質問フェーズ or 手放しフェーズ） ★★★
